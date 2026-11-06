@@ -59,8 +59,19 @@
   "pit_legend": {
    "yes": "提供 Point-in-Time / as-reported 版本",
    "partial": "部分字段或部分数据集提供 PIT",
-   "no": "只给最新修订值，回测需自行处理未来函数"
+   "no": "只给最新修订值，回测需自行处理未来函数",
+   "not_applicable": "数据不可修订（原始行情/逐笔/链上/归档）或条目本身是工具，PIT 不适用",
+   "unverified": "尚未核实，不能假设有或没有 PIT"
   },
+  "verification_legend": {
+   "discovered": "已登记但本网络不可达（403/429/202/challenge 或不可解析），只能当引用线索",
+   "reachable": "仅 HTTP 200 可达；没有检查返回内容",
+   "schema_verified": "实际抓取过返回内容，结构与文档一致",
+   "semantic_verified": "核对过具体口径（费率、限频、端点、PIT、更名等）",
+   "production_approved": "在真实任务里端到端用过"
+  },
+  "data_types_note": "data_types 是数据集级标签（如 orderbook_l2、funding、xbrl），用于核对某条引用是否真的覆盖所引数据。",
+  "enrichment": "data/enrichment.yaml",
   "license_note": "license_class 是策略分桶，不是法律意见；绑定许可以源站条款为准。"
  },
  "sources": [
@@ -75,6 +86,7 @@
    "evidence": "official-doc",
    "kind": "html",
    "content_access": "challenge",
+   "verification": "discovered",
    "license_class": "public-domain",
    "cache_policy": "short-quote",
    "attribution": "recommended",
@@ -95,7 +107,10 @@
    "iface": [
     "web"
    ],
-   "pit": "no"
+   "pit": "no",
+   "data_types": [
+    "filings"
+   ]
   },
   {
    "id": "sec-data-apis",
@@ -108,6 +123,7 @@
    "evidence": "official-doc",
    "kind": "html",
    "content_access": "challenge",
+   "verification": "discovered",
    "license_class": "public-domain",
    "cache_policy": "short-quote",
    "attribution": "recommended",
@@ -127,6 +143,11 @@
     "rest"
    ],
    "pit": "partial",
+   "data_types": [
+    "filings",
+    "xbrl",
+    "ownership"
+   ],
    "free_tier": "free, no API key (verified 2026-11-06)"
   },
   {
@@ -140,6 +161,7 @@
    "evidence": "official-doc",
    "kind": "api",
    "content_access": "challenge",
+   "verification": "discovered",
    "license_class": "public-domain",
    "cache_policy": "short-quote",
    "attribution": "recommended",
@@ -157,6 +179,10 @@
     "rest"
    ],
    "pit": "partial",
+   "data_types": [
+    "xbrl",
+    "fundamentals"
+   ],
    "free_tier": "free, no API key (verified 2026-11-06)",
    "as_reported": "yes"
   },
@@ -171,6 +197,7 @@
    "evidence": "official-doc",
    "kind": "api",
    "content_access": "challenge",
+   "verification": "discovered",
    "license_class": "public-domain",
    "cache_policy": "short-quote",
    "attribution": "recommended",
@@ -189,6 +216,10 @@
     "rest"
    ],
    "pit": "no",
+   "data_types": [
+    "filings",
+    "ownership"
+   ],
    "free_tier": "free, no API key (verified 2026-11-06)"
   },
   {
@@ -202,6 +233,7 @@
    "evidence": "dataset",
    "kind": "dataset",
    "content_access": "challenge",
+   "verification": "discovered",
    "license_class": "public-domain",
    "cache_policy": "short-quote",
    "attribution": "recommended",
@@ -221,6 +253,10 @@
     "archive"
    ],
    "pit": "partial",
+   "data_types": [
+    "xbrl",
+    "fundamentals"
+   ],
    "as_reported": "yes"
   },
   {
@@ -234,6 +270,7 @@
    "evidence": "dataset",
    "kind": "dataset",
    "content_access": "challenge",
+   "verification": "discovered",
    "license_class": "public-domain",
    "cache_policy": "short-quote",
    "attribution": "recommended",
@@ -250,7 +287,11 @@
    "iface": [
     "archive"
    ],
-   "pit": "partial"
+   "pit": "partial",
+   "data_types": [
+    "ownership",
+    "13f"
+   ]
   },
   {
    "id": "sec-insider-transactions",
@@ -263,6 +304,7 @@
    "evidence": "dataset",
    "kind": "dataset",
    "content_access": "challenge",
+   "verification": "discovered",
    "license_class": "public-domain",
    "cache_policy": "short-quote",
    "attribution": "recommended",
@@ -279,7 +321,11 @@
    "iface": [
     "archive"
    ],
-   "pit": "partial"
+   "pit": "partial",
+   "data_types": [
+    "ownership",
+    "form4"
+   ]
   },
   {
    "id": "finra-short-interest",
@@ -292,6 +338,7 @@
    "evidence": "dataset",
    "kind": "dataset",
    "content_access": "api",
+   "verification": "reachable",
    "license_class": "site-terms",
    "cache_policy": "metadata-only",
    "attribution": "recommended",
@@ -309,7 +356,10 @@
     "archive",
     "web"
    ],
-   "pit": "no"
+   "pit": "no",
+   "data_types": [
+    "short_interest"
+   ]
   },
   {
    "id": "cftc-cot",
@@ -322,6 +372,7 @@
    "evidence": "official-doc",
    "kind": "html",
    "content_access": "static",
+   "verification": "reachable",
    "license_class": "public-domain",
    "cache_policy": "short-quote",
    "attribution": "recommended",
@@ -340,7 +391,11 @@
     "web",
     "archive"
    ],
-   "pit": "no"
+   "pit": "no",
+   "data_types": [
+    "positioning",
+    "futures"
+   ]
   },
   {
    "id": "cboe-datashop",
@@ -353,6 +408,7 @@
    "evidence": "vendor-doc",
    "kind": "html",
    "content_access": "static",
+   "verification": "reachable",
    "license_class": "site-terms",
    "cache_policy": "metadata-only",
    "attribution": "recommended",
@@ -370,7 +426,12 @@
    "iface": [
     "web"
    ],
-   "pit": "no"
+   "pit": "not_applicable",
+   "data_types": [
+    "options",
+    "vix",
+    "historical_ticks"
+   ]
   },
   {
    "id": "cninfo",
@@ -383,6 +444,7 @@
    "evidence": "official-doc",
    "kind": "html",
    "content_access": "static",
+   "verification": "reachable",
    "license_class": "site-terms",
    "cache_policy": "metadata-only",
    "attribution": "recommended",
@@ -401,7 +463,11 @@
    "iface": [
     "web"
    ],
-   "pit": "no"
+   "pit": "no",
+   "data_types": [
+    "filings",
+    "disclosures"
+   ]
   },
   {
    "id": "sse",
@@ -414,6 +480,7 @@
    "evidence": "official-doc",
    "kind": "html",
    "content_access": "static",
+   "verification": "reachable",
    "license_class": "site-terms",
    "cache_policy": "metadata-only",
    "attribution": "recommended",
@@ -431,7 +498,11 @@
    "iface": [
     "web"
    ],
-   "pit": "no"
+   "pit": "no",
+   "data_types": [
+    "filings",
+    "market_data"
+   ]
   },
   {
    "id": "szse",
@@ -444,6 +515,7 @@
    "evidence": "official-doc",
    "kind": "html",
    "content_access": "static",
+   "verification": "reachable",
    "license_class": "site-terms",
    "cache_policy": "metadata-only",
    "attribution": "recommended",
@@ -461,7 +533,11 @@
    "iface": [
     "web"
    ],
-   "pit": "no"
+   "pit": "no",
+   "data_types": [
+    "filings",
+    "market_data"
+   ]
   },
   {
    "id": "hkex",
@@ -474,6 +550,7 @@
    "evidence": "official-doc",
    "kind": "html",
    "content_access": "static",
+   "verification": "reachable",
    "license_class": "site-terms",
    "cache_policy": "metadata-only",
    "attribution": "recommended",
@@ -491,7 +568,11 @@
    "iface": [
     "web"
    ],
-   "pit": "no"
+   "pit": "no",
+   "data_types": [
+    "market_data",
+    "filings"
+   ]
   },
   {
    "id": "fred",
@@ -504,6 +585,7 @@
    "evidence": "official-doc",
    "kind": "html",
    "content_access": "static",
+   "verification": "semantic_verified",
    "license_class": "public-domain",
    "cache_policy": "short-quote",
    "attribution": "recommended",
@@ -525,6 +607,9 @@
     "web"
    ],
    "pit": "no",
+   "data_types": [
+    "macro_series"
+   ],
    "free_tier": "free API key"
   },
   {
@@ -538,6 +623,7 @@
    "evidence": "official-doc",
    "kind": "html",
    "content_access": "static",
+   "verification": "semantic_verified",
    "license_class": "public-domain",
    "cache_policy": "short-quote",
    "attribution": "recommended",
@@ -558,6 +644,10 @@
     "web"
    ],
    "pit": "yes",
+   "data_types": [
+    "macro_series",
+    "vintages"
+   ],
    "free_tier": "free API key"
   },
   {
@@ -571,6 +661,7 @@
    "evidence": "official-doc",
    "kind": "html",
    "content_access": "challenge",
+   "verification": "discovered",
    "license_class": "public-domain",
    "cache_policy": "short-quote",
    "attribution": "recommended",
@@ -592,6 +683,11 @@
     "web"
    ],
    "pit": "no",
+   "data_types": [
+    "macro_series",
+    "employment",
+    "cpi"
+   ],
    "free_tier": "free API key"
   },
   {
@@ -605,6 +701,7 @@
    "evidence": "official-doc",
    "kind": "html",
    "content_access": "static",
+   "verification": "reachable",
    "license_class": "public-domain",
    "cache_policy": "short-quote",
    "attribution": "recommended",
@@ -623,6 +720,10 @@
     "web"
    ],
    "pit": "no",
+   "data_types": [
+    "macro_series",
+    "gdp"
+   ],
    "free_tier": "free API key"
   },
   {
@@ -636,6 +737,7 @@
    "evidence": "official-doc",
    "kind": "html",
    "content_access": "static",
+   "verification": "reachable",
    "license_class": "public-domain",
    "cache_policy": "short-quote",
    "attribution": "recommended",
@@ -655,6 +757,11 @@
     "web"
    ],
    "pit": "no",
+   "data_types": [
+    "fiscal",
+    "debt",
+    "rates"
+   ],
    "free_tier": "free, no key"
   },
   {
@@ -668,6 +775,7 @@
    "evidence": "official-doc",
    "kind": "html",
    "content_access": "static",
+   "verification": "reachable",
    "license_class": "public-domain",
    "cache_policy": "short-quote",
    "attribution": "recommended",
@@ -685,7 +793,10 @@
     "web",
     "rest"
    ],
-   "pit": "no"
+   "pit": "no",
+   "data_types": [
+    "macro_series"
+   ]
   },
   {
    "id": "world-bank-data",
@@ -698,6 +809,7 @@
    "evidence": "official-doc",
    "kind": "html",
    "content_access": "unknown",
+   "verification": "discovered",
    "license_class": "public-domain",
    "cache_policy": "short-quote",
    "attribution": "recommended",
@@ -715,7 +827,11 @@
     "web",
     "rest"
    ],
-   "pit": "no"
+   "pit": "unverified",
+   "data_types": [
+    "macro_series",
+    "development"
+   ]
   },
   {
    "id": "bis-data",
@@ -728,6 +844,7 @@
    "evidence": "official-doc",
    "kind": "html",
    "content_access": "static",
+   "verification": "reachable",
    "license_class": "site-terms",
    "cache_policy": "metadata-only",
    "attribution": "recommended",
@@ -746,7 +863,11 @@
     "web",
     "rest"
    ],
-   "pit": "no"
+   "pit": "no",
+   "data_types": [
+    "macro_series",
+    "banking"
+   ]
   },
   {
    "id": "oecd-data",
@@ -759,6 +880,7 @@
    "evidence": "official-doc",
    "kind": "html",
    "content_access": "js",
+   "verification": "reachable",
    "license_class": "site-terms",
    "cache_policy": "metadata-only",
    "attribution": "recommended",
@@ -776,7 +898,10 @@
     "web",
     "rest"
    ],
-   "pit": "no"
+   "pit": "unverified",
+   "data_types": [
+    "macro_series"
+   ]
   },
   {
    "id": "ecb-data",
@@ -789,6 +914,7 @@
    "evidence": "official-doc",
    "kind": "html",
    "content_access": "static",
+   "verification": "reachable",
    "license_class": "site-terms",
    "cache_policy": "metadata-only",
    "attribution": "recommended",
@@ -807,7 +933,11 @@
     "web",
     "rest"
    ],
-   "pit": "no"
+   "pit": "no",
+   "data_types": [
+    "macro_series",
+    "rates"
+   ]
   },
   {
    "id": "nbs-china",
@@ -820,6 +950,7 @@
    "evidence": "official-doc",
    "kind": "html",
    "content_access": "portal",
+   "verification": "reachable",
    "license_class": "public-domain",
    "cache_policy": "short-quote",
    "attribution": "recommended",
@@ -838,7 +969,10 @@
    "iface": [
     "web"
    ],
-   "pit": "no"
+   "pit": "no",
+   "data_types": [
+    "macro_series"
+   ]
   },
   {
    "id": "pbc-china",
@@ -851,6 +985,7 @@
    "evidence": "official-doc",
    "kind": "html",
    "content_access": "static",
+   "verification": "reachable",
    "license_class": "public-domain",
    "cache_policy": "short-quote",
    "attribution": "recommended",
@@ -868,7 +1003,11 @@
    "iface": [
     "web"
    ],
-   "pit": "no"
+   "pit": "no",
+   "data_types": [
+    "rates",
+    "macro_series"
+   ]
   },
   {
    "id": "chinamoney",
@@ -881,6 +1020,7 @@
    "evidence": "official-doc",
    "kind": "html",
    "content_access": "portal",
+   "verification": "reachable",
    "license_class": "site-terms",
    "cache_policy": "metadata-only",
    "attribution": "recommended",
@@ -899,7 +1039,11 @@
    "iface": [
     "web"
    ],
-   "pit": "no"
+   "pit": "no",
+   "data_types": [
+    "rates",
+    "fx"
+   ]
   },
   {
    "id": "massive",
@@ -912,6 +1056,7 @@
    "evidence": "vendor-doc",
    "kind": "html",
    "content_access": "static",
+   "verification": "semantic_verified",
    "license_class": "site-terms",
    "cache_policy": "metadata-only",
    "attribution": "recommended",
@@ -933,7 +1078,13 @@
     "ws",
     "archive"
    ],
-   "pit": "no"
+   "pit": "not_applicable",
+   "data_types": [
+    "ohlcv",
+    "trades",
+    "options",
+    "reference"
+   ]
   },
   {
    "id": "alpaca-data",
@@ -946,6 +1097,7 @@
    "evidence": "vendor-doc",
    "kind": "html",
    "content_access": "static",
+   "verification": "semantic_verified",
    "license_class": "site-terms",
    "cache_policy": "metadata-only",
    "attribution": "recommended",
@@ -964,7 +1116,12 @@
     "rest",
     "ws"
    ],
-   "pit": "no",
+   "pit": "not_applicable",
+   "data_types": [
+    "ohlcv",
+    "trades",
+    "quotes"
+   ],
    "free_tier": "free tier API data is 15-min delayed; real-time SIP needs Algo Trader Plus $99/mo (verified 2026-11-06)"
   },
   {
@@ -978,6 +1135,7 @@
    "evidence": "vendor-doc",
    "kind": "html",
    "content_access": "js",
+   "verification": "reachable",
    "license_class": "site-terms",
    "cache_policy": "metadata-only",
    "attribution": "recommended",
@@ -998,7 +1156,12 @@
     "ws",
     "archive"
    ],
-   "pit": "no"
+   "pit": "not_applicable",
+   "data_types": [
+    "historical_ticks",
+    "orderbook_l2",
+    "ohlcv"
+   ]
   },
   {
    "id": "tiingo",
@@ -1011,6 +1174,7 @@
    "evidence": "vendor-doc",
    "kind": "html",
    "content_access": "portal",
+   "verification": "reachable",
    "license_class": "site-terms",
    "cache_policy": "metadata-only",
    "attribution": "recommended",
@@ -1029,7 +1193,12 @@
     "rest",
     "ws"
    ],
-   "pit": "no",
+   "pit": "not_applicable",
+   "data_types": [
+    "ohlcv",
+    "fundamentals",
+    "news"
+   ],
    "free_tier": "unverified (pricing page is client-rendered)"
   },
   {
@@ -1043,6 +1212,7 @@
    "evidence": "vendor-doc",
    "kind": "html",
    "content_access": "static",
+   "verification": "semantic_verified",
    "license_class": "site-terms",
    "cache_policy": "metadata-only",
    "attribution": "recommended",
@@ -1061,7 +1231,12 @@
     "rest",
     "mcp"
    ],
-   "pit": "no",
+   "pit": "not_applicable",
+   "data_types": [
+    "ohlcv",
+    "fundamentals",
+    "fx"
+   ],
    "free_tier": "free tier 25 requests/day; premium from $49.99/mo (verified 2026-11-06)"
   },
   {
@@ -1075,6 +1250,7 @@
    "evidence": "vendor-doc",
    "kind": "html",
    "content_access": "js",
+   "verification": "reachable",
    "license_class": "site-terms",
    "cache_policy": "metadata-only",
    "attribution": "recommended",
@@ -1093,7 +1269,13 @@
     "rest",
     "ws"
    ],
-   "pit": "no",
+   "pit": "not_applicable",
+   "data_types": [
+    "ohlcv",
+    "fundamentals",
+    "news",
+    "earnings"
+   ],
    "free_tier": "unverified"
   },
   {
@@ -1107,6 +1289,7 @@
    "evidence": "vendor-doc",
    "kind": "html",
    "content_access": "static",
+   "verification": "semantic_verified",
    "license_class": "site-terms",
    "cache_policy": "metadata-only",
    "attribution": "recommended",
@@ -1125,7 +1308,11 @@
     "rest",
     "ws"
    ],
-   "pit": "no",
+   "pit": "not_applicable",
+   "data_types": [
+    "ohlcv",
+    "fundamentals"
+   ],
    "free_tier": "free: 8 credits/min, 800/day; Grow $79/mo (verified 2026-11-06)"
   },
   {
@@ -1139,6 +1326,7 @@
    "evidence": "vendor-doc",
    "kind": "html",
    "content_access": "js",
+   "verification": "reachable",
    "license_class": "site-terms",
    "cache_policy": "metadata-only",
    "attribution": "recommended",
@@ -1156,7 +1344,12 @@
     "rest",
     "web"
    ],
-   "pit": "no"
+   "pit": "not_applicable",
+   "data_types": [
+    "ohlcv",
+    "macro_series",
+    "fundamentals"
+   ]
   },
   {
    "id": "openbb",
@@ -1169,6 +1362,7 @@
    "evidence": "vendor-doc",
    "kind": "html",
    "content_access": "static",
+   "verification": "reachable",
    "license_class": "open-source",
    "cache_policy": "metadata-only",
    "attribution": "required",
@@ -1188,7 +1382,10 @@
     "mcp",
     "web"
    ],
-   "pit": "no",
+   "pit": "not_applicable",
+   "data_types": [
+    "tooling"
+   ],
    "free_tier": "open source (AGPL-3.0)"
   },
   {
@@ -1202,6 +1399,7 @@
    "evidence": "vendor-doc",
    "kind": "html",
    "content_access": "static",
+   "verification": "semantic_verified",
    "license_class": "site-terms",
    "cache_policy": "metadata-only",
    "attribution": "recommended",
@@ -1222,6 +1420,10 @@
     "archive"
    ],
    "pit": "yes",
+   "data_types": [
+    "fundamentals",
+    "pit"
+   ],
    "free_tier": "paid subscription",
    "as_reported": "yes",
    "survivorship": "bias-free"
@@ -1237,6 +1439,7 @@
    "evidence": "dataset",
    "kind": "html",
    "content_access": "static",
+   "verification": "reachable",
    "license_class": "site-terms",
    "cache_policy": "metadata-only",
    "attribution": "recommended",
@@ -1256,6 +1459,9 @@
     "sdk"
    ],
    "pit": "partial",
+   "data_types": [
+    "fundamentals"
+   ],
    "free_tier": "institutional subscription",
    "as_reported": "yes",
    "survivorship": "bias-free"
@@ -1271,6 +1477,7 @@
    "evidence": "dataset",
    "kind": "html",
    "content_access": "static",
+   "verification": "reachable",
    "license_class": "site-terms",
    "cache_policy": "metadata-only",
    "attribution": "recommended",
@@ -1290,6 +1497,11 @@
     "sdk"
    ],
    "pit": "partial",
+   "data_types": [
+    "ohlcv",
+    "corporate_actions",
+    "delisting"
+   ],
    "free_tier": "institutional subscription",
    "survivorship": "bias-free"
   },
@@ -1304,6 +1516,7 @@
    "evidence": "vendor-doc",
    "kind": "html",
    "content_access": "static",
+   "verification": "reachable",
    "license_class": "site-terms",
    "cache_policy": "metadata-only",
    "attribution": "recommended",
@@ -1322,6 +1535,11 @@
     "archive"
    ],
    "pit": "partial",
+   "data_types": [
+    "options",
+    "iv",
+    "vol_surface"
+   ],
    "free_tier": "paid / academic subscription"
   },
   {
@@ -1335,6 +1553,7 @@
    "evidence": "vendor-doc",
    "kind": "html",
    "content_access": "static",
+   "verification": "semantic_verified",
    "license_class": "site-terms",
    "cache_policy": "metadata-only",
    "attribution": "recommended",
@@ -1353,6 +1572,9 @@
     "rest"
    ],
    "pit": "no",
+   "data_types": [
+    "fundamentals"
+   ],
    "free_tier": "unverified (docs site blocked bots on 2026-11-06)"
   },
   {
@@ -1366,6 +1588,7 @@
    "evidence": "vendor-doc",
    "kind": "html",
    "content_access": "static",
+   "verification": "semantic_verified",
    "license_class": "site-terms",
    "cache_policy": "metadata-only",
    "attribution": "recommended",
@@ -1385,6 +1608,9 @@
     "mcp"
    ],
    "pit": "no",
+   "data_types": [
+    "fundamentals"
+   ],
    "free_tier": "unverified"
   },
   {
@@ -1398,6 +1624,7 @@
    "evidence": "vendor-doc",
    "kind": "html",
    "content_access": "static",
+   "verification": "semantic_verified",
    "license_class": "site-terms",
    "cache_policy": "metadata-only",
    "attribution": "recommended",
@@ -1415,6 +1642,9 @@
     "rest"
    ],
    "pit": "no",
+   "data_types": [
+    "fundamentals"
+   ],
    "free_tier": "unverified"
   },
   {
@@ -1428,6 +1658,7 @@
    "evidence": "vendor-doc",
    "kind": "html",
    "content_access": "portal",
+   "verification": "reachable",
    "license_class": "site-terms",
    "cache_policy": "metadata-only",
    "attribution": "recommended",
@@ -1447,6 +1678,10 @@
     "rest"
    ],
    "pit": "partial",
+   "data_types": [
+    "market_data",
+    "fundamentals"
+   ],
    "free_tier": "free tier limited by points/积分"
   },
   {
@@ -1460,6 +1695,7 @@
    "evidence": "community",
    "kind": "html",
    "content_access": "static",
+   "verification": "reachable",
    "license_class": "open-source",
    "cache_policy": "metadata-only",
    "attribution": "required",
@@ -1478,7 +1714,11 @@
    "iface": [
     "sdk"
    ],
-   "pit": "no",
+   "pit": "not_applicable",
+   "data_types": [
+    "tooling",
+    "market_data"
+   ],
    "free_tier": "open source, free"
   },
   {
@@ -1492,6 +1732,7 @@
    "evidence": "community",
    "kind": "html",
    "content_access": "static",
+   "verification": "reachable",
    "license_class": "varies",
    "cache_policy": "metadata-only",
    "attribution": "required",
@@ -1512,6 +1753,11 @@
     "mcp"
    ],
    "pit": "yes",
+   "data_types": [
+    "fundamentals",
+    "pit",
+    "market_data"
+   ],
    "free_tier": "open source, self-hosted",
    "survivorship": "bias-free"
   },
@@ -1526,6 +1772,7 @@
    "evidence": "vendor-doc",
    "kind": "html",
    "content_access": "portal",
+   "verification": "reachable",
    "license_class": "site-terms",
    "cache_policy": "metadata-only",
    "attribution": "recommended",
@@ -1546,6 +1793,11 @@
     "web"
    ],
    "pit": "partial",
+   "data_types": [
+    "market_data",
+    "fundamentals",
+    "macro_series"
+   ],
    "free_tier": "paid license"
   },
   {
@@ -1559,6 +1811,7 @@
    "evidence": "vendor-doc",
    "kind": "html",
    "content_access": "portal",
+   "verification": "reachable",
    "license_class": "site-terms",
    "cache_policy": "metadata-only",
    "attribution": "recommended",
@@ -1577,6 +1830,11 @@
     "web"
    ],
    "pit": "partial",
+   "data_types": [
+    "market_data",
+    "fundamentals",
+    "macro_series"
+   ],
    "free_tier": "paid license"
   },
   {
@@ -1590,6 +1848,7 @@
    "evidence": "vendor-doc",
    "kind": "html",
    "content_access": "portal",
+   "verification": "reachable",
    "license_class": "site-terms",
    "cache_policy": "metadata-only",
    "attribution": "recommended",
@@ -1609,6 +1868,11 @@
     "web"
    ],
    "pit": "partial",
+   "data_types": [
+    "market_data",
+    "fundamentals",
+    "backtest"
+   ],
    "free_tier": "free tier + paid plans"
   },
   {
@@ -1622,6 +1886,7 @@
    "evidence": "vendor-doc",
    "kind": "html",
    "content_access": "portal",
+   "verification": "reachable",
    "license_class": "site-terms",
    "cache_policy": "metadata-only",
    "attribution": "recommended",
@@ -1641,6 +1906,11 @@
     "web"
    ],
    "pit": "partial",
+   "data_types": [
+    "market_data",
+    "fundamentals",
+    "backtest"
+   ],
    "free_tier": "free tier + paid plans"
   },
   {
@@ -1654,6 +1924,7 @@
    "evidence": "vendor-doc",
    "kind": "html",
    "content_access": "static",
+   "verification": "reachable",
    "license_class": "site-terms",
    "cache_policy": "metadata-only",
    "attribution": "recommended",
@@ -1674,7 +1945,13 @@
     "ws",
     "sdk"
    ],
-   "pit": "no",
+   "pit": "not_applicable",
+   "data_types": [
+    "orders",
+    "positions",
+    "ohlcv",
+    "account"
+   ],
    "free_tier": "requires funded account"
   },
   {
@@ -1688,6 +1965,7 @@
    "evidence": "vendor-doc",
    "kind": "html",
    "content_access": "static",
+   "verification": "reachable",
    "license_class": "site-terms",
    "cache_policy": "metadata-only",
    "attribution": "recommended",
@@ -1706,7 +1984,12 @@
     "rest",
     "ws"
    ],
-   "pit": "no",
+   "pit": "not_applicable",
+   "data_types": [
+    "orders",
+    "positions",
+    "account"
+   ],
    "free_tier": "paper trading free"
   },
   {
@@ -1720,6 +2003,7 @@
    "evidence": "index",
    "kind": "html",
    "content_access": "static",
+   "verification": "reachable",
    "license_class": "site-terms",
    "cache_policy": "metadata-only",
    "attribution": "recommended",
@@ -1737,7 +2021,10 @@
    "iface": [
     "web"
    ],
-   "pit": "no"
+   "pit": "not_applicable",
+   "data_types": [
+    "papers"
+   ]
   },
   {
    "id": "ssrn",
@@ -1750,6 +2037,7 @@
    "evidence": "index",
    "kind": "html",
    "content_access": "challenge",
+   "verification": "discovered",
    "license_class": "site-terms",
    "cache_policy": "metadata-only",
    "attribution": "recommended",
@@ -1767,7 +2055,10 @@
    "iface": [
     "web"
    ],
-   "pit": "no"
+   "pit": "not_applicable",
+   "data_types": [
+    "papers"
+   ]
   },
   {
    "id": "arxiv-qfin",
@@ -1780,6 +2071,7 @@
    "evidence": "preprint",
    "kind": "html",
    "content_access": "static",
+   "verification": "reachable",
    "license_class": "open-access-paper",
    "cache_policy": "short-quote",
    "attribution": "recommended",
@@ -1798,7 +2090,10 @@
     "web",
     "rest"
    ],
-   "pit": "no"
+   "pit": "not_applicable",
+   "data_types": [
+    "papers"
+   ]
   },
   {
    "id": "gdelt",
@@ -1811,6 +2106,7 @@
    "evidence": "dataset",
    "kind": "html",
    "content_access": "static",
+   "verification": "reachable",
    "license_class": "public-domain",
    "cache_policy": "short-quote",
    "attribution": "recommended",
@@ -1830,7 +2126,11 @@
     "archive",
     "rest"
    ],
-   "pit": "no",
+   "pit": "partial",
+   "data_types": [
+    "news",
+    "events"
+   ],
    "free_tier": "free, open"
   },
   {
@@ -1844,6 +2144,7 @@
    "evidence": "vendor-doc",
    "kind": "html",
    "content_access": "challenge",
+   "verification": "discovered",
    "license_class": "site-terms",
    "cache_policy": "metadata-only",
    "attribution": "recommended",
@@ -1861,7 +2162,11 @@
    "iface": [
     "rest"
    ],
-   "pit": "no",
+   "pit": "partial",
+   "data_types": [
+    "news",
+    "events"
+   ],
    "free_tier": "paid"
   },
   {
@@ -1875,6 +2180,7 @@
    "evidence": "vendor-doc",
    "kind": "html",
    "content_access": "static",
+   "verification": "reachable",
    "license_class": "site-terms",
    "cache_policy": "metadata-only",
    "attribution": "recommended",
@@ -1892,7 +2198,11 @@
     "rest",
     "archive"
    ],
-   "pit": "no",
+   "pit": "partial",
+   "data_types": [
+    "news",
+    "events"
+   ],
    "free_tier": "paid"
   },
   {
@@ -1906,6 +2216,7 @@
    "evidence": "spec",
    "kind": "html",
    "content_access": "static",
+   "verification": "semantic_verified",
    "license_class": "site-terms",
    "cache_policy": "metadata-only",
    "attribution": "recommended",
@@ -1926,7 +2237,15 @@
     "rest",
     "ws"
    ],
-   "pit": "no",
+   "pit": "not_applicable",
+   "data_types": [
+    "ohlcv",
+    "trades",
+    "orderbook_l2",
+    "ticker",
+    "account",
+    "orders"
+   ],
    "free_tier": "public market data free, no key"
   },
   {
@@ -1940,6 +2259,7 @@
    "evidence": "spec",
    "kind": "html",
    "content_access": "static",
+   "verification": "semantic_verified",
    "license_class": "site-terms",
    "cache_policy": "metadata-only",
    "attribution": "recommended",
@@ -1959,7 +2279,20 @@
     "rest",
     "ws"
    ],
-   "pit": "no",
+   "pit": "not_applicable",
+   "data_types": [
+    "ohlcv",
+    "trades",
+    "orderbook_l2",
+    "funding",
+    "open_interest",
+    "mark_price",
+    "index_price",
+    "long_short_ratio",
+    "liquidations",
+    "account",
+    "orders"
+   ],
    "free_tier": "public market data free, no key"
   },
   {
@@ -1973,6 +2306,7 @@
    "evidence": "official-doc",
    "kind": "html",
    "content_access": "static",
+   "verification": "reachable",
    "license_class": "site-terms",
    "cache_policy": "metadata-only",
    "attribution": "recommended",
@@ -1993,7 +2327,11 @@
     "rest",
     "mcp"
    ],
-   "pit": "no",
+   "pit": "not_applicable",
+   "data_types": [
+    "tooling",
+    "llm_docs"
+   ],
    "verified_on": "2026-11-06"
   },
   {
@@ -2007,6 +2345,7 @@
    "evidence": "official-doc",
    "kind": "api",
    "content_access": "api",
+   "verification": "reachable",
    "license_class": "site-terms",
    "cache_policy": "metadata-only",
    "attribution": "recommended",
@@ -2024,7 +2363,11 @@
    "iface": [
     "rest"
    ],
-   "pit": "no",
+   "pit": "not_applicable",
+   "data_types": [
+    "tooling",
+    "llm_docs"
+   ],
    "free_tier": "free",
    "verified_on": "2026-11-06"
   },
@@ -2039,6 +2382,7 @@
    "evidence": "official-doc",
    "kind": "html",
    "content_access": "static",
+   "verification": "semantic_verified",
    "license_class": "site-terms",
    "cache_policy": "metadata-only",
    "attribution": "recommended",
@@ -2056,7 +2400,11 @@
    "iface": [
     "mcp"
    ],
-   "pit": "no",
+   "pit": "not_applicable",
+   "data_types": [
+    "tooling",
+    "mcp"
+   ],
    "verified_on": "2026-11-06"
   },
   {
@@ -2070,6 +2418,7 @@
    "evidence": "spec",
    "kind": "html",
    "content_access": "static",
+   "verification": "reachable",
    "license_class": "site-terms",
    "cache_policy": "metadata-only",
    "attribution": "recommended",
@@ -2088,7 +2437,12 @@
    "iface": [
     "ws"
    ],
-   "pit": "no",
+   "pit": "not_applicable",
+   "data_types": [
+    "trades",
+    "orderbook_l2",
+    "ticker"
+   ],
    "verified_on": "2026-11-06"
   },
   {
@@ -2102,6 +2456,7 @@
    "evidence": "spec",
    "kind": "html",
    "content_access": "static",
+   "verification": "semantic_verified",
    "license_class": "site-terms",
    "cache_policy": "metadata-only",
    "attribution": "recommended",
@@ -2120,7 +2475,15 @@
    "iface": [
     "ws"
    ],
-   "pit": "no",
+   "pit": "not_applicable",
+   "data_types": [
+    "trades",
+    "orderbook_l2",
+    "mark_price",
+    "funding",
+    "liquidations",
+    "long_short_ratio"
+   ],
    "verified_on": "2026-11-06"
   },
   {
@@ -2134,6 +2497,7 @@
    "evidence": "dataset",
    "kind": "html",
    "content_access": "portal",
+   "verification": "reachable",
    "license_class": "site-terms",
    "cache_policy": "metadata-only",
    "attribution": "recommended",
@@ -2152,7 +2516,12 @@
    "iface": [
     "archive"
    ],
-   "pit": "no",
+   "pit": "not_applicable",
+   "data_types": [
+    "historical_ticks",
+    "historical_klines",
+    "orderbook_l2"
+   ],
    "free_tier": "free",
    "history_start": "2019-12 (UM futures 1m; spot earlier)",
    "verified_on": "2026-11-06"
@@ -2168,6 +2537,7 @@
    "evidence": "official-doc",
    "kind": "html",
    "content_access": "static",
+   "verification": "reachable",
    "license_class": "site-terms",
    "cache_policy": "metadata-only",
    "attribution": "recommended",
@@ -2186,7 +2556,10 @@
     "rest",
     "ws"
    ],
-   "pit": "no",
+   "pit": "not_applicable",
+   "data_types": [
+    "sandbox"
+   ],
    "free_tier": "free testnet"
   },
   {
@@ -2200,6 +2573,7 @@
    "evidence": "official-doc",
    "kind": "html",
    "content_access": "challenge",
+   "verification": "discovered",
    "license_class": "site-terms",
    "cache_policy": "metadata-only",
    "attribution": "recommended",
@@ -2217,7 +2591,10 @@
     "rest",
     "ws"
    ],
-   "pit": "no",
+   "pit": "not_applicable",
+   "data_types": [
+    "sandbox"
+   ],
    "free_tier": "free testnet"
   },
   {
@@ -2231,6 +2608,7 @@
    "evidence": "spec",
    "kind": "html",
    "content_access": "static",
+   "verification": "reachable",
    "license_class": "site-terms",
    "cache_policy": "metadata-only",
    "attribution": "recommended",
@@ -2249,7 +2627,12 @@
     "rest",
     "ws"
    ],
-   "pit": "no"
+   "pit": "not_applicable",
+   "data_types": [
+    "options",
+    "iv",
+    "greeks"
+   ]
   },
   {
    "id": "bybit-v5",
@@ -2262,6 +2645,7 @@
    "evidence": "spec",
    "kind": "html",
    "content_access": "static",
+   "verification": "reachable",
    "license_class": "site-terms",
    "cache_policy": "metadata-only",
    "attribution": "recommended",
@@ -2280,7 +2664,14 @@
     "rest",
     "ws"
    ],
-   "pit": "no"
+   "pit": "not_applicable",
+   "data_types": [
+    "ohlcv",
+    "trades",
+    "orderbook_l2",
+    "funding",
+    "open_interest"
+   ]
   },
   {
    "id": "okx-v5",
@@ -2293,6 +2684,7 @@
    "evidence": "spec",
    "kind": "html",
    "content_access": "static",
+   "verification": "reachable",
    "license_class": "site-terms",
    "cache_policy": "metadata-only",
    "attribution": "recommended",
@@ -2311,7 +2703,15 @@
     "rest",
     "ws"
    ],
-   "pit": "no"
+   "pit": "not_applicable",
+   "data_types": [
+    "ohlcv",
+    "trades",
+    "orderbook_l2",
+    "funding",
+    "open_interest",
+    "options"
+   ]
   },
   {
    "id": "coinbase-advanced-trade",
@@ -2324,6 +2724,7 @@
    "evidence": "spec",
    "kind": "html",
    "content_access": "static",
+   "verification": "reachable",
    "license_class": "site-terms",
    "cache_policy": "metadata-only",
    "attribution": "recommended",
@@ -2341,7 +2742,14 @@
     "rest",
     "ws"
    ],
-   "pit": "no"
+   "pit": "not_applicable",
+   "data_types": [
+    "ohlcv",
+    "trades",
+    "orderbook_l2",
+    "orders",
+    "account"
+   ]
   },
   {
    "id": "kraken-api",
@@ -2354,6 +2762,7 @@
    "evidence": "spec",
    "kind": "html",
    "content_access": "static",
+   "verification": "reachable",
    "license_class": "site-terms",
    "cache_policy": "metadata-only",
    "attribution": "recommended",
@@ -2372,7 +2781,13 @@
     "rest",
     "ws"
    ],
-   "pit": "no"
+   "pit": "not_applicable",
+   "data_types": [
+    "ohlcv",
+    "trades",
+    "orderbook_l2",
+    "funding"
+   ]
   },
   {
    "id": "deribit",
@@ -2385,6 +2800,7 @@
    "evidence": "spec",
    "kind": "html",
    "content_access": "static",
+   "verification": "reachable",
    "license_class": "site-terms",
    "cache_policy": "metadata-only",
    "attribution": "recommended",
@@ -2403,7 +2819,14 @@
     "rest",
     "ws"
    ],
-   "pit": "no"
+   "pit": "not_applicable",
+   "data_types": [
+    "options",
+    "iv",
+    "greeks",
+    "futures",
+    "funding"
+   ]
   },
   {
    "id": "coingecko-api",
@@ -2416,6 +2839,7 @@
    "evidence": "vendor-doc",
    "kind": "html",
    "content_access": "static",
+   "verification": "schema_verified",
    "license_class": "site-terms",
    "cache_policy": "metadata-only",
    "attribution": "recommended",
@@ -2433,7 +2857,12 @@
    "iface": [
     "rest"
    ],
-   "pit": "no",
+   "pit": "not_applicable",
+   "data_types": [
+    "spot_price",
+    "market_cap",
+    "metadata"
+   ],
    "free_tier": "demo key; limits unverified"
   },
   {
@@ -2447,6 +2876,7 @@
    "evidence": "official-doc",
    "kind": "html",
    "content_access": "static",
+   "verification": "reachable",
    "license_class": "site-terms",
    "cache_policy": "metadata-only",
    "attribution": "recommended",
@@ -2463,7 +2893,11 @@
    "iface": [
     "mcp"
    ],
-   "pit": "no",
+   "pit": "not_applicable",
+   "data_types": [
+    "tooling",
+    "mcp"
+   ],
    "free_tier": "keyless server shares rate limits",
    "verified_on": "2026-11-06"
   },
@@ -2478,6 +2912,7 @@
    "evidence": "vendor-doc",
    "kind": "html",
    "content_access": "static",
+   "verification": "reachable",
    "license_class": "site-terms",
    "cache_policy": "metadata-only",
    "attribution": "recommended",
@@ -2494,7 +2929,12 @@
    "iface": [
     "rest"
    ],
-   "pit": "no",
+   "pit": "not_applicable",
+   "data_types": [
+    "spot_price",
+    "market_cap",
+    "metadata"
+   ],
    "free_tier": "unverified"
   },
   {
@@ -2508,6 +2948,7 @@
    "evidence": "vendor-doc",
    "kind": "html",
    "content_access": "static",
+   "verification": "reachable",
    "license_class": "site-terms",
    "cache_policy": "metadata-only",
    "attribution": "recommended",
@@ -2525,7 +2966,13 @@
    "iface": [
     "rest"
    ],
-   "pit": "no",
+   "pit": "not_applicable",
+   "data_types": [
+    "funding",
+    "open_interest",
+    "liquidations",
+    "long_short_ratio"
+   ],
    "free_tier": "unverified"
   },
   {
@@ -2539,6 +2986,7 @@
    "evidence": "vendor-doc",
    "kind": "html",
    "content_access": "static",
+   "verification": "reachable",
    "license_class": "site-terms",
    "cache_policy": "metadata-only",
    "attribution": "recommended",
@@ -2557,7 +3005,12 @@
     "rest",
     "archive"
    ],
-   "pit": "no",
+   "pit": "not_applicable",
+   "data_types": [
+    "historical_ticks",
+    "orderbook_l2",
+    "reference_rates"
+   ],
    "free_tier": "paid"
   },
   {
@@ -2571,6 +3024,7 @@
    "evidence": "vendor-doc",
    "kind": "html",
    "content_access": "static",
+   "verification": "reachable",
    "license_class": "site-terms",
    "cache_policy": "metadata-only",
    "attribution": "recommended",
@@ -2588,7 +3042,12 @@
     "rest",
     "archive"
    ],
-   "pit": "no",
+   "pit": "not_applicable",
+   "data_types": [
+    "onchain_metrics",
+    "market_data",
+    "reference_rates"
+   ],
    "free_tier": "community tier"
   },
   {
@@ -2602,6 +3061,7 @@
    "evidence": "vendor-doc",
    "kind": "html",
    "content_access": "static",
+   "verification": "reachable",
    "license_class": "site-terms",
    "cache_policy": "metadata-only",
    "attribution": "recommended",
@@ -2620,7 +3080,12 @@
     "rest",
     "web"
    ],
-   "pit": "no",
+   "pit": "not_applicable",
+   "data_types": [
+    "onchain_metrics",
+    "exchange_flows",
+    "stablecoin_supply"
+   ],
    "free_tier": "free tier + paid"
   },
   {
@@ -2634,6 +3099,7 @@
    "evidence": "vendor-doc",
    "kind": "html",
    "content_access": "static",
+   "verification": "reachable",
    "license_class": "site-terms",
    "cache_policy": "metadata-only",
    "attribution": "recommended",
@@ -2651,7 +3117,11 @@
     "web",
     "rest"
    ],
-   "pit": "no",
+   "pit": "not_applicable",
+   "data_types": [
+    "onchain_flows",
+    "whale_behavior"
+   ],
    "free_tier": "paid"
   },
   {
@@ -2665,6 +3135,7 @@
    "evidence": "vendor-doc",
    "kind": "html",
    "content_access": "challenge",
+   "verification": "discovered",
    "license_class": "site-terms",
    "cache_policy": "metadata-only",
    "attribution": "recommended",
@@ -2682,7 +3153,12 @@
     "web",
     "rest"
    ],
-   "pit": "no",
+   "pit": "not_applicable",
+   "data_types": [
+    "exchange_flows",
+    "miner_flow",
+    "whale_behavior"
+   ],
    "free_tier": "paid"
   },
   {
@@ -2696,6 +3172,7 @@
    "evidence": "vendor-doc",
    "kind": "html",
    "content_access": "static",
+   "verification": "reachable",
    "license_class": "site-terms",
    "cache_policy": "metadata-only",
    "attribution": "recommended",
@@ -2713,7 +3190,12 @@
    "iface": [
     "rest"
    ],
-   "pit": "no",
+   "pit": "not_applicable",
+   "data_types": [
+    "transactions",
+    "token_transfers",
+    "contract"
+   ],
    "free_tier": "free tier + paid"
   },
   {
@@ -2727,6 +3209,7 @@
    "evidence": "vendor-doc",
    "kind": "html",
    "content_access": "static",
+   "verification": "reachable",
    "license_class": "site-terms",
    "cache_policy": "metadata-only",
    "attribution": "recommended",
@@ -2745,7 +3228,11 @@
     "rest",
     "web"
    ],
-   "pit": "no",
+   "pit": "not_applicable",
+   "data_types": [
+    "onchain_queries",
+    "dashboards"
+   ],
    "free_tier": "free tier + paid"
   },
   {
@@ -2759,6 +3246,7 @@
    "evidence": "vendor-doc",
    "kind": "html",
    "content_access": "static",
+   "verification": "reachable",
    "license_class": "site-terms",
    "cache_policy": "metadata-only",
    "attribution": "recommended",
@@ -2776,7 +3264,12 @@
    "iface": [
     "rest"
    ],
-   "pit": "no",
+   "pit": "not_applicable",
+   "data_types": [
+    "defi_tvl",
+    "stablecoin_supply",
+    "dex_volume"
+   ],
    "free_tier": "free"
   },
   {
@@ -2790,6 +3283,7 @@
    "evidence": "vendor-doc",
    "kind": "html",
    "content_access": "challenge",
+   "verification": "discovered",
    "license_class": "site-terms",
    "cache_policy": "metadata-only",
    "attribution": "recommended",
@@ -2807,7 +3301,11 @@
    "iface": [
     "rest"
    ],
-   "pit": "no",
+   "pit": "not_applicable",
+   "data_types": [
+    "transactions",
+    "onchain_metrics"
+   ],
    "free_tier": "free tier + paid"
   },
   {
@@ -2821,6 +3319,7 @@
    "evidence": "vendor-doc",
    "kind": "html",
    "content_access": "portal",
+   "verification": "reachable",
    "license_class": "site-terms",
    "cache_policy": "metadata-only",
    "attribution": "recommended",
@@ -2838,7 +3337,12 @@
    "iface": [
     "rest"
    ],
-   "pit": "no",
+   "pit": "not_applicable",
+   "data_types": [
+    "mempool",
+    "fees",
+    "blocks"
+   ],
    "free_tier": "free, self-hostable"
   },
   {
@@ -2852,6 +3356,7 @@
    "evidence": "vendor-doc",
    "kind": "html",
    "content_access": "static",
+   "verification": "reachable",
    "license_class": "site-terms",
    "cache_policy": "metadata-only",
    "attribution": "recommended",
@@ -2871,7 +3376,12 @@
     "rest",
     "archive"
    ],
-   "pit": "no",
+   "pit": "not_applicable",
+   "data_types": [
+    "historical_ticks",
+    "orderbook_l2",
+    "derivatives"
+   ],
    "free_tier": "paid, first day of each month free"
   },
   {
@@ -2885,6 +3395,7 @@
    "evidence": "vendor-doc",
    "kind": "html",
    "content_access": "static",
+   "verification": "reachable",
    "license_class": "site-terms",
    "cache_policy": "metadata-only",
    "attribution": "recommended",
@@ -2903,7 +3414,11 @@
     "rest",
     "archive"
    ],
-   "pit": "no",
+   "pit": "not_applicable",
+   "data_types": [
+    "historical_ticks",
+    "orderbook_l2"
+   ],
    "free_tier": "paid"
   },
   {
@@ -2917,6 +3432,7 @@
    "evidence": "community",
    "kind": "html",
    "content_access": "static",
+   "verification": "reachable",
    "license_class": "open-source",
    "cache_policy": "metadata-only",
    "attribution": "required",
@@ -2934,7 +3450,11 @@
    "iface": [
     "sdk"
    ],
-   "pit": "no",
+   "pit": "not_applicable",
+   "data_types": [
+    "tooling",
+    "sdk"
+   ],
    "free_tier": "open source (MIT)"
   },
   {
@@ -2948,6 +3468,7 @@
    "evidence": "official-doc",
    "kind": "html",
    "content_access": "static",
+   "verification": "reachable",
    "license_class": "open-source",
    "cache_policy": "metadata-only",
    "attribution": "required",
@@ -2964,7 +3485,11 @@
    "iface": [
     "sdk"
    ],
-   "pit": "no",
+   "pit": "not_applicable",
+   "data_types": [
+    "tooling",
+    "sdk"
+   ],
    "free_tier": "open source"
   },
   {
@@ -2978,6 +3503,7 @@
    "evidence": "community",
    "kind": "html",
    "content_access": "static",
+   "verification": "reachable",
    "license_class": "open-source",
    "cache_policy": "metadata-only",
    "attribution": "required",
@@ -2993,7 +3519,11 @@
    "iface": [
     "sdk"
    ],
-   "pit": "no",
+   "pit": "not_applicable",
+   "data_types": [
+    "tooling",
+    "sdk"
+   ],
    "free_tier": "open source (MIT)"
   },
   {
@@ -3007,6 +3537,7 @@
    "evidence": "spec",
    "kind": "api",
    "content_access": "api",
+   "verification": "production_approved",
    "license_class": "site-terms",
    "cache_policy": "metadata-only",
    "attribution": "recommended",
@@ -3025,7 +3556,13 @@
    "iface": [
     "rest"
    ],
-   "pit": "no",
+   "pit": "not_applicable",
+   "data_types": [
+    "ticker",
+    "ohlcv",
+    "trades",
+    "orderbook_l2"
+   ],
    "free_tier": "public market data free, no key"
   },
   {
@@ -3039,6 +3576,7 @@
    "evidence": "spec",
    "kind": "api",
    "content_access": "api",
+   "verification": "schema_verified",
    "license_class": "site-terms",
    "cache_policy": "metadata-only",
    "attribution": "recommended",
@@ -3056,7 +3594,13 @@
    "iface": [
     "rest"
    ],
-   "pit": "no",
+   "pit": "not_applicable",
+   "data_types": [
+    "ticker",
+    "ohlcv",
+    "trades",
+    "orderbook_l2"
+   ],
    "free_tier": "public market data free, no key"
   },
   {
@@ -3070,6 +3614,7 @@
    "evidence": "blog",
    "kind": "rss",
    "content_access": "api",
+   "verification": "production_approved",
    "license_class": "site-terms",
    "cache_policy": "metadata-only",
    "attribution": "recommended",
@@ -3089,7 +3634,10 @@
     "rss",
     "web"
    ],
-   "pit": "no",
+   "pit": "partial",
+   "data_types": [
+    "news"
+   ],
    "free_tier": "free"
   },
   {
@@ -3103,6 +3651,7 @@
    "evidence": "blog",
    "kind": "rss",
    "content_access": "api",
+   "verification": "reachable",
    "license_class": "site-terms",
    "cache_policy": "metadata-only",
    "attribution": "recommended",
@@ -3120,7 +3669,10 @@
     "rss",
     "web"
    ],
-   "pit": "no",
+   "pit": "partial",
+   "data_types": [
+    "news"
+   ],
    "free_tier": "free"
   },
   {
@@ -3134,6 +3686,7 @@
    "evidence": "blog",
    "kind": "rss",
    "content_access": "api",
+   "verification": "schema_verified",
    "license_class": "site-terms",
    "cache_policy": "metadata-only",
    "attribution": "recommended",
@@ -3151,7 +3704,10 @@
     "rss",
     "web"
    ],
-   "pit": "no",
+   "pit": "partial",
+   "data_types": [
+    "news"
+   ],
    "free_tier": "free"
   },
   {
@@ -3165,6 +3721,7 @@
    "evidence": "blog",
    "kind": "rss",
    "content_access": "api",
+   "verification": "schema_verified",
    "license_class": "site-terms",
    "cache_policy": "metadata-only",
    "attribution": "recommended",
@@ -3182,7 +3739,10 @@
     "rss",
     "web"
    ],
-   "pit": "no",
+   "pit": "partial",
+   "data_types": [
+    "news"
+   ],
    "free_tier": "free"
   },
   {
@@ -3196,6 +3756,7 @@
    "evidence": "official-doc",
    "kind": "html",
    "content_access": "challenge",
+   "verification": "discovered",
    "license_class": "site-terms",
    "cache_policy": "metadata-only",
    "attribution": "recommended",
@@ -3211,7 +3772,10 @@
    "iface": [
     "web"
    ],
-   "pit": "no"
+   "pit": "not_applicable",
+   "data_types": [
+    "research"
+   ]
   }
  ]
 }

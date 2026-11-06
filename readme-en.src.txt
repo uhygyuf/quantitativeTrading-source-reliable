@@ -2,14 +2,15 @@
 
 English · [简体中文](README.zh.md)
 
-Source reliability for quantitative finance and crypto trading in [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness): a bundled registry of **100 verified, agent-collectable sources** with authority tiers, point-in-time and free-tier flags, plus two model-facing tools to find sources and audit citations.
+Source reliability for quantitative finance and crypto trading in [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness): a bundled registry of **100 curated, agent-collectable sources** with authority tiers, verification states, five-state point-in-time flags and per-source dataset tags, plus two model-facing tools to find sources and audit citations.
 
 A plugin for DeepSeek Harness (`dsh`). The registry ships as data; both tools are local lookups (no network calls), so they are fast and have no side effects. It is independent from [`cs-source-reliable`](https://github.com/uhygyuf/cs-source-reliable) and can be installed on its own.
 
 ## What it ships
 
 - **100 sources** — 58 `quant` (filings, macro, fundamentals, China A-share/HK, execution) and 42 `crypto` (exchanges, derivatives, on-chain, archives, SDKs, news).
-- Per source: domain, category, authority tier (`A` regulator/exchange/official docs, `B` institutional vendor/peer-reviewed, `C` curated secondary, `D` lead only), evidence type, `content_access` (static / portal / js / challenge / api / binary), `license_class`, `cache_policy`, `attribution`, `refresh_days`, `last_checked`, and where meaningful `pit`, `free_tier`, `auth`, `iface`, `history_start`.
+- Per source: domain, category, authority tier (`A` regulator/exchange/official docs, `B` institutional vendor/peer-reviewed, `C` curated secondary, `D` lead only), evidence type, `content_access` (static / portal / js / challenge / api / binary), `verification` (`discovered` / `reachable` / `schema_verified` / `semantic_verified` / `production_approved`), `license_class`, `cache_policy`, `attribution`, `refresh_days`, `last_checked`, `pit` (`yes` / `partial` / `no` / `not_applicable` / `unverified`), `data_types` (dataset tags such as `orderbook_l2`, `funding`, `xbrl`), and where meaningful `free_tier`, `auth`, `iface`, `history_start`.
+- A curation layer (`data/enrichment.yaml`) records what was verified after the probe — PIT corrections, verification states and per-source dataset tags; `tools/build-data.cjs` merges it and rejects unknown ids.
 - **Two tools**: `qt_source_find` and `qt_source_audit`.
 - A short system-prompt section (order 241) that tells the model when to use them and how to cite.
 
@@ -36,6 +37,13 @@ Everything below was checked against the official page or API on **2026-11-06**;
 
 The matrices keep a dated `verified_on` field on every one of these claims; `free_tier: unverified` is a first-class value.
 
+### What the flags mean
+
+- `pit=not_applicable` — the data cannot be revised (raw ticks/quotes/order books, on-chain state, archives) or the entry is tooling; `pit=unverified` means nobody checked. A live stream is not a "no PIT" dataset.
+- `verification` is separate from `authority`: `reachable` only means HTTP 200 from the probe network; `schema_verified` means a payload shape was seen; `semantic_verified` means a specific fee/limit/endpoint/PIT claim was checked; `production_approved` means it was used end-to-end; `discovered` means the page was unreachable at probe time and is a citation lead only.
+- `data_types` names the datasets a source actually covers, so a citation can be matched to the dataset it claims (e.g. depth, aggTrades, funding, OI, XBRL, vintages).
+- For news and event-driven facts cite the first publication time; a page update time is not evidence.
+
 ## Coverage
 
 **quant (58)** — filing 7, market-data 14, china 14, macro 10, fundamentals 5, research 3, news 3, execution 2.
@@ -44,7 +52,7 @@ Includes SEC EDGAR + `data.sec.gov` XBRL APIs, SEC 13F/Form 4 datasets, FINRA sh
 **crypto (42)** — exchange 17, on-chain 8, news 4, archive 3, aggregator 3, SDK 3, market-data 2, derivatives 1, research 1.
 Includes Binance (REST/WS/Agent Native/llms.txt/MCP/testnet/archive/public ticker), Bybit/OKX/Coinbase/Kraken/Deribit, CoinGecko (API + keyless MCP)/CoinMarketCap/CoinGlass, Kaiko/Coin Metrics, Glassnode/Nansen/CryptoQuant/Etherscan/Dune/DefiLlama/Blockchair/mempool.space, Tardis/CryptoHFTData, ccxt/binance-connector-python/python-binance, Binance Research, and CoinDesk/Cointelegraph/Decrypt/The Block (D-tier: leads only).
 
-**Flags measured at build time**: auth `none` 52 / `key` 34 / `account` 14; PIT `yes` 3 / `partial` 13 / `no` 84; access static 63 / portal 10 / js 4 / api 8 / challenge 14 / unknown 1.
+**Flags measured at build time**: auth `none` 52 / `key` 34 / `account` 14; PIT `yes` 3 / `partial` 20 / `no` 21 / `not_applicable` 54 / `unverified` 2; verification `discovered` 15 / `reachable` 65 / `schema_verified` 4 / `semantic_verified` 14 / `production_approved` 2; access static 63 / portal 10 / js 4 / api 8 / challenge 14 / unknown 1.
 
 ## Tools
 
@@ -59,20 +67,21 @@ Find a source by URL, keyword, or domain.
 - `limit` — max results (default 5, ceiling 20).
 
 ```
-- [binance-ws-futures] Binance USD-M Futures WebSocket Streams — crypto/exchange; A/spec; access=static; pit=no; auth=none; refresh=90d; https://developers.binance.info/en/docs/derivatives/usds-margined-futures/websocket-market-streams
+- [binance-ws-futures] Binance USD-M Futures WebSocket Streams — crypto/exchange; A/spec; verify=semantic_verified; access=static; pit=not_applicable; data=trades+orderbook_l2+mark_price+funding+liquidations+long_short_ratio; auth=none; refresh=90d; https://developers.binance.info/en/docs/derivatives/usds-margined-futures/websocket-market-streams
   note: 公开行情 wss://fstream.binance.com/ws/<stream>（或 /stream?streams=）；私有用户流 /private/ws/<listenKey>。不存在 /public 或 /market 路径。
 ```
 
-Ranking uses IDF-like token weighting with a subject-token boost, so `"binance funding rate"` ranks exchange/derivative sources above generic "rate" pages.
+Ranking uses IDF-like token weighting with a subject-token boost, so `"binance funding rate"` ranks exchange/derivative sources above generic "rate" pages. URL lookups rank an exact page or deeper path above other pages on the same host, so a cited endpoint resolves to the source that documents it.
 
 ### `qt_source_audit`
 
-Audit the URL citations in a draft: map each URL to a known source, report its domain, authority tier and PIT flag, flag unknown domains and C/D-tier citations, count substantive paragraphs without a source, and suggest fixes.
+Audit the URL citations in a draft: map each URL to a known source, report its domain, authority tier, PIT and verification state, flag unknown domains, C/D-tier citations and sources that were unreachable at the last probe, count substantive paragraphs without a source, and suggest fixes.
 
 ```
-Citations: 3/3 audited, 2 known, 1 unknown; A=2 B=0 C=0 D=0; uncited paragraphs=0
-- https://developers.binance.info/en/docs/.../websocket-market-streams -> binance-ws-futures (crypto, A/spec, pit=no)
-- https://alfred.stlouisfed.org/ -> alfred (quant, A/official-doc, pit=yes)
+Citations: 4/4 audited, 3 known, 1 unknown; A=3 B=0 C=0 D=0; uncited paragraphs=0
+- https://developers.binance.info/en/docs/.../websocket-market-streams -> binance-ws-futures (crypto, A/spec, pit=not_applicable, verify=semantic_verified)
+- https://alfred.stlouisfed.org/ -> alfred (quant, A/official-doc, pit=yes, verify=semantic_verified)
+- https://www.sec.gov/edgar/search/ -> sec-edgar-search (quant, A/official-doc, pit=no, verify=discovered); not reachable from this network at the last probe; re-check the page before citing
 - https://example.com/post -> unknown; not in the registry: verify the domain yourself before relying on it
 ```
 
@@ -84,6 +93,9 @@ The plugin does not intercept requests. The model decides, guided by a system-pr
 - prefer A/B sources, treat C as secondary and D as a lead, never as fact;
 - cite as `[source-id] URL` with the date or version the source states, and never invent fees, limits, or endpoint paths;
 - treat `pit` and `free_tier` as dated claims, not permanent facts;
+- `verification=discovered` citations must be re-checked; `verification=reachable` only means HTTP 200, not correctness;
+- cite the first publication time for news or event-driven facts;
+- use `data_types` to confirm the source actually covers the dataset being claimed;
 - call `qt_source_audit` on a draft that cites URLs;
 - skip both tools outside quant finance and crypto.
 
@@ -93,13 +105,13 @@ The plugin does not intercept requests. The model decides, guided by a system-pr
 |---|---|
 | `qt_source_find` schema (name + description + parameters) | 953 chars ≈ 239 tokens |
 | `qt_source_audit` schema | 470 chars ≈ 118 tokens |
-| Guidance section | 804 chars ≈ 201 tokens |
-| **Combined per-request overhead** | **≈ 557 tokens** (schemas + guidance) |
-| Registry load | 2.0 ms |
-| `qt_source_find` latency | avg 0.095 ms, p95 0.205 ms (5,000 calls) |
-| `qt_source_audit` latency | avg 0.018 ms (3,008-char draft, 500 calls) |
+| Guidance section | 1,169 chars ≈ 293 tokens |
+| **Combined per-request overhead** | **≈ 648 tokens** (schemas + guidance) |
+| Registry load | 5.3 ms |
+| `qt_source_find` latency | avg 0.618 ms, p95 1.409 ms (5,000 calls) |
+| `qt_source_audit` latency | avg 0.092 ms (3,008-char draft, 500 calls) |
 
-Token counts are character-based estimates at 4 chars/token. If both this plugin and `cs-source-reliable` are installed, expect ≈ 1,050 tokens of combined per-request overhead.
+Token counts are character-based estimates at 4 chars/token. If both this plugin and `cs-source-reliable` are installed, expect ≈ 1,150 tokens of combined per-request overhead.
 
 ## Install
 
@@ -127,14 +139,14 @@ Restart or reload the profile after installing. The plugin row appears under Set
 
 ## Development
 
-The YAML matrices are the source of truth; `data/sources.json` is generated from them.
+The YAML matrices record probe-time facts; `data/enrichment.yaml` records verified corrections (PIT, verification states, dataset tags). `tools/build-data.cjs` merges both into `data/sources.json` and rejects unknown ids.
 
 ```sh
 npm install                 # dev dependency: yaml
 node tools/probe-sources.cjs --file=quant --apply    # probe + write snapshot
 node tools/probe-sources.cjs --file=crypto --apply
-npm run build:data          # rebuild data/sources.json
-node test/check.mjs         # 38 checks: registry, tools, lossless JSON, latency budgets
+npm run build:data          # merge matrices + enrichment into data/sources.json
+node test/check.mjs         # 53 checks: registry, five-state PIT, verification, dataset tags, latency budgets
 ```
 
 `tools/probe-sources.cjs` records `content_access`, `last_checked` and a probe snapshot per source. Challenge sites (Cloudflare/202/401/403) are recorded as `challenge`, not treated as a valid data response.
@@ -142,6 +154,7 @@ node test/check.mjs         # 38 checks: registry, tools, lossless JSON, latency
 ## Data provenance and maintenance
 
 - Every source was probed on **2026-11-06**: 85 returned HTTP 200; 14 returned a challenge (SEC endpoints, BLS, SSRN, Benzinga, Binance testnet/research, CryptoQuant, Blockchair from this network); 1 was unreachable (World Bank).
+- PIT and verification are curated, not scraped: 54 sources are `not_applicable` (immutable raw data or tooling), 2 are `unverified` (World Bank, OECD — not checkable from this network), and 15 are `discovered` (unreachable at probe time; citation leads only). The rest were checked against official docs and dated 2026-11-06.
 - `refresh_days` is a suggestion per class: specs 90 d, official/vendor docs 30 d, datasets/APIs 14 d, peer-reviewed 365 d. `last_checked` is the probe date.
 - `license_class` / `cache_policy` are policy buckets, not legal advice. Exchange and market-data terms restrict redistribution; link and quote briefly unless you have a license.
 
@@ -149,7 +162,7 @@ node test/check.mjs         # 38 checks: registry, tools, lossless JSON, latency
 
 - The tools **look up a curated registry**; they do not fetch pages, call APIs, or verify claims on their own.
 - `qt_source_audit` is a mechanical check (URL extraction, tier mapping, uncited-paragraph count). It does not judge whether a cited source actually supports a sentence.
-- A/B tiers reduce risk; they do not guarantee correctness. Fees, limits and endpoints change — re-probe before relying on a number.
+- A/B tiers reduce risk; they do not guarantee correctness. `verification` records what was checked and when — `reachable` is not a data-quality score. Fees, limits and endpoints change — re-probe before relying on a number.
 - Non-registry URLs are flagged as unknown even when legitimate.
 - The plugin does not execute trades, store API keys, or give legal/compliance advice. Trading requires a deterministic risk layer between the model and the exchange.
 

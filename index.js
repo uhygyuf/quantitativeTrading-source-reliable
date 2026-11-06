@@ -23,11 +23,15 @@ function renderFind(value) {
   if (!value?.results?.length) return 'No matching source in the registry.';
   const lines = [`${value.count} match(es); showing ${value.results.length}:`];
   for (const s of value.results) {
+    const types = s.data_types ?? [];
+    const shownTypes = types.length > 8 ? `${types.slice(0, 8).join('+')}+${types.length - 8}` : types.join('+');
     const flags = [
       `${s.domain}/${s.category}`,
       `${s.authority}/${s.evidence}`,
+      `verify=${s.verification}`,
       `access=${s.content_access}`,
       s.pit ? `pit=${s.pit}` : undefined,
+      shownTypes ? `data=${shownTypes}` : undefined,
       s.free_tier ? `free=${String(s.free_tier).slice(0, 80)}` : undefined,
       s.auth ? `auth=${s.auth}` : undefined,
       `refresh=${s.refresh_days}d`,
@@ -45,7 +49,7 @@ function renderAudit(value) {
   ];
   for (const c of value.citations) {
     const where = c.known
-      ? `${c.source_id} (${c.domain ?? '?'}, ${c.authority}/${c.evidence}${c.pit ? `, pit=${c.pit}` : ''})`
+      ? `${c.source_id} (${c.domain ?? '?'}, ${c.authority}/${c.evidence}${c.pit ? `, pit=${c.pit}` : ''}${c.verification ? `, verify=${c.verification}` : ''})`
       : 'unknown';
     lines.push(`- ${c.url} -> ${where}${c.note ? `; ${c.note}` : ''}`);
   }
@@ -80,8 +84,10 @@ const findTool = defineTool({
               authority: { type: 'string' },
               evidence: { type: 'string' },
               content_access: { type: 'string' },
+              verification: { type: 'string' },
               license_class: { type: 'string' },
               pit: { type: 'string' },
+              data_types: { type: 'array', items: { type: 'string' } },
               free_tier: { type: 'string' },
               auth: { type: 'string' },
               iface: { type: 'array', items: { type: 'string' } },

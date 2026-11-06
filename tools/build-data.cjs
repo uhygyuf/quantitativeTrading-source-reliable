@@ -22,14 +22,32 @@ const ROOT = path.join(__dirname, '..');
 const FILES = ['quant-source-matrix.yaml', 'crypto-source-matrix.yaml'];
 const OUT = path.join(ROOT, 'data', 'sources.json');
 
+// Human-verified curation layer applied on top of the probe-time matrices.
+const ENRICH_FILE = path.join(ROOT, 'data', 'enrichment.yaml');
+const ENRICH = YAML.parse(fs.readFileSync(ENRICH_FILE, 'utf8')) ?? {};
+const PIT_OVERRIDES = ENRICH.pit ?? {};
+const VERIFICATION_OVERRIDES = ENRICH.verification ?? {};
+const DATA_TYPE_OVERRIDES = ENRICH.data_types ?? {};
+const OVERRIDE_IDS = new Set([
+  ...Object.keys(PIT_OVERRIDES),
+  ...Object.keys(VERIFICATION_OVERRIDES),
+  ...Object.keys(DATA_TYPE_OVERRIDES),
+]);
+
 const FIELDS = [
   'id', 'name', 'url', 'domain', 'category', 'layer', 'authority', 'evidence', 'kind',
-  'content_access', 'license_class', 'cache_policy', 'attribution', 'refresh_days',
-  'last_checked', 'keywords', 'notes', 'auth', 'iface', 'pit', 'free_tier',
-  'as_reported', 'survivorship', 'history_start', 'verified_on', 'rate_limit', 'terms',
+  'content_access', 'verification', 'license_class', 'cache_policy', 'attribution',
+  'refresh_days', 'last_checked', 'keywords', 'notes', 'auth', 'iface', 'pit',
+  'data_types', 'free_tier', 'as_reported', 'survivorship', 'history_start',
+  'verified_on', 'rate_limit', 'terms',
 ];
 
-const PIT = new Set(['yes', 'partial', 'no']);
+const PIT = new Set(['yes', 'partial', 'no', 'not_applicable', 'unverified']);
+const VERIFICATION = new Set([
+  'discovered', 'reachable', 'schema_verified', 'semantic_verified', 'production_approved',
+]);
+// The probe could not read these from this network; they are citations only.
+const UNREACHABLE_ACCESS = new Set(['challenge', 'unknown']);
 const DOMAINS = new Set(['quant', 'crypto']);
 
 const sources = [];
@@ -54,11 +72,19 @@ for (const file of FILES) {
     if (!DOMAINS.has(src.domain)) errors.push(`${file}:${src.id}: bad domain ${src.domain}`);
     if (!src.category) errors.push(`${file}:${src.id}: missing category`);
     else categories[src.category] = (categories[src.category] || 0) + 1;
+    if (PIT_OVERRIDES[src.id] !== undefined) src.pit = PIT_OVERRIDES[src.id];
     if (src.pit && !PIT.has(src.pit)) errors.push(`${file}:${src.id}: bad pit ${src.pit}`);
     if (!src.authority || !'ABCD'.includes(src.authority)) errors.push(`${file}:${src.id}: bad authority`);
     if (!src.url) errors.push(`${file}:${src.id}: missing url`);
     if (seenIds.has(src.id)) errors.push(`${file}:${src.id}: duplicate id`);
     seenIds.add(src.id);
+    src.verification = VERIFICATION_OVERRIDES[src.id]
+      ?? (UNREACHABLE_ACCESS.has(src.content_access) ? 'discovered' : 'reachable');
+    if (!VERIFICATION.has(src.verification)) errors.push(`${file}:${src.id}: bad verification ${src.verification}`);
+    src.data_types = DATA_TYPE_OVERRIDES[src.id] ?? [];
+    if (!Array.isArray(src.data_types) || src.data_types.some((t) => typeof t !== 'string' || !t)) {
+      errors.push(`${file}:${src.id}: data_types must be an array of non-empty strings`);
+    }
     domains[src.domain] = (domains[src.domain] || 0) + 1;
 
     const row = {};
@@ -67,6 +93,10 @@ for (const file of FILES) {
     delete row.ka;
     sources.push(row);
   }
+}
+
+for (const id of OVERRIDE_IDS) {
+  if (!seenIds.has(id)) errors.push(`enrichment.yaml: unknown source id ${id}`);
 }
 
 if (errors.length) {
@@ -115,7 +145,18 @@ const out = {
       yes: '提供 Point-in-Time / as-reported 版本',
       partial: '部分字段或部分数据集提供 PIT',
       no: '只给最新修订值，回测需自行处理未来函数',
+      not_applicable: '数据不可修订（原始行情/逐笔/链上/归档）或条目本身是工具，PIT 不适用',
+      unverified: '尚未核实，不能假设有或没有 PIT',
     },
+    verification_legend: {
+      discovered: '已登记但本网络不可达（403/429/202/challenge 或不可解析），只能当引用线索',
+      reachable: '仅 HTTP 200 可达；没有检查返回内容',
+      schema_verified: '实际抓取过返回内容，结构与文档一致',
+      semantic_verified: '核对过具体口径（费率、限频、端点、PIT、更名等）',
+      production_approved: '在真实任务里端到端用过',
+    },
+    data_types_note: 'data_types 是数据集级标签（如 orderbook_l2、funding、xbrl），用于核对某条引用是否真的覆盖所引数据。',
+    enrichment: 'data/enrichment.yaml',
     license_note: 'license_class 是策略分桶，不是法律意见；绑定许可以源站条款为准。',
   },
   sources,

@@ -29,6 +29,13 @@ meta:
     archive: "历史归档（tick / 订单簿）"
     sdk: "客户端库"
     research: "研究"
+  pit_legend:
+    yes: "提供 Point-in-Time / as-reported 版本"
+    partial: "部分字段或部分数据集提供 PIT（新闻：首发时间可得，但历史重建不保证）"
+    no: "只给最新修订值，回测需自行处理未来函数"
+    not_applicable: "数据不可修订（行情/逐笔/订单簿/链上/归档）或条目本身是工具，PIT 不适用"
+    unverified: "尚未核实，不能假设有或没有 PIT"
+  # 探测后的人工核验层（PIT 修正、verification、data_types）在 data/enrichment.yaml，由 build-data.cjs 合并。
   content_access_legend:
     static: "静态 HTML，可直接取正文"
     portal: "落地页/目录页，需跟到正文"

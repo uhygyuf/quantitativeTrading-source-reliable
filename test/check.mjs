@@ -59,6 +59,33 @@ ok(incomplete.length === 0, 'every source has domain/category/authority/url/last
 const badDomain = registry.sources.filter((s) => !DOMAINS.includes(s.domain));
 ok(badDomain.length === 0, 'every source has a known domain', badDomain.map((s) => s.id).join(','));
 
+const VERIFICATION_STATES = ['discovered', 'reachable', 'schema_verified', 'semantic_verified', 'production_approved'];
+const badVerification = registry.sources.filter((s) => !VERIFICATION_STATES.includes(s.verification));
+ok(badVerification.length === 0, 'every source has a known verification state', badVerification.map((s) => s.id).join(','));
+const badTypes = registry.sources.filter((s) => !Array.isArray(s.data_types));
+ok(badTypes.length === 0, 'every source has a data_types array', badTypes.map((s) => s.id).join(','));
+const typed = registry.sources.filter((s) => s.data_types.length > 0).length;
+ok(typed === stats.count, 'every source is tagged with at least one dataset', `${typed}/${stats.count}`);
+
+const pitSum = Object.values(stats.by_pit).reduce((a, b) => a + b, 0);
+ok(pitSum === stats.count, 'every source has exactly one PIT state', String(pitSum));
+ok(
+  stats.by_pit.yes === 3
+  && stats.by_pit.partial >= 15
+  && stats.by_pit.not_applicable >= 40
+  && stats.by_pit.unverified >= 1
+  && stats.by_pit.no >= 15,
+  'PIT uses all five states (yes/partial/no/not_applicable/unverified)',
+  JSON.stringify(stats.by_pit),
+);
+const unreachable = registry.sources.filter((s) => s.content_access === 'challenge' || s.content_access === 'unknown').length;
+ok(
+  stats.by_verification.discovered === unreachable,
+  'challenge/unreachable sources are marked discovered',
+  `${stats.by_verification.discovered} discovered vs ${unreachable} unreachable`,
+);
+ok(stats.by_verification.production_approved >= 1, 'at least one source is production approved', JSON.stringify(stats.by_verification));
+
 // ---------- find ----------
 const byUrl = findSources(registry, { url: 'https://alfred.stlouisfed.org/' });
 ok(byUrl.results[0]?.id === 'alfred', 'find by ALFRED URL', byUrl.results[0]?.id);
@@ -90,6 +117,16 @@ ok(quantOnly.results.length > 0 && quantOnly.results.every((s) => s.domain === '
 
 const breadthDepth = findSources(registry, { domain: 'quant', layer: 'depth', limit: 5 });
 ok(breadthDepth.results.every((s) => s.layer === 'depth'), 'layer filter works');
+
+const futuresResults = findSources(registry, { url: 'https://developers.binance.info/en/docs/derivatives/usds-margined-futures' }).results;
+ok(futuresResults[0]?.id === 'binance-futures-api', 'URL lookup ranks the exact page above same-host fallbacks', futuresResults.map((s) => s.id).join(','));
+const futuresRow = futuresResults[0];
+ok(futuresRow?.verification === 'semantic_verified', 'find exposes the verification state', futuresRow?.verification);
+ok(
+  futuresRow?.data_types?.includes('funding') && futuresRow?.data_types?.includes('open_interest'),
+  'find exposes dataset tags for a derivatives source',
+  JSON.stringify(futuresRow?.data_types),
+);
 
 const unknownUrl = findSources(registry, { url: 'https://unknown.invalid/x' });
 ok(unknownUrl.count === 0, 'unknown URL returns zero matches', String(unknownUrl.count));
@@ -131,11 +168,22 @@ ok(cjkUrl.citations[0]?.url === 'https://alfred.stlouisfed.org/', 'audit strips 
 const newsAudit = auditText(registry, { text: 'Headline: https://www.coindesk.com/arc/outboundfeeds/rss/' });
 ok(newsAudit.citations[0]?.known === true && newsAudit.citations[0]?.authority === 'D', 'crypto media is known but D-tier', JSON.stringify(newsAudit.citations[0]));
 
+const discoveredAudit = auditText(registry, { text: 'SEC filing search: https://www.sec.gov/edgar/search/' });
+ok(discoveredAudit.citations[0]?.verification === 'discovered', 'audit exposes the verification state', discoveredAudit.citations[0]?.verification);
+ok(
+  discoveredAudit.suggestions.some((s) => s.includes('unreachable')),
+  'audit suggests re-checking unreachable citations',
+  JSON.stringify(discoveredAudit.suggestions),
+);
+
 // ---------- prompt footprint ----------
 const guidance = buildGuidance(stats);
 const estTokens = (text) => Math.ceil(text.length / 4);
 console.log(`\n[prompt] guidance ${guidance.length} chars (~${estTokens(guidance)} tokens at 4 chars/token), section order ${SECTION_ORDER}`);
 ok(guidance.length < 1200, 'guidance stays under 1200 chars', String(guidance.length));
+ok(guidance.includes('first publication time'), 'guidance requires news first-published time', 'missing news-time rule');
+ok(guidance.includes('HTTP 200'), 'guidance decouples reachability from data correctness', 'missing HTTP-200 caveat');
+ok(guidance.includes('not_applicable'), 'guidance explains the not_applicable PIT state', 'missing PIT state');
 
 const findChars = declarationChars(FIND_TOOL);
 const auditChars = declarationChars(AUDIT_TOOL);

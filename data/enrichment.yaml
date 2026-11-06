@@ -1,0 +1,216 @@
+# Enrichment layer for quantitativeTrading-source-reliable.
+# The matrices record what the 2026-11-06 probe saw. This file records what was
+# verified afterwards, and adds dataset-level tags and PIT corrections.
+# tools/build-data.cjs merges this on top of the matrices and rejects unknown ids.
+meta:
+  version: 1
+  applied_at: "2026-11-06"
+
+# pit states:
+#   yes            as-of / as-reported vintages available
+#   partial        some fields or datasets are PIT
+#   no             latest revision only; backtests must model look-ahead
+#   not_applicable the data cannot be revised (raw ticks/quotes/order books,
+#                  on-chain state, archives) or the entry is tooling/sandbox
+#   unverified     nobody checked; do not assume either way
+pit:
+  world-bank-data: unverified
+  oecd-data: unverified
+  # quant market data / execution / research / tooling
+  massive: not_applicable
+  alpaca-data: not_applicable
+  databento: not_applicable
+  tiingo: not_applicable
+  alpha-vantage: not_applicable
+  finnhub: not_applicable
+  twelve-data: not_applicable
+  nasdaq-data-link: not_applicable
+  openbb: not_applicable
+  cboe-datashop: not_applicable
+  ibkr-api: not_applicable
+  alpaca-trading: not_applicable
+  nber: not_applicable
+  ssrn: not_applicable
+  arxiv-qfin: not_applicable
+  akshare: not_applicable
+  # crypto: exchanges, aggregators, derivatives, on-chain, archives, sdk, research
+  binance-spot-api: not_applicable
+  binance-futures-api: not_applicable
+  binance-agent-native: not_applicable
+  binance-llms-txt: not_applicable
+  binance-mcp: not_applicable
+  binance-ws-spot: not_applicable
+  binance-ws-futures: not_applicable
+  binance-data-archive: not_applicable
+  binance-testnet-spot: not_applicable
+  binance-testnet-futures: not_applicable
+  binance-options: not_applicable
+  bybit-v5: not_applicable
+  okx-v5: not_applicable
+  coinbase-advanced-trade: not_applicable
+  kraken-api: not_applicable
+  deribit: not_applicable
+  coingecko-api: not_applicable
+  coingecko-mcp: not_applicable
+  coinmarketcap-api: not_applicable
+  coinglass-api: not_applicable
+  kaiko: not_applicable
+  coinmetrics: not_applicable
+  glassnode: not_applicable
+  nansen: not_applicable
+  cryptoquant: not_applicable
+  etherscan-api: not_applicable
+  dune-docs: not_applicable
+  defillama-api: not_applicable
+  blockchair-api: not_applicable
+  mempool-api: not_applicable
+  tardis: not_applicable
+  cryptohftdata: not_applicable
+  ccxt: not_applicable
+  binance-connector-python: not_applicable
+  python-binance: not_applicable
+  binance-market-data-api: not_applicable
+  binance-data-api-vision: not_applicable
+  binance-research: not_applicable
+  # news keeps a revision dimension: first-published time vs page update time
+  gdelt: partial
+  benzinga-api: partial
+  ravenpack: partial
+  coindesk: partial
+  cointelegraph: partial
+  decrypt: partial
+  theblock: partial
+
+# verification states:
+#   discovered         recorded but not reachable from this network
+#                      (HTTP 403/429/202/challenge, or unreachable)
+#   reachable          HTTP 200 only; the payload was not inspected
+#   schema_verified    a payload was fetched and the documented shape was seen
+#   semantic_verified  a concrete numeric/semantic claim was checked
+#                      (fee, rate limit, endpoint path, PIT, rename)
+#   production_approved used end-to-end in a real task
+verification:
+  binance-market-data-api: production_approved
+  coindesk: production_approved
+  binance-data-api-vision: schema_verified
+  coingecko-api: schema_verified
+  decrypt: schema_verified
+  theblock: schema_verified
+  binance-spot-api: semantic_verified
+  binance-futures-api: semantic_verified
+  binance-ws-futures: semantic_verified
+  binance-mcp: semantic_verified
+  alpha-vantage: semantic_verified
+  alpaca-data: semantic_verified
+  twelve-data: semantic_verified
+  massive: semantic_verified
+  sharadar: semantic_verified
+  fred: semantic_verified
+  alfred: semantic_verified
+  fmp: semantic_verified
+  financial-datasets: semantic_verified
+  equibles: semantic_verified
+
+# data_types: dataset-level tags so a citation can be matched to the dataset
+# it actually covers. Free-form lowercase tags, not a closed vocabulary.
+data_types:
+  sec-edgar-search: [ filings ]
+  sec-data-apis: [ filings, xbrl, ownership ]
+  sec-companyfacts: [ xbrl, fundamentals ]
+  sec-submissions: [ filings, ownership ]
+  sec-financial-statement-data-sets: [ xbrl, fundamentals ]
+  sec-form-13f-datasets: [ ownership, 13f ]
+  sec-insider-transactions: [ ownership, form4 ]
+  finra-short-interest: [ short_interest ]
+  cftc-cot: [ positioning, futures ]
+  cboe-datashop: [ options, vix, historical_ticks ]
+  cninfo: [ filings, disclosures ]
+  sse: [ filings, market_data ]
+  szse: [ filings, market_data ]
+  hkex: [ market_data, filings ]
+  fred: [ macro_series ]
+  alfred: [ macro_series, vintages ]
+  bls-api: [ macro_series, employment, cpi ]
+  bea-api: [ macro_series, gdp ]
+  treasury-fiscal-data: [ fiscal, debt, rates ]
+  imf-data: [ macro_series ]
+  world-bank-data: [ macro_series, development ]
+  bis-data: [ macro_series, banking ]
+  oecd-data: [ macro_series ]
+  ecb-data: [ macro_series, rates ]
+  nbs-china: [ macro_series ]
+  pbc-china: [ rates, macro_series ]
+  chinamoney: [ rates, fx ]
+  massive: [ ohlcv, trades, options, reference ]
+  alpaca-data: [ ohlcv, trades, quotes ]
+  databento: [ historical_ticks, orderbook_l2, ohlcv ]
+  tiingo: [ ohlcv, fundamentals, news ]
+  alpha-vantage: [ ohlcv, fundamentals, fx ]
+  finnhub: [ ohlcv, fundamentals, news, earnings ]
+  twelve-data: [ ohlcv, fundamentals ]
+  nasdaq-data-link: [ ohlcv, macro_series, fundamentals ]
+  openbb: [ tooling ]
+  sharadar: [ fundamentals, pit ]
+  compustat-wrds: [ fundamentals ]
+  crsp: [ ohlcv, corporate_actions, delisting ]
+  optionmetrics: [ options, iv, vol_surface ]
+  fmp: [ fundamentals ]
+  financial-datasets: [ fundamentals ]
+  equibles: [ fundamentals ]
+  tushare: [ market_data, fundamentals ]
+  akshare: [ tooling, market_data ]
+  cnequity: [ fundamentals, pit, market_data ]
+  wind: [ market_data, fundamentals, macro_series ]
+  ifind: [ market_data, fundamentals, macro_series ]
+  joinquant: [ market_data, fundamentals, backtest ]
+  ricequant: [ market_data, fundamentals, backtest ]
+  ibkr-api: [ orders, positions, ohlcv, account ]
+  alpaca-trading: [ orders, positions, account ]
+  nber: [ papers ]
+  ssrn: [ papers ]
+  arxiv-qfin: [ papers ]
+  gdelt: [ news, events ]
+  benzinga-api: [ news, events ]
+  ravenpack: [ news, events ]
+  binance-spot-api: [ ohlcv, trades, orderbook_l2, ticker, account, orders ]
+  binance-futures-api: [ ohlcv, trades, orderbook_l2, funding, open_interest, mark_price, index_price, long_short_ratio, liquidations, account, orders ]
+  binance-agent-native: [ tooling, llm_docs ]
+  binance-llms-txt: [ tooling, llm_docs ]
+  binance-mcp: [ tooling, mcp ]
+  binance-ws-spot: [ trades, orderbook_l2, ticker ]
+  binance-ws-futures: [ trades, orderbook_l2, mark_price, funding, liquidations, long_short_ratio ]
+  binance-data-archive: [ historical_ticks, historical_klines, orderbook_l2 ]
+  binance-testnet-spot: [ sandbox ]
+  binance-testnet-futures: [ sandbox ]
+  binance-options: [ options, iv, greeks ]
+  bybit-v5: [ ohlcv, trades, orderbook_l2, funding, open_interest ]
+  okx-v5: [ ohlcv, trades, orderbook_l2, funding, open_interest, options ]
+  coinbase-advanced-trade: [ ohlcv, trades, orderbook_l2, orders, account ]
+  kraken-api: [ ohlcv, trades, orderbook_l2, funding ]
+  deribit: [ options, iv, greeks, futures, funding ]
+  coingecko-api: [ spot_price, market_cap, metadata ]
+  coingecko-mcp: [ tooling, mcp ]
+  coinmarketcap-api: [ spot_price, market_cap, metadata ]
+  coinglass-api: [ funding, open_interest, liquidations, long_short_ratio ]
+  kaiko: [ historical_ticks, orderbook_l2, reference_rates ]
+  coinmetrics: [ onchain_metrics, market_data, reference_rates ]
+  glassnode: [ onchain_metrics, exchange_flows, stablecoin_supply ]
+  nansen: [ onchain_flows, whale_behavior ]
+  cryptoquant: [ exchange_flows, miner_flow, whale_behavior ]
+  etherscan-api: [ transactions, token_transfers, contract ]
+  dune-docs: [ onchain_queries, dashboards ]
+  defillama-api: [ defi_tvl, stablecoin_supply, dex_volume ]
+  blockchair-api: [ transactions, onchain_metrics ]
+  mempool-api: [ mempool, fees, blocks ]
+  tardis: [ historical_ticks, orderbook_l2, derivatives ]
+  cryptohftdata: [ historical_ticks, orderbook_l2 ]
+  ccxt: [ tooling, sdk ]
+  binance-connector-python: [ tooling, sdk ]
+  python-binance: [ tooling, sdk ]
+  binance-market-data-api: [ ticker, ohlcv, trades, orderbook_l2 ]
+  binance-data-api-vision: [ ticker, ohlcv, trades, orderbook_l2 ]
+  coindesk: [ news ]
+  cointelegraph: [ news ]
+  decrypt: [ news ]
+  theblock: [ news ]
+  binance-research: [ research ]
