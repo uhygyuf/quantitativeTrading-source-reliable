@@ -882,7 +882,7 @@ sources:
     iface: [ rest, ws, archive ]
     pit: no
     keywords: [ stocks, options, futures, forex, crypto, websocket, polygon ]
-    notes: "polygon.io 已跳转到 massive.com（2026-11-06 实测）；官网个人档显示 $199/月。"
+    notes: "polygon.io 已跳转到 massive.com（2026-11-06 实测）；官网个人档显示 $199/月。没有官方 MCP，只有社区包。"
     content_access: static
     last_checked: 2026-11-06
     check_method: probe-v1

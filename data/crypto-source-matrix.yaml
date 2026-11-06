@@ -116,7 +116,7 @@ sources:
     pit: no
     verified_on: "2026-11-06"
     keywords: [ binance, agent, llm, mcp, llms.txt, agent rest api ]
-    notes: "官方确认三种接入：llms.txt、Agent REST API、MCP Server（2026-11-06 文档）。"
+    notes: "官方确认三种接入：llms.txt、Agent REST API、MCP Server（2026-11-06 文档）。Wallet Skills 文档存在，但 \"Skills Hub\" 这个名称未在官方文档找到。"
     content_access: static
     last_checked: 2026-11-06
     check_method: probe-v1

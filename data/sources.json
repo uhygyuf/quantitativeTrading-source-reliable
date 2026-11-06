@@ -926,7 +926,7 @@
     "websocket",
     "polygon"
    ],
-   "notes": "polygon.io 已跳转到 massive.com（2026-11-06 实测）；官网个人档显示 $199/月。",
+   "notes": "polygon.io 已跳转到 massive.com（2026-11-06 实测）；官网个人档显示 $199/月。没有官方 MCP，只有社区包。",
    "auth": "key",
    "iface": [
     "rest",
@@ -1986,7 +1986,7 @@
     "llms.txt",
     "agent rest api"
    ],
-   "notes": "官方确认三种接入：llms.txt、Agent REST API、MCP Server（2026-11-06 文档）。",
+   "notes": "官方确认三种接入：llms.txt、Agent REST API、MCP Server（2026-11-06 文档）。Wallet Skills 文档存在，但 \"Skills Hub\" 这个名称未在官方文档找到。",
    "auth": "none",
    "iface": [
     "web",
