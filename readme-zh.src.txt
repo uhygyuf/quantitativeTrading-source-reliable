@@ -2,13 +2,13 @@
 
 [English](README.md) · 简体中文
 
-给 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) 的量化金融与加密交易信源插件：内置 **94 个实测可采集的信源**，带权威分级、PIT（Point-in-Time）与免费额度标记，并给模型两个工具——查源、审引用。
+给 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) 的量化金融与加密交易信源插件：内置 **100 个实测可采集的信源**，带权威分级、PIT（Point-in-Time）与免费额度标记，并给模型两个工具——查源、审引用。
 
 这是 DSH 插件（`dsh`）。注册表以数据形式打包，两个工具都是本地查表（不联网），所以很快、没有副作用。它与 [`cs-source-reliable`](https://github.com/uhygyuf/cs-source-reliable) 完全独立，可以单独安装。
 
 ## 它装了什么
 
-- **94 个信源** —— 58 个 `quant`（监管申报、宏观、基本面、A股/港股、执行接口）+ 36 个 `crypto`（交易所、衍生品、链上、归档、SDK）。
+- **100 个信源** —— 58 个 `quant`（监管申报、宏观、基本面、A股/港股、执行接口）+ 42 个 `crypto`（交易所、衍生品、链上、归档、SDK、新闻）。
 - 每条源包含：域、类别、权威级（`A` 监管/交易所/官方文档，`B` 机构数据商/同行评审，`C` 可靠二手，`D` 仅线索）、证据类型、`content_access`（static / portal / js / challenge / api / binary）、`license_class`、`cache_policy`、`attribution`、`refresh_days`、`last_checked`，以及按需出现的 `pit`、`free_tier`、`auth`、`iface`、`history_start`。
 - **两个工具**：`qt_source_find`、`qt_source_audit`。
 - 一段很短的 system prompt 引导（order 241），告诉模型什么时候用、怎么引用。
@@ -41,10 +41,10 @@
 **quant（58）** —— filing 7、market-data 14、china 14、macro 10、fundamentals 5、research 3、news 3、execution 2。
 含 SEC EDGAR 与 `data.sec.gov` XBRL API、SEC 13F/Form 4 数据集、FINRA 空头、CFTC COT、Cboe DataShop、巨潮/上交所/深交所/港交所、FRED + ALFRED、BLS/BEA/财政部/IMF/世界银行/BIS/OECD/ECB、国家统计局/人民银行/中国货币网、Massive/Alpaca/Databento/Tiingo/Alpha Vantage/Finnhub/Twelve Data/Nasdaq Data Link/OpenBB、Sharadar/Compustat-WRDS/CRSP/OptionMetrics/FMP、Tushare/AKShare/CNEquity/Wind/iFinD/聚宽/米筐、IBKR/Alpaca Trading、NBER/SSRN/arXiv q-fin/GDELT/Benzinga/RavenPack。
 
-**crypto（36）** —— exchange 15、on-chain 8、archive 3、aggregator 3、SDK 3、market-data 2、derivatives 1、research 1。
+**crypto（42）** —— exchange 17、on-chain 8、news 4、archive 3、aggregator 3、SDK 3、market-data 2、derivatives 1、research 1。
 含 Binance（REST/WS/Agent Native/llms.txt/MCP/testnet/归档）、Bybit/OKX/Coinbase/Kraken/Deribit、CoinGecko（API + 免 key MCP）/CoinMarketCap/CoinGlass、Kaiko/Coin Metrics、Glassnode/Nansen/CryptoQuant/Etherscan/Dune/DefiLlama/Blockchair/mempool.space、Tardis/CryptoHFTData、ccxt/binance-connector-python/python-binance、Binance Research。
 
-**构建时实测分布**：auth `none` 46 / `key` 34 / `account` 14；PIT `yes` 3 / `partial` 13 / `no` 78；访问方式 static 63 / portal 10 / js 4 / api 2 / challenge 14 / unknown 1。
+**构建时实测分布**：auth `none` 52 / `key` 34 / `account` 14；PIT `yes` 3 / `partial` 13 / `no` 84；访问方式 static 63 / portal 10 / js 4 / api 8 / challenge 14 / unknown 1。
 
 ## 工具
 
@@ -91,7 +91,7 @@ Citations: 3/3 audited, 2 known, 1 unknown; A=2 B=0 C=0 D=0; uncited paragraphs=
 
 | 项目 | 实测 |
 |---|---|
-| `qt_source_find` schema（名称+描述+参数） | 952 字符 ≈ 238 tokens |
+| `qt_source_find` schema（名称+描述+参数） | 953 字符 ≈ 239 tokens |
 | `qt_source_audit` schema | 470 字符 ≈ 118 tokens |
 | 引导段 | 804 字符 ≈ 201 tokens |
 | **每请求合计开销** | **≈ 557 tokens**（schema + 引导） |
@@ -134,14 +134,14 @@ npm install                 # 开发依赖：yaml
 node tools/probe-sources.cjs --file=quant --apply    # 探测并写回快照
 node tools/probe-sources.cjs --file=crypto --apply
 npm run build:data          # 重建 data/sources.json
-node test/check.mjs         # 36 项检查：注册表、工具、无损 JSON、延迟预算
+node test/check.mjs         # 38 项检查：注册表、工具、无损 JSON、延迟预算
 ```
 
 `tools/probe-sources.cjs` 会为每条源记录 `content_access`、`last_checked` 与探测快照。反爬站点（Cloudflare / 202 / 401 / 403）记为 `challenge`，不当作有效数据响应。
 
 ## 数据来源与维护
 
-- 全部信源在 **2026-11-06** 探测：79 条 HTTP 200；14 条返回 challenge（SEC 各端点、BLS、SSRN、Benzinga、Binance testnet/research、CryptoQuant、Blockchair，在本网络下）；1 条不可达（World Bank）。
+- 全部信源在 **2026-11-06** 探测：85 条 HTTP 200；14 条返回 challenge（SEC 各端点、BLS、SSRN、Benzinga、Binance testnet/research、CryptoQuant、Blockchair，在本网络下）；1 条不可达（World Bank）。
 - `refresh_days` 按类别给建议：规范 90 天、官方/数据商文档 30 天、数据集/API 14 天、同行评审 365 天。`last_checked` 是探测日期。
 - `license_class` / `cache_policy` 是策略分桶，不是法律意见。交易所与行情条款限制再分发；没有授权时只链接 + 短引用。
 

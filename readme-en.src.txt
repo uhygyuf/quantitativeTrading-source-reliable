@@ -2,13 +2,13 @@
 
 English · [简体中文](README.zh.md)
 
-Source reliability for quantitative finance and crypto trading in [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness): a bundled registry of **94 verified, agent-collectable sources** with authority tiers, point-in-time and free-tier flags, plus two model-facing tools to find sources and audit citations.
+Source reliability for quantitative finance and crypto trading in [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness): a bundled registry of **100 verified, agent-collectable sources** with authority tiers, point-in-time and free-tier flags, plus two model-facing tools to find sources and audit citations.
 
 A plugin for DeepSeek Harness (`dsh`). The registry ships as data; both tools are local lookups (no network calls), so they are fast and have no side effects. It is independent from [`cs-source-reliable`](https://github.com/uhygyuf/cs-source-reliable) and can be installed on its own.
 
 ## What it ships
 
-- **94 sources** — 58 `quant` (filings, macro, fundamentals, China A-share/HK, execution) and 36 `crypto` (exchanges, derivatives, on-chain, archives, SDKs).
+- **100 sources** — 58 `quant` (filings, macro, fundamentals, China A-share/HK, execution) and 42 `crypto` (exchanges, derivatives, on-chain, archives, SDKs, news).
 - Per source: domain, category, authority tier (`A` regulator/exchange/official docs, `B` institutional vendor/peer-reviewed, `C` curated secondary, `D` lead only), evidence type, `content_access` (static / portal / js / challenge / api / binary), `license_class`, `cache_policy`, `attribution`, `refresh_days`, `last_checked`, and where meaningful `pit`, `free_tier`, `auth`, `iface`, `history_start`.
 - **Two tools**: `qt_source_find` and `qt_source_audit`.
 - A short system-prompt section (order 241) that tells the model when to use them and how to cite.
@@ -41,10 +41,10 @@ The matrices keep a dated `verified_on` field on every one of these claims; `fre
 **quant (58)** — filing 7, market-data 14, china 14, macro 10, fundamentals 5, research 3, news 3, execution 2.
 Includes SEC EDGAR + `data.sec.gov` XBRL APIs, SEC 13F/Form 4 datasets, FINRA short interest, CFTC COT, Cboe DataShop, 巨潮/上交所/深交所/HKEX, FRED + ALFRED, BLS/BEA/Treasury/IMF/World Bank/BIS/OECD/ECB, 国家统计局/人民银行/中国货币网, Massive/Alpaca/Databento/Tiingo/Alpha Vantage/Finnhub/Twelve Data/Nasdaq Data Link/OpenBB, Sharadar/Compustat-WRDS/CRSP/OptionMetrics/FMP, Tushare/AKShare/CNEquity/Wind/iFinD/JoinQuant/RiceQuant, IBKR/Alpaca Trading, NBER/SSRN/arXiv q-fin/GDELT/Benzinga/RavenPack.
 
-**crypto (36)** — exchange 15, on-chain 8, archive 3, aggregator 3, SDK 3, market-data 2, derivatives 1, research 1.
-Includes Binance (REST/WS/Agent Native/llms.txt/MCP/testnet/archive), Bybit/OKX/Coinbase/Kraken/Deribit, CoinGecko (API + keyless MCP)/CoinMarketCap/CoinGlass, Kaiko/Coin Metrics, Glassnode/Nansen/CryptoQuant/Etherscan/Dune/DefiLlama/Blockchair/mempool.space, Tardis/CryptoHFTData, ccxt/binance-connector-python/python-binance, Binance Research.
+**crypto (42)** — exchange 17, on-chain 8, news 4, archive 3, aggregator 3, SDK 3, market-data 2, derivatives 1, research 1.
+Includes Binance (REST/WS/Agent Native/llms.txt/MCP/testnet/archive/public ticker), Bybit/OKX/Coinbase/Kraken/Deribit, CoinGecko (API + keyless MCP)/CoinMarketCap/CoinGlass, Kaiko/Coin Metrics, Glassnode/Nansen/CryptoQuant/Etherscan/Dune/DefiLlama/Blockchair/mempool.space, Tardis/CryptoHFTData, ccxt/binance-connector-python/python-binance, Binance Research, and CoinDesk/Cointelegraph/Decrypt/The Block (D-tier: leads only).
 
-**Flags measured at build time**: auth `none` 46 / `key` 34 / `account` 14; PIT `yes` 3 / `partial` 13 / `no` 78; access static 63 / portal 10 / js 4 / api 2 / challenge 14 / unknown 1.
+**Flags measured at build time**: auth `none` 52 / `key` 34 / `account` 14; PIT `yes` 3 / `partial` 13 / `no` 84; access static 63 / portal 10 / js 4 / api 8 / challenge 14 / unknown 1.
 
 ## Tools
 
@@ -91,7 +91,7 @@ The plugin does not intercept requests. The model decides, guided by a system-pr
 
 | Item | Measured |
 |---|---|
-| `qt_source_find` schema (name + description + parameters) | 952 chars ≈ 238 tokens |
+| `qt_source_find` schema (name + description + parameters) | 953 chars ≈ 239 tokens |
 | `qt_source_audit` schema | 470 chars ≈ 118 tokens |
 | Guidance section | 804 chars ≈ 201 tokens |
 | **Combined per-request overhead** | **≈ 557 tokens** (schemas + guidance) |
@@ -134,14 +134,14 @@ npm install                 # dev dependency: yaml
 node tools/probe-sources.cjs --file=quant --apply    # probe + write snapshot
 node tools/probe-sources.cjs --file=crypto --apply
 npm run build:data          # rebuild data/sources.json
-node test/check.mjs         # 36 checks: registry, tools, lossless JSON, latency budgets
+node test/check.mjs         # 38 checks: registry, tools, lossless JSON, latency budgets
 ```
 
 `tools/probe-sources.cjs` records `content_access`, `last_checked` and a probe snapshot per source. Challenge sites (Cloudflare/202/401/403) are recorded as `challenge`, not treated as a valid data response.
 
 ## Data provenance and maintenance
 
-- Every source was probed on **2026-11-06**: 79 returned HTTP 200; 14 returned a challenge (SEC endpoints, BLS, SSRN, Benzinga, Binance testnet/research, CryptoQuant, Blockchair from this network); 1 was unreachable (World Bank).
+- Every source was probed on **2026-11-06**: 85 returned HTTP 200; 14 returned a challenge (SEC endpoints, BLS, SSRN, Benzinga, Binance testnet/research, CryptoQuant, Blockchair from this network); 1 was unreachable (World Bank).
 - `refresh_days` is a suggestion per class: specs 90 d, official/vendor docs 30 d, datasets/APIs 14 d, peer-reviewed 365 d. `last_checked` is the probe date.
 - `license_class` / `cache_policy` are policy buckets, not legal advice. Exchange and market-data terms restrict redistribution; link and quote briefly unless you have a license.
 

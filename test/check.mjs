@@ -2,8 +2,7 @@
  * Unit + performance checks for quantitativeTrading-source-reliable (no DSH runtime required).
  * Run: node test/check.mjs
  */
-import { loadRegistry, findSources, auditText, registryStats, DOMAINS } from '../lib/registry.js';
-import { buildGuidance, SECTION_ORDER } from '../lib/guidance.js';
+import { loadRegistry, findSources, auditText, registryStats, DOMAINS } from '../lib/registry.js';import { buildGuidance, SECTION_ORDER } from '../lib/guidance.js';
 import { FIND_TOOL, AUDIT_TOOL, declarationChars } from '../lib/tool-defs.js';
 
 const DATA = new URL('../data/sources.json', import.meta.url);
@@ -125,6 +124,12 @@ const badTier = auditText(registry, {
 });
 ok(badTier.summary.by_authority.C === 1, 'audit grades SSRN as C', JSON.stringify(badTier.summary.by_authority));
 ok(badTier.summary.by_authority.unknown === 1, 'audit grades reddit as unknown', JSON.stringify(badTier.summary.by_authority));
+
+const cjkUrl = auditText(registry, { text: '参考（https://alfred.stlouisfed.org/）。' });
+ok(cjkUrl.citations[0]?.url === 'https://alfred.stlouisfed.org/', 'audit strips full-width CJK punctuation from URLs', cjkUrl.citations[0]?.url);
+
+const newsAudit = auditText(registry, { text: 'Headline: https://www.coindesk.com/arc/outboundfeeds/rss/' });
+ok(newsAudit.citations[0]?.known === true && newsAudit.citations[0]?.authority === 'D', 'crypto media is known but D-tier', JSON.stringify(newsAudit.citations[0]));
 
 // ---------- prompt footprint ----------
 const guidance = buildGuidance(stats);

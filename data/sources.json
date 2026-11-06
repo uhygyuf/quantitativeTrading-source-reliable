@@ -7,10 +7,10 @@
    "data/quant-source-matrix.yaml",
    "data/crypto-source-matrix.yaml"
   ],
-  "count": 94,
+  "count": 100,
   "by_domain": {
    "quant": 58,
-   "crypto": 36
+   "crypto": 42
   },
   "categories": {
    "filing": 7,
@@ -20,8 +20,8 @@
    "fundamentals": 5,
    "execution": 2,
    "research": 4,
-   "news": 3,
-   "exchange": 15,
+   "news": 7,
+   "exchange": 17,
    "archive": 3,
    "aggregator": 3,
    "derivatives": 1,
@@ -2995,6 +2995,195 @@
    ],
    "pit": "no",
    "free_tier": "open source (MIT)"
+  },
+  {
+   "id": "binance-market-data-api",
+   "name": "Binance Public Market Data API",
+   "url": "https://api.binance.com/api/v3/ticker/24hr?symbol=BTCUSDT",
+   "domain": "crypto",
+   "category": "exchange",
+   "layer": "depth",
+   "authority": "A",
+   "evidence": "spec",
+   "kind": "api",
+   "content_access": "api",
+   "license_class": "site-terms",
+   "cache_policy": "metadata-only",
+   "attribution": "recommended",
+   "refresh_days": 14,
+   "last_checked": "2026-11-06",
+   "keywords": [
+    "binance",
+    "ticker",
+    "24hr",
+    "price",
+    "public api",
+    "market data"
+   ],
+   "notes": "公开行情端点（本网络 2026-11-06 实测 200）；同内容镜像 data-api.binance.vision。",
+   "auth": "none",
+   "iface": [
+    "rest"
+   ],
+   "pit": "no",
+   "free_tier": "public market data free, no key"
+  },
+  {
+   "id": "binance-data-api-vision",
+   "name": "Binance market-data mirror (data-api.binance.vision)",
+   "url": "https://data-api.binance.vision/api/v3/ticker/24hr?symbol=BTCUSDT",
+   "domain": "crypto",
+   "category": "exchange",
+   "layer": "depth",
+   "authority": "A",
+   "evidence": "spec",
+   "kind": "api",
+   "content_access": "api",
+   "license_class": "site-terms",
+   "cache_policy": "metadata-only",
+   "attribution": "recommended",
+   "refresh_days": 14,
+   "last_checked": "2026-11-06",
+   "keywords": [
+    "binance",
+    "mirror",
+    "data-api",
+    "public",
+    "ticker"
+   ],
+   "notes": "官方公开行情镜像（实测 200），适合绕开主站反爬；数据与 api.binance.com 同源。",
+   "auth": "none",
+   "iface": [
+    "rest"
+   ],
+   "pit": "no",
+   "free_tier": "public market data free, no key"
+  },
+  {
+   "id": "coindesk",
+   "name": "CoinDesk",
+   "url": "https://www.coindesk.com/arc/outboundfeeds/rss/",
+   "domain": "crypto",
+   "category": "news",
+   "layer": "depth",
+   "authority": "D",
+   "evidence": "blog",
+   "kind": "rss",
+   "content_access": "api",
+   "license_class": "site-terms",
+   "cache_policy": "metadata-only",
+   "attribution": "recommended",
+   "refresh_days": 14,
+   "last_checked": "2026-11-06",
+   "keywords": [
+    "coindesk",
+    "news",
+    "bitcoin",
+    "media",
+    "新闻",
+    "标题"
+   ],
+   "notes": "媒体标题只能当线索，不能当事实；数字与事件回到交易所、BLS、监管原文核对。",
+   "auth": "none",
+   "iface": [
+    "rss",
+    "web"
+   ],
+   "pit": "no",
+   "free_tier": "free"
+  },
+  {
+   "id": "cointelegraph",
+   "name": "Cointelegraph",
+   "url": "https://cointelegraph.com/rss",
+   "domain": "crypto",
+   "category": "news",
+   "layer": "depth",
+   "authority": "D",
+   "evidence": "blog",
+   "kind": "rss",
+   "content_access": "api",
+   "license_class": "site-terms",
+   "cache_policy": "metadata-only",
+   "attribution": "recommended",
+   "refresh_days": 14,
+   "last_checked": "2026-11-06",
+   "keywords": [
+    "cointelegraph",
+    "news",
+    "crypto media",
+    "媒体"
+   ],
+   "notes": "媒体源：仅作事件线索；引用数字前必须回到一手来源。",
+   "auth": "none",
+   "iface": [
+    "rss",
+    "web"
+   ],
+   "pit": "no",
+   "free_tier": "free"
+  },
+  {
+   "id": "decrypt",
+   "name": "Decrypt",
+   "url": "https://decrypt.co/feed",
+   "domain": "crypto",
+   "category": "news",
+   "layer": "depth",
+   "authority": "D",
+   "evidence": "blog",
+   "kind": "rss",
+   "content_access": "api",
+   "license_class": "site-terms",
+   "cache_policy": "metadata-only",
+   "attribution": "recommended",
+   "refresh_days": 14,
+   "last_checked": "2026-11-06",
+   "keywords": [
+    "decrypt",
+    "news",
+    "crypto media",
+    "媒体"
+   ],
+   "notes": "媒体源：仅作事件线索；结论需一手来源或监管文件支撑。",
+   "auth": "none",
+   "iface": [
+    "rss",
+    "web"
+   ],
+   "pit": "no",
+   "free_tier": "free"
+  },
+  {
+   "id": "theblock",
+   "name": "The Block",
+   "url": "https://www.theblock.co/rss.xml",
+   "domain": "crypto",
+   "category": "news",
+   "layer": "depth",
+   "authority": "D",
+   "evidence": "blog",
+   "kind": "rss",
+   "content_access": "api",
+   "license_class": "site-terms",
+   "cache_policy": "metadata-only",
+   "attribution": "recommended",
+   "refresh_days": 14,
+   "last_checked": "2026-11-06",
+   "keywords": [
+    "the block",
+    "news",
+    "crypto media",
+    "媒体"
+   ],
+   "notes": "媒体源：仅作事件线索；ETF 流向、清算量等数字要找数据商或交易所原文。",
+   "auth": "none",
+   "iface": [
+    "rss",
+    "web"
+   ],
+   "pit": "no",
+   "free_tier": "free"
   },
   {
    "id": "binance-research",

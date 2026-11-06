@@ -1128,6 +1128,193 @@ sources:
       checked_at: 2026-11-06
       method: probe-v1
 
+  - id: binance-market-data-api
+    name: "Binance Public Market Data API"
+    domain: crypto
+    category: exchange
+    layer: depth
+    authority: A
+    evidence: spec
+    kind: api
+    url: "https://api.binance.com/api/v3/ticker/24hr?symbol=BTCUSDT"
+    auth: none
+    iface: [ rest ]
+    pit: no
+    free_tier: "public market data free, no key"
+    keywords: [ binance, ticker, 24hr, price, public api, market data ]
+    notes: "公开行情端点（本网络 2026-11-06 实测 200）；同内容镜像 data-api.binance.vision。"
+    content_access: api
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 14
+    license_class: site-terms
+    cache_policy: metadata-only
+    attribution: recommended
+    probe:
+      status: 200
+      content_type: application/json;charset=UTF-8
+      bytes: 559
+      text_len: null
+      final_url: https://api.binance.com/api/v3/ticker/24hr?symbol=BTCUSDT
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: binance-data-api-vision
+    name: "Binance market-data mirror (data-api.binance.vision)"
+    domain: crypto
+    category: exchange
+    layer: depth
+    authority: A
+    evidence: spec
+    kind: api
+    url: "https://data-api.binance.vision/api/v3/ticker/24hr?symbol=BTCUSDT"
+    auth: none
+    iface: [ rest ]
+    pit: no
+    free_tier: "public market data free, no key"
+    keywords: [ binance, mirror, data-api, public, ticker ]
+    notes: "官方公开行情镜像（实测 200），适合绕开主站反爬；数据与 api.binance.com 同源。"
+    content_access: api
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 14
+    license_class: site-terms
+    cache_policy: metadata-only
+    attribution: recommended
+    probe:
+      status: 200
+      content_type: application/json;charset=UTF-8
+      bytes: 559
+      text_len: null
+      final_url: https://data-api.binance.vision/api/v3/ticker/24hr?symbol=BTCUSDT
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  # ---------- 新闻（仅线索，不可当事实） ----------
+  - id: coindesk
+    name: "CoinDesk"
+    domain: crypto
+    category: news
+    layer: depth
+    authority: D
+    evidence: blog
+    kind: rss
+    url: "https://www.coindesk.com/arc/outboundfeeds/rss/"
+    auth: none
+    iface: [ rss, web ]
+    pit: no
+    free_tier: "free"
+    keywords: [ coindesk, news, bitcoin, media, 新闻, 标题 ]
+    notes: "媒体标题只能当线索，不能当事实；数字与事件回到交易所、BLS、监管原文核对。"
+    content_access: api
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 14
+    license_class: site-terms
+    cache_policy: metadata-only
+    attribution: recommended
+    probe:
+      status: 200
+      content_type: application/xml
+      bytes: 30533
+      text_len: 1999
+      final_url: https://www.coindesk.com/arc/outboundfeeds/rss
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: cointelegraph
+    name: "Cointelegraph"
+    domain: crypto
+    category: news
+    layer: depth
+    authority: D
+    evidence: blog
+    kind: rss
+    url: "https://cointelegraph.com/rss"
+    auth: none
+    iface: [ rss, web ]
+    pit: no
+    free_tier: "free"
+    keywords: [ cointelegraph, news, crypto media, 媒体 ]
+    notes: "媒体源：仅作事件线索；引用数字前必须回到一手来源。"
+    content_access: api
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 14
+    license_class: site-terms
+    cache_policy: metadata-only
+    attribution: recommended
+    probe:
+      status: 200
+      content_type: application/xml; charset=utf-8
+      bytes: 52790
+      text_len: 2000
+      final_url: https://cointelegraph.com/rss
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: decrypt
+    name: "Decrypt"
+    domain: crypto
+    category: news
+    layer: depth
+    authority: D
+    evidence: blog
+    kind: rss
+    url: "https://decrypt.co/feed"
+    auth: none
+    iface: [ rss, web ]
+    pit: no
+    free_tier: "free"
+    keywords: [ decrypt, news, crypto media, 媒体 ]
+    notes: "媒体源：仅作事件线索；结论需一手来源或监管文件支撑。"
+    content_access: api
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 14
+    license_class: site-terms
+    cache_policy: metadata-only
+    attribution: recommended
+    probe:
+      status: 200
+      content_type: application/xml
+      bytes: 42861
+      text_len: 2000
+      final_url: https://decrypt.co/feed
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: theblock
+    name: "The Block"
+    domain: crypto
+    category: news
+    layer: depth
+    authority: D
+    evidence: blog
+    kind: rss
+    url: "https://www.theblock.co/rss.xml"
+    auth: none
+    iface: [ rss, web ]
+    pit: no
+    free_tier: "free"
+    keywords: [ the block, news, crypto media, 媒体 ]
+    notes: "媒体源：仅作事件线索；ETF 流向、清算量等数字要找数据商或交易所原文。"
+    content_access: api
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 14
+    license_class: site-terms
+    cache_policy: metadata-only
+    attribution: recommended
+    probe:
+      status: 200
+      content_type: text/xml; charset=UTF-8
+      bytes: 30277
+      text_len: 1997
+      final_url: https://www.theblock.co/rss.xml
+      checked_at: 2026-11-06
+      method: probe-v1
+
   # ---------- 研究 ----------
   - id: binance-research
     name: "Binance Research"
