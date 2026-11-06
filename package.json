@@ -1,6 +1,6 @@
 {
   "name": "quantitativeTrading-source-reliable",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Verified, agent-collectable sources for quantitative finance and crypto trading: regulator filings, PIT fundamentals, macro, exchange APIs, on-chain data and archives, each with authority tier, verification state, five-state PIT and dataset tags. · 量化金融与加密交易信源插件：监管原始文件、PIT 基本面、宏观、交易所 API、链上数据与归档，按权威分级并标注验证状态、PIT 五态与数据集标签。",
   "type": "module",
   "main": "./index.js",
@@ -35,7 +35,8 @@
   "scripts": {
     "test": "node test/check.mjs",
     "build:data": "node tools/build-data.cjs",
-    "probe": "node tools/probe-sources.cjs"
+    "probe": "node tools/probe-sources.cjs",
+    "health": "node tools/weekly-health.cjs"
   },
   "keywords": [
     "dsh",

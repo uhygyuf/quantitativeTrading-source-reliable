@@ -147,9 +147,14 @@ node tools/probe-sources.cjs --file=quant --apply    # probe + write snapshot
 node tools/probe-sources.cjs --file=crypto --apply
 npm run build:data          # merge matrices + enrichment into data/sources.json
 node test/check.mjs         # 60 checks: registry, five-state PIT, verification, dataset tags, latency budgets
+npm run health              # weekly reachability diff, writes reports/source-health-<date>.txt
 ```
 
 `tools/probe-sources.cjs` records `content_access`, `last_checked` and a probe snapshot per source. Challenge sites (Cloudflare/202/401/403) are recorded as `challenge`, not treated as a valid data response.
+
+### Weekly source health
+
+`npm run health` probes every source without writing back, diffs the result against `reports/source-health-state.json`, writes `reports/source-health-YYYY-MM-DD.txt`, and restores the tracked probe snapshots so the working tree stays clean (`reports/` is gitignored). It checks reachability and content access only — not data values, fees or PIT semantics.
 
 ## Data provenance and maintenance
 

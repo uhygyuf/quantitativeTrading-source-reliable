@@ -147,9 +147,14 @@ node tools/probe-sources.cjs --file=quant --apply    # 探测并写回快照
 node tools/probe-sources.cjs --file=crypto --apply
 npm run build:data          # 合并矩阵 + 核验层，生成 data/sources.json
 node test/check.mjs         # 60 项检查：注册表、PIT 五态、验证状态、数据集标签、延迟预算
+npm run health              # 每周可达性巡检，输出 reports/source-health-<日期>.txt
 ```
 
 `tools/probe-sources.cjs` 会为每条源记录 `content_access`、`last_checked` 与探测快照。反爬站点（Cloudflare / 202 / 401 / 403）记为 `challenge`，不当作有效数据响应。
+
+### 每周信源巡检
+
+`npm run health` 会探测全部信源但不写回，与 `reports/source-health-state.json` 做周对比，输出 `reports/source-health-YYYY-MM-DD.txt`，并恢复被探测覆盖的已跟踪快照，保持工作区干净（`reports/` 已加入 .gitignore）。它只检查可达性与内容形态，不验证数据值、费率或 PIT 口径。
 
 ## 数据来源与维护
 
