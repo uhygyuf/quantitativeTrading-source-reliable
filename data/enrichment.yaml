@@ -110,6 +110,13 @@ verification:
   fmp: semantic_verified
   financial-datasets: semantic_verified
   equibles: semantic_verified
+  # 2026-11-06 additions: page content fetched and the stated capability was checked
+  hkex-data-marketplace: semantic_verified
+  hkexnews: semantic_verified
+  ccass: semantic_verified
+  fed-fomc: semantic_verified
+  cftc-press: semantic_verified
+  sec-press: semantic_verified
 
 # data_types: dataset-level tags so a citation can be matched to the dataset
 # it actually covers. Free-form lowercase tags, not a closed vocabulary.
@@ -214,3 +221,23 @@ data_types:
   decrypt: [ news ]
   theblock: [ news ]
   binance-research: [ research ]
+  # 2026-11-06 additions: HKEX / global macro / regulators / venue / crypto flows
+  hkex-data-marketplace: [ historical_ticks, orderbook_l2, market_data ]
+  hkexnews: [ filings, disclosures ]
+  ccass: [ holdings, ownership ]
+  sfc: [ regulatory, news ]
+  hkma: [ rates, macro_series, banking ]
+  censtatd: [ macro_series ]
+  boj: [ macro_series, rates ]
+  ons: [ macro_series, employment, cpi, gdp ]
+  eurostat: [ macro_series ]
+  boe: [ rates, macro_series ]
+  fed-fomc: [ events, calendar ]
+  cftc-press: [ news, regulatory ]
+  sec-press: [ news, regulatory ]
+  nasdaqtrader: [ listing, symbols, market_status ]
+  nyse: [ listing, market_status ]
+  binance-announcements: [ news, events ]
+  tokenomist: [ token_unlocks ]
+  farside-btc-etf: [ etf_flows ]
+  sosovalue: [ etf_flows, market_data ]

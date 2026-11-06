@@ -2,13 +2,13 @@
 
 English · [简体中文](README.zh.md)
 
-Source reliability for quantitative finance and crypto trading in [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness): a bundled registry of **100 curated, agent-collectable sources** with authority tiers, verification states, five-state point-in-time flags and per-source dataset tags, plus two model-facing tools to find sources and audit citations.
+Source reliability for quantitative finance and crypto trading in [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness): a bundled registry of **119 curated, agent-collectable sources** with authority tiers, verification states, five-state point-in-time flags and per-source dataset tags, plus two model-facing tools to find sources and audit citations.
 
 A plugin for DeepSeek Harness (`dsh`). The registry ships as data; both tools are local lookups (no network calls), so they are fast and have no side effects. It is independent from [`cs-source-reliable`](https://github.com/uhygyuf/cs-source-reliable) and can be installed on its own.
 
 ## What it ships
 
-- **100 sources** — 58 `quant` (filings, macro, fundamentals, China A-share/HK, execution) and 42 `crypto` (exchanges, derivatives, on-chain, archives, SDKs, news).
+- **119 sources** — 73 `quant` (filings, macro, fundamentals, China A-share/HK, execution, global official statistics) and 46 `crypto` (exchanges, derivatives, on-chain, archives, SDKs, news, ETF flows).
 - Per source: domain, category, authority tier (`A` regulator/exchange/official docs, `B` institutional vendor/peer-reviewed, `C` curated secondary, `D` lead only), evidence type, `content_access` (static / portal / js / challenge / api / binary), `verification` (`discovered` / `reachable` / `schema_verified` / `semantic_verified` / `production_approved`), `license_class`, `cache_policy`, `attribution`, `refresh_days`, `last_checked`, `pit` (`yes` / `partial` / `no` / `not_applicable` / `unverified`), `data_types` (dataset tags such as `orderbook_l2`, `funding`, `xbrl`), and where meaningful `free_tier`, `auth`, `iface`, `history_start`.
 - A curation layer (`data/enrichment.yaml`) records what was verified after the probe — PIT corrections, verification states and per-source dataset tags; `tools/build-data.cjs` merges it and rejects unknown ids.
 - **Two tools**: `qt_source_find` and `qt_source_audit`.
@@ -46,13 +46,13 @@ The matrices keep a dated `verified_on` field on every one of these claims; `fre
 
 ## Coverage
 
-**quant (58)** — filing 7, market-data 14, china 14, macro 10, fundamentals 5, research 3, news 3, execution 2.
-Includes SEC EDGAR + `data.sec.gov` XBRL APIs, SEC 13F/Form 4 datasets, FINRA short interest, CFTC COT, Cboe DataShop, 巨潮/上交所/深交所/HKEX, FRED + ALFRED, BLS/BEA/Treasury/IMF/World Bank/BIS/OECD/ECB, 国家统计局/人民银行/中国货币网, Massive/Alpaca/Databento/Tiingo/Alpha Vantage/Finnhub/Twelve Data/Nasdaq Data Link/OpenBB, Sharadar/Compustat-WRDS/CRSP/OptionMetrics/FMP, Tushare/AKShare/CNEquity/Wind/iFinD/JoinQuant/RiceQuant, IBKR/Alpaca Trading, NBER/SSRN/arXiv q-fin/GDELT/Benzinga/RavenPack.
+**quant (73)** — filing 7, market-data 16, china 20, macro 15, fundamentals 5, news 5, research 3, execution 2.
+Includes SEC EDGAR + `data.sec.gov` XBRL APIs, SEC 13F/Form 4 datasets, FINRA short interest, CFTC COT, Cboe DataShop, 巨潮/上交所/深交所/HKEX, HKEX Data Marketplace (historical Full Book), HKEXnews/CCASS/香港证监会/HKMA/香港统计处, FRED + ALFRED, BLS/BEA/Treasury/IMF/World Bank/BIS/OECD/ECB, Bank of Japan/ONS/Eurostat/BoE/FOMC calendar, 国家统计局/人民银行/中国货币网, Massive/Alpaca/Databento/Tiingo/Alpha Vantage/Finnhub/Twelve Data/Nasdaq Data Link/OpenBB, Sharadar/Compustat-WRDS/CRSP/OptionMetrics/FMP, Tushare/AKShare/CNEquity/Wind/iFinD/JoinQuant/RiceQuant, IBKR/Alpaca Trading, Nasdaq Trader/NYSE, SEC and CFTC press releases, NBER/SSRN/arXiv q-fin/GDELT/Benzinga/RavenPack.
 
-**crypto (42)** — exchange 17, on-chain 8, news 4, archive 3, aggregator 3, SDK 3, market-data 2, derivatives 1, research 1.
-Includes Binance (REST/WS/Agent Native/llms.txt/MCP/testnet/archive/public ticker), Bybit/OKX/Coinbase/Kraken/Deribit, CoinGecko (API + keyless MCP)/CoinMarketCap/CoinGlass, Kaiko/Coin Metrics, Glassnode/Nansen/CryptoQuant/Etherscan/Dune/DefiLlama/Blockchair/mempool.space, Tardis/CryptoHFTData, ccxt/binance-connector-python/python-binance, Binance Research, and CoinDesk/Cointelegraph/Decrypt/The Block (D-tier: leads only).
+**crypto (46)** — exchange 17, on-chain 9, news 5, aggregator 4, archive 3, SDK 3, market-data 3, derivatives 1, research 1.
+Includes Binance (REST/WS/Agent Native/llms.txt/MCP/testnet/archive/public ticker/announcements), Bybit/OKX/Coinbase/Kraken/Deribit, CoinGecko (API + keyless MCP)/CoinMarketCap/CoinGlass/SoSoValue, Kaiko/Coin Metrics, Glassnode/Nansen/CryptoQuant/Etherscan/Dune/DefiLlama/Blockchair/mempool.space, Tokenomist (formerly TokenUnlocks), Farside BTC ETF flows, Tardis/CryptoHFTData, ccxt/binance-connector-python/python-binance, Binance Research, and CoinDesk/Cointelegraph/Decrypt/The Block (D-tier: leads only).
 
-**Flags measured at build time**: auth `none` 52 / `key` 34 / `account` 14; PIT `yes` 3 / `partial` 20 / `no` 21 / `not_applicable` 54 / `unverified` 2; verification `discovered` 15 / `reachable` 65 / `schema_verified` 4 / `semantic_verified` 14 / `production_approved` 2; access static 63 / portal 10 / js 4 / api 8 / challenge 14 / unknown 1.
+**Flags measured at build time**: auth `none` 71 / `key` 34 / `account` 14; PIT `yes` 3 / `partial` 29 / `no` 26 / `not_applicable` 56 / `unverified` 5; verification `discovered` 22 / `reachable` 71 / `schema_verified` 4 / `semantic_verified` 20 / `production_approved` 2; access static 66 / portal 19 / js 4 / api 8 / challenge 18 / unknown 4.
 
 ## Tools
 
@@ -107,9 +107,9 @@ The plugin does not intercept requests. The model decides, guided by a system-pr
 | `qt_source_audit` schema | 470 chars ≈ 118 tokens |
 | Guidance section | 1,169 chars ≈ 293 tokens |
 | **Combined per-request overhead** | **≈ 648 tokens** (schemas + guidance) |
-| Registry load | 5.3 ms |
-| `qt_source_find` latency | avg 0.618 ms, p95 1.409 ms (5,000 calls) |
-| `qt_source_audit` latency | avg 0.092 ms (3,008-char draft, 500 calls) |
+| Registry load | 8.4 ms |
+| `qt_source_find` latency | avg 0.563 ms, p95 1.268 ms (5,000 calls) |
+| `qt_source_audit` latency | avg 0.098 ms (3,008-char draft, 500 calls) |
 
 Token counts are character-based estimates at 4 chars/token. If both this plugin and `cs-source-reliable` are installed, expect ≈ 1,150 tokens of combined per-request overhead.
 
@@ -146,15 +146,15 @@ npm install                 # dev dependency: yaml
 node tools/probe-sources.cjs --file=quant --apply    # probe + write snapshot
 node tools/probe-sources.cjs --file=crypto --apply
 npm run build:data          # merge matrices + enrichment into data/sources.json
-node test/check.mjs         # 53 checks: registry, five-state PIT, verification, dataset tags, latency budgets
+node test/check.mjs         # 60 checks: registry, five-state PIT, verification, dataset tags, latency budgets
 ```
 
 `tools/probe-sources.cjs` records `content_access`, `last_checked` and a probe snapshot per source. Challenge sites (Cloudflare/202/401/403) are recorded as `challenge`, not treated as a valid data response.
 
 ## Data provenance and maintenance
 
-- Every source was probed on **2026-11-06**: 85 returned HTTP 200; 14 returned a challenge (SEC endpoints, BLS, SSRN, Benzinga, Binance testnet/research, CryptoQuant, Blockchair from this network); 1 was unreachable (World Bank).
-- PIT and verification are curated, not scraped: 54 sources are `not_applicable` (immutable raw data or tooling), 2 are `unverified` (World Bank, OECD — not checkable from this network), and 15 are `discovered` (unreachable at probe time; citation leads only). The rest were checked against official docs and dated 2026-11-06.
+- Every source was probed on **2026-11-06**: 97 returned HTTP 200; 18 returned a challenge (SEC endpoints, BLS, SSRN, Benzinga, Binance testnet/research/announcements, CryptoQuant, Blockchair, Tokenomist, Farside, SoSoValue from this network); 4 were unreachable (World Bank, HKMA, 香港统计处, Bank of England).
+- PIT and verification are curated, not scraped: 56 sources are `not_applicable` (immutable raw data or tooling), 5 are `unverified` (World Bank, OECD, HKMA, 香港统计处, BoE — not checkable from this network), and 22 are `discovered` (unreachable at probe time; citation leads only). The rest were checked against official docs and dated 2026-11-06.
 - `refresh_days` is a suggestion per class: specs 90 d, official/vendor docs 30 d, datasets/APIs 14 d, peer-reviewed 365 d. `last_checked` is the probe date.
 - `license_class` / `cache_policy` are policy buckets, not legal advice. Exchange and market-data terms restrict redistribution; link and quote briefly unless you have a license.
 

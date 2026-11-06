@@ -47,9 +47,10 @@ const loadMs = ms(process.hrtime.bigint() - loadStart);
 const stats = registryStats(registry);
 
 console.log(`\n[registry] ${stats.count} sources, quant ${stats.by_domain.quant} / crypto ${stats.by_domain.crypto}, load ${loadMs.toFixed(1)} ms`);
-ok(stats.count >= 90, 'registry has at least 90 sources', String(stats.count));
-ok(stats.by_domain.quant >= 50, 'quant domain has at least 50 sources', String(stats.by_domain.quant));
-ok(stats.by_domain.crypto >= 30, 'crypto domain has at least 30 sources', String(stats.by_domain.crypto));
+ok(stats.count >= 110, 'registry has at least 110 sources', String(stats.count));
+ok(stats.by_domain.quant >= 65, 'quant domain has at least 65 sources', String(stats.by_domain.quant));
+ok(stats.by_domain.crypto >= 40, 'crypto domain has at least 40 sources', String(stats.by_domain.crypto));
+ok(stats.count === 119, 'registry ships the 119-source v0.1.3 set', String(stats.count));
 ok(Object.keys(stats.categories).length >= 10, 'at least 10 categories are covered', JSON.stringify(stats.categories));
 
 const ids = registry.sources.map((s) => s.id);
@@ -85,6 +86,7 @@ ok(
   `${stats.by_verification.discovered} discovered vs ${unreachable} unreachable`,
 );
 ok(stats.by_verification.production_approved >= 1, 'at least one source is production approved', JSON.stringify(stats.by_verification));
+ok(stats.by_verification.semantic_verified >= 18, 'at least 18 sources were semantically checked', JSON.stringify(stats.by_verification));
 
 // ---------- find ----------
 const byUrl = findSources(registry, { url: 'https://alfred.stlouisfed.org/' });
@@ -127,6 +129,13 @@ ok(
   'find exposes dataset tags for a derivatives source',
   JSON.stringify(futuresRow?.data_types),
 );
+
+const hkexDm = findSources(registry, { url: 'https://www.hkex.com.hk/Services/Market-Data-Services/Historical-Data-Services/HKEX-Data-Marketplace?sc_lang=en' }).results[0];
+ok(hkexDm?.id === 'hkex-data-marketplace' && hkexDm?.category === 'china', 'HKEX Data Marketplace is registered as a China source', JSON.stringify(hkexDm));
+ok(hkexDm?.data_types?.includes('orderbook_l2'), 'HKEX Data Marketplace carries Full Book dataset tags', JSON.stringify(hkexDm?.data_types));
+const etfFlow = findSources(registry, { query: 'bitcoin etf flow farside', limit: 5 }).results.find((s) => s.id === 'farside-btc-etf');
+ok(etfFlow?.authority === 'C' && etfFlow?.verification === 'discovered', 'Farside ETF flows are a C-tier, discovered-only lead', JSON.stringify(etfFlow));
+ok(registry.byId.has('hkexnews') && registry.byId.has('fed-fomc') && registry.byId.has('ccass'), 'HKEXnews, CCASS and FOMC calendar are registered');
 
 const unknownUrl = findSources(registry, { url: 'https://unknown.invalid/x' });
 ok(unknownUrl.count === 0, 'unknown URL returns zero matches', String(unknownUrl.count));
@@ -181,6 +190,7 @@ const guidance = buildGuidance(stats);
 const estTokens = (text) => Math.ceil(text.length / 4);
 console.log(`\n[prompt] guidance ${guidance.length} chars (~${estTokens(guidance)} tokens at 4 chars/token), section order ${SECTION_ORDER}`);
 ok(guidance.length < 1200, 'guidance stays under 1200 chars', String(guidance.length));
+ok(guidance.includes('119 curated sources'), 'guidance states the current registry size', 'missing 119');
 ok(guidance.includes('first publication time'), 'guidance requires news first-published time', 'missing news-time rule');
 ok(guidance.includes('HTTP 200'), 'guidance decouples reachability from data correctness', 'missing HTTP-200 caveat');
 ok(guidance.includes('not_applicable'), 'guidance explains the not_applicable PIT state', 'missing PIT state');

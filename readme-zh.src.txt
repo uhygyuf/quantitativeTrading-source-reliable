@@ -2,13 +2,13 @@
 
 [English](README.md) · 简体中文
 
-给 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) 的量化金融与加密交易信源插件：内置 **100 个人工核定、可采集的信源**，带权威分级、验证状态、PIT 五态与数据集标签，并给模型两个工具——查源、审引用。
+给 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) 的量化金融与加密交易信源插件：内置 **119 个人工核定、可采集的信源**，带权威分级、验证状态、PIT 五态与数据集标签，并给模型两个工具——查源、审引用。
 
 这是 DSH 插件（`dsh`）。注册表以数据形式打包，两个工具都是本地查表（不联网），所以很快、没有副作用。它与 [`cs-source-reliable`](https://github.com/uhygyuf/cs-source-reliable) 完全独立，可以单独安装。
 
 ## 它装了什么
 
-- **100 个信源** —— 58 个 `quant`（监管申报、宏观、基本面、A股/港股、执行接口）+ 42 个 `crypto`（交易所、衍生品、链上、归档、SDK、新闻）。
+- **119 个信源** —— 73 个 `quant`（监管申报、宏观、基本面、A股/港股、执行接口、全球官方统计）+ 46 个 `crypto`（交易所、衍生品、链上、归档、SDK、新闻、ETF 资金流）。
 - 每条源包含：域、类别、权威级（`A` 监管/交易所/官方文档，`B` 机构数据商/同行评审，`C` 可靠二手，`D` 仅线索）、证据类型、`content_access`（static / portal / js / challenge / api / binary）、`verification`（`discovered` / `reachable` / `schema_verified` / `semantic_verified` / `production_approved`）、`license_class`、`cache_policy`、`attribution`、`refresh_days`、`last_checked`、`pit`（`yes` / `partial` / `no` / `not_applicable` / `unverified`）、`data_types`（数据集标签，如 `orderbook_l2`、`funding`、`xbrl`），以及按需出现的 `free_tier`、`auth`、`iface`、`history_start`。
 - 人工核验层（`data/enrichment.yaml`）记录探测之后才核实的内容——PIT 修正、验证状态、每条源的数据集标签；`tools/build-data.cjs` 合并两层并拒绝未知 id。
 - **两个工具**：`qt_source_find`、`qt_source_audit`。
@@ -46,13 +46,13 @@
 
 ## 覆盖
 
-**quant（58）** —— filing 7、market-data 14、china 14、macro 10、fundamentals 5、research 3、news 3、execution 2。
-含 SEC EDGAR 与 `data.sec.gov` XBRL API、SEC 13F/Form 4 数据集、FINRA 空头、CFTC COT、Cboe DataShop、巨潮/上交所/深交所/港交所、FRED + ALFRED、BLS/BEA/财政部/IMF/世界银行/BIS/OECD/ECB、国家统计局/人民银行/中国货币网、Massive/Alpaca/Databento/Tiingo/Alpha Vantage/Finnhub/Twelve Data/Nasdaq Data Link/OpenBB、Sharadar/Compustat-WRDS/CRSP/OptionMetrics/FMP、Tushare/AKShare/CNEquity/Wind/iFinD/聚宽/米筐、IBKR/Alpaca Trading、NBER/SSRN/arXiv q-fin/GDELT/Benzinga/RavenPack。
+**quant（73）** —— filing 7、market-data 16、china 20、macro 15、fundamentals 5、news 5、research 3、execution 2。
+含 SEC EDGAR 与 `data.sec.gov` XBRL API、SEC 13F/Form 4 数据集、FINRA 空头、CFTC COT、Cboe DataShop、巨潮/上交所/深交所/港交所、HKEX Data Marketplace（历史 Full Book）、HKEXnews/CCASS/香港证监会/HKMA/香港统计处、FRED + ALFRED、BLS/BEA/财政部/IMF/世界银行/BIS/OECD/ECB、日本央行/ONS/Eurostat/BoE/FOMC 日历、国家统计局/人民银行/中国货币网、Massive/Alpaca/Databento/Tiingo/Alpha Vantage/Finnhub/Twelve Data/Nasdaq Data Link/OpenBB、Sharadar/Compustat-WRDS/CRSP/OptionMetrics/FMP、Tushare/AKShare/CNEquity/Wind/iFinD/聚宽/米筐、IBKR/Alpaca Trading、Nasdaq Trader/NYSE、SEC 与 CFTC 新闻稿、NBER/SSRN/arXiv q-fin/GDELT/Benzinga/RavenPack。
 
-**crypto（42）** —— exchange 17、on-chain 8、news 4、archive 3、aggregator 3、SDK 3、market-data 2、derivatives 1、research 1。
-含 Binance（REST/WS/Agent Native/llms.txt/MCP/testnet/归档）、Bybit/OKX/Coinbase/Kraken/Deribit、CoinGecko（API + 免 key MCP）/CoinMarketCap/CoinGlass、Kaiko/Coin Metrics、Glassnode/Nansen/CryptoQuant/Etherscan/Dune/DefiLlama/Blockchair/mempool.space、Tardis/CryptoHFTData、ccxt/binance-connector-python/python-binance、Binance Research。
+**crypto（46）** —— exchange 17、on-chain 9、news 5、aggregator 4、archive 3、SDK 3、market-data 3、derivatives 1、research 1。
+含 Binance（REST/WS/Agent Native/llms.txt/MCP/testnet/归档/公告）、Bybit/OKX/Coinbase/Kraken/Deribit、CoinGecko（API + 免 key MCP）/CoinMarketCap/CoinGlass/SoSoValue、Kaiko/Coin Metrics、Glassnode/Nansen/CryptoQuant/Etherscan/Dune/DefiLlama/Blockchair/mempool.space、Tokenomist（原 TokenUnlocks）、Farside BTC ETF 资金流、Tardis/CryptoHFTData、ccxt/binance-connector-python/python-binance、Binance Research。
 
-**构建时实测分布**：auth `none` 52 / `key` 34 / `account` 14；PIT `yes` 3 / `partial` 20 / `no` 21 / `not_applicable` 54 / `unverified` 2；验证状态 `discovered` 15 / `reachable` 65 / `schema_verified` 4 / `semantic_verified` 14 / `production_approved` 2；访问方式 static 63 / portal 10 / js 4 / api 8 / challenge 14 / unknown 1。
+**构建时实测分布**：auth `none` 71 / `key` 34 / `account` 14；PIT `yes` 3 / `partial` 29 / `no` 26 / `not_applicable` 56 / `unverified` 5；验证状态 `discovered` 22 / `reachable` 71 / `schema_verified` 4 / `semantic_verified` 20 / `production_approved` 2；访问方式 static 66 / portal 19 / js 4 / api 8 / challenge 18 / unknown 4。
 
 ## 工具
 
@@ -107,9 +107,9 @@ Citations: 4/4 audited, 3 known, 1 unknown; A=3 B=0 C=0 D=0; uncited paragraphs=
 | `qt_source_audit` schema | 470 字符 ≈ 118 tokens |
 | 引导段 | 1169 字符 ≈ 293 tokens |
 | **每请求合计开销** | **≈ 648 tokens**（schema + 引导） |
-| 注册表加载 | 5.3 ms |
-| `qt_source_find` 延迟 | 平均 0.618 ms，p95 1.409 ms（5000 次） |
-| `qt_source_audit` 延迟 | 平均 0.092 ms（3008 字符草稿，500 次） |
+| 注册表加载 | 8.4 ms |
+| `qt_source_find` 延迟 | 平均 0.563 ms，p95 1.268 ms（5000 次） |
+| `qt_source_audit` 延迟 | 平均 0.098 ms（3008 字符草稿，500 次） |
 
 token 数是按 4 字符/token 的字符估算。若与 `cs-source-reliable` 同装，合计约 1,150 tokens/请求。
 
@@ -146,15 +146,15 @@ npm install                 # 开发依赖：yaml
 node tools/probe-sources.cjs --file=quant --apply    # 探测并写回快照
 node tools/probe-sources.cjs --file=crypto --apply
 npm run build:data          # 合并矩阵 + 核验层，生成 data/sources.json
-node test/check.mjs         # 53 项检查：注册表、PIT 五态、验证状态、数据集标签、延迟预算
+node test/check.mjs         # 60 项检查：注册表、PIT 五态、验证状态、数据集标签、延迟预算
 ```
 
 `tools/probe-sources.cjs` 会为每条源记录 `content_access`、`last_checked` 与探测快照。反爬站点（Cloudflare / 202 / 401 / 403）记为 `challenge`，不当作有效数据响应。
 
 ## 数据来源与维护
 
-- 全部信源在 **2026-11-06** 探测：85 条 HTTP 200；14 条返回 challenge（SEC 各端点、BLS、SSRN、Benzinga、Binance testnet/research、CryptoQuant、Blockchair，在本网络下）；1 条不可达（World Bank）。
-- PIT 与验证状态是人工核定的，不是抓出来的：54 条为 `not_applicable`（不可修订的原始数据或工具），2 条为 `unverified`（World Bank、OECD，本网络下无法核实），15 条为 `discovered`（探测时不可达，只能当引用线索）；其余按官方文档核对过，日期为 2026-11-06。
+- 全部信源在 **2026-11-06** 探测：97 条 HTTP 200；18 条返回 challenge（SEC 各端点、BLS、SSRN、Benzinga、Binance testnet/research/公告、CryptoQuant、Blockchair、Tokenomist、Farside、SoSoValue，在本网络下）；4 条不可达（World Bank、HKMA、香港统计处、Bank of England）。
+- PIT 与验证状态是人工核定的，不是抓出来的：56 条为 `not_applicable`（不可修订的原始数据或工具），5 条为 `unverified`（World Bank、OECD、HKMA、香港统计处、BoE，本网络下无法核实），22 条为 `discovered`（探测时不可达，只能当引用线索）；其余按官方文档核对过，日期为 2026-11-06。
 - `refresh_days` 按类别给建议：规范 90 天、官方/数据商文档 30 天、数据集/API 14 天、同行评审 365 天。`last_checked` 是探测日期。
 - `license_class` / `cache_policy` 是策略分桶，不是法律意见。交易所与行情条款限制再分发；没有授权时只链接 + 短引用。
 

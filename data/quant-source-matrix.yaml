@@ -1836,3 +1836,469 @@ sources:
       final_url: https://www.ravenpack.com/
       checked_at: 2026-11-06
       method: probe-v1
+
+  # ---------- 2026-11-06 补充：港股 / 宏观 / 监管 / 交易所官方 ----------
+  - id: hkex-data-marketplace
+    name: "HKEX Data Marketplace"
+    domain: quant
+    category: china
+    layer: breadth
+    authority: A
+    evidence: dataset
+    kind: html
+    url: "https://www.hkex.com.hk/Services/Market-Data-Services/Historical-Data-Services/HKEX-Data-Marketplace?sc_lang=en"
+    auth: none
+    iface: [ web ]
+    pit: not_applicable
+    free_tier: "paid subscription"
+    keywords: [ hkex, data marketplace, full book, 港股, historical, order book ]
+    notes: "港交所官方历史数据平台：证券市场历史 Full Book 与衍生品逐笔；需订阅。2026-11-06 页面核实含 full book 说明。"
+    content_access: portal
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 90
+    license_class: site-terms
+    cache_policy: metadata-only
+    attribution: recommended
+    probe:
+      status: 200
+      content_type: text/html; charset=utf-8
+      bytes: 253817
+      text_len: 12574
+      final_url: https://www.hkex.com.hk/Services/Market-Data-Services/Historical-Data-Services/HKEX-Data-Marketplace?sc_lang=en
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: hkexnews
+    name: "HKEXnews 披露易"
+    domain: quant
+    category: china
+    layer: breadth
+    authority: A
+    evidence: official-doc
+    kind: html
+    url: "https://www.hkexnews.hk/index.htm"
+    auth: none
+    iface: [ web ]
+    pit: partial
+    free_tier: "free"
+    keywords: [ hkexnews, 披露易, listed company, announcement, hong kong, 公告 ]
+    notes: "港股上市公司公告与披露检索；按日期/代码检索，公告带首次发布日期。"
+    content_access: portal
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 1
+    license_class: site-terms
+    cache_policy: short-quote
+    attribution: recommended
+    probe:
+      status: 200
+      content_type: text/html
+      bytes: 9168
+      text_len: 214
+      final_url: https://www.hkexnews.hk/index.htm
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: ccass
+    name: "CCASS Shareholding Search"
+    domain: quant
+    category: china
+    layer: breadth
+    authority: A
+    evidence: official-doc
+    kind: html
+    url: "https://www3.hkexnews.hk/sdw/search/searchsdw.aspx"
+    auth: none
+    iface: [ web ]
+    pit: partial
+    free_tier: "free"
+    keywords: [ ccass, hong kong, shareholding, 中央结算, 持仓, 股权分布 ]
+    notes: "中央结算系统持股查询：按日期、股票代码、参与者查历史持仓快照。"
+    content_access: portal
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 1
+    license_class: site-terms
+    cache_policy: short-quote
+    attribution: recommended
+    probe:
+      status: 200
+      content_type: text/html; charset=utf-8
+      bytes: 13583
+      text_len: 3155
+      final_url: https://www3.hkexnews.hk/sdw/search/searchsdw.aspx
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: sfc
+    name: "香港证监会 SFC"
+    domain: quant
+    category: china
+    layer: breadth
+    authority: A
+    evidence: official-doc
+    kind: html
+    url: "https://www.sfc.hk/en/"
+    auth: none
+    iface: [ web ]
+    pit: partial
+    free_tier: "free"
+    keywords: [ sfc, hong kong, securities, regulatory, 证监会, 监管 ]
+    notes: "香港证监会：监管公告、执法与警示名单；监管口径以官方为准。"
+    content_access: static
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 7
+    license_class: site-terms
+    cache_policy: short-quote
+    attribution: recommended
+    probe:
+      status: 200
+      content_type: text/html; charset=utf-8
+      bytes: 125645
+      text_len: 12141
+      final_url: https://www.sfc.hk/en/
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: hkma
+    name: "香港金融管理局 HKMA"
+    domain: quant
+    category: china
+    layer: breadth
+    authority: A
+    evidence: official-doc
+    kind: html
+    url: "https://www.hkma.gov.hk/eng/"
+    auth: none
+    iface: [ web ]
+    pit: unverified
+    free_tier: "unverified"
+    keywords: [ hkma, hong kong, monetary, banking, 金管局, 利率 ]
+    notes: "香港货币、银行与金融数据；本网络 2026-11-06 无法解析域名（http/https 均失败），内容未核实，只作引用线索。"
+    content_access: unknown
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 30
+    license_class: site-terms
+    cache_policy: metadata-only
+    attribution: recommended
+    probe:
+      status: null
+      content_type: ""
+      bytes: 0
+      text_len: null
+      final_url: ""
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: censtatd
+    name: "香港政府统计处"
+    domain: quant
+    category: china
+    layer: breadth
+    authority: A
+    evidence: official-doc
+    kind: html
+    url: "https://www.censtatd.gov.hk/en/"
+    auth: none
+    iface: [ web ]
+    pit: unverified
+    free_tier: "unverified"
+    keywords: [ censustat, hong kong, statistics, gdp, cpi, 统计处 ]
+    notes: "香港官方统计（GDP、CPI、人口等）；本网络 2026-11-06 无法解析域名，内容未核实。"
+    content_access: unknown
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 30
+    license_class: site-terms
+    cache_policy: metadata-only
+    attribution: recommended
+    probe:
+      status: null
+      content_type: ""
+      bytes: 0
+      text_len: null
+      final_url: ""
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: boj
+    name: "Bank of Japan"
+    domain: quant
+    category: macro
+    layer: breadth
+    authority: A
+    evidence: official-doc
+    kind: html
+    url: "https://www.boj.or.jp/en/"
+    auth: none
+    iface: [ web ]
+    pit: no
+    free_tier: "free"
+    keywords: [ boj, japan, monetary policy, statistics, 日本央行, 利率 ]
+    notes: "日本央行：政策声明与统计数据；只发当前口径，无 vintage。"
+    content_access: static
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 30
+    license_class: site-terms
+    cache_policy: short-quote
+    attribution: recommended
+    probe:
+      status: 200
+      content_type: text/html;charset=UTF-8
+      bytes: 64057
+      text_len: 14442
+      final_url: https://www.boj.or.jp/en/
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: ons
+    name: "UK Office for National Statistics"
+    domain: quant
+    category: macro
+    layer: breadth
+    authority: A
+    evidence: official-doc
+    kind: html
+    url: "https://www.ons.gov.uk/"
+    auth: none
+    iface: [ web ]
+    pit: no
+    free_tier: "free"
+    keywords: [ ons, uk, inflation, labour, gdp, statistics ]
+    notes: "英国官方统计；发布后会有修订，历史口径用版本页而不是最新值。"
+    content_access: portal
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 30
+    license_class: site-terms
+    cache_policy: short-quote
+    attribution: recommended
+    probe:
+      status: 200
+      content_type: text/html; charset=UTF-8
+      bytes: 81037
+      text_len: 4956
+      final_url: https://www.ons.gov.uk/
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: eurostat
+    name: "Eurostat"
+    domain: quant
+    category: macro
+    layer: breadth
+    authority: A
+    evidence: official-doc
+    kind: html
+    url: "https://ec.europa.eu/eurostat"
+    auth: none
+    iface: [ web ]
+    pit: no
+    free_tier: "free"
+    keywords: [ eurostat, europe, statistics, 欧盟统计, 宏观 ]
+    notes: "欧盟官方统计；只发当前修订值，PIT 回测需自建 vintage。"
+    content_access: portal
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 30
+    license_class: site-terms
+    cache_policy: short-quote
+    attribution: recommended
+    probe:
+      status: 200
+      content_type: text/html;charset=UTF-8
+      bytes: 243588
+      text_len: 12006
+      final_url: https://ec.europa.eu/eurostat
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: boe
+    name: "Bank of England"
+    domain: quant
+    category: macro
+    layer: breadth
+    authority: A
+    evidence: official-doc
+    kind: html
+    url: "https://www.bankofengland.co.uk/"
+    auth: none
+    iface: [ web ]
+    pit: unverified
+    free_tier: "unverified"
+    keywords: [ boe, bank of england, uk, rates, monetary policy ]
+    notes: "英国央行：利率决议、统计与货币政策；本网络 2026-11-06 不可达，内容未核实。"
+    content_access: unknown
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 30
+    license_class: site-terms
+    cache_policy: metadata-only
+    attribution: recommended
+    probe:
+      status: null
+      content_type: ""
+      bytes: 0
+      text_len: null
+      final_url: ""
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: fed-fomc
+    name: "Federal Reserve FOMC calendars"
+    domain: quant
+    category: macro
+    layer: breadth
+    authority: A
+    evidence: official-doc
+    kind: html
+    url: "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm"
+    auth: none
+    iface: [ web ]
+    pit: not_applicable
+    free_tier: "free"
+    keywords: [ fomc, fed, calendar, meeting, 议息, 美联储 ]
+    notes: "FOMC 会议日历与纪要入口；事件驱动策略的官方时间表。"
+    content_access: static
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 30
+    license_class: public-domain
+    cache_policy: short-quote
+    attribution: recommended
+    probe:
+      status: 200
+      content_type: text/html
+      bytes: 168455
+      text_len: 21003
+      final_url: https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: cftc-press
+    name: "CFTC Press Releases"
+    domain: quant
+    category: news
+    layer: depth
+    authority: A
+    evidence: official-doc
+    kind: html
+    url: "https://www.cftc.gov/PressRoom/PressReleases"
+    auth: none
+    iface: [ web ]
+    pit: partial
+    free_tier: "free"
+    keywords: [ cftc, press release, enforcement, regulation, 监管 ]
+    notes: "CFTC 监管新闻与执法公告；带发布日期，属于事件驱动的一手来源。"
+    content_access: portal
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 7
+    license_class: public-domain
+    cache_policy: short-quote
+    attribution: recommended
+    probe:
+      status: 200
+      content_type: text/html; charset=utf-8
+      bytes: 65103
+      text_len: 7193
+      final_url: https://www.cftc.gov/PressRoom/PressReleases
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: sec-press
+    name: "SEC Press Releases"
+    domain: quant
+    category: news
+    layer: depth
+    authority: A
+    evidence: official-doc
+    kind: html
+    url: "https://www.sec.gov/newsroom/press-releases"
+    auth: none
+    iface: [ web ]
+    pit: partial
+    free_tier: "free"
+    keywords: [ sec, press release, enforcement, charges, 监管 ]
+    notes: "SEC 新闻稿；原 /news/pressreleases 已迁移到 /newsroom/press-releases，引用时用新路径。"
+    content_access: portal
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 7
+    license_class: public-domain
+    cache_policy: short-quote
+    attribution: recommended
+    probe:
+      status: 200
+      content_type: text/html; charset=utf-8
+      bytes: 97184
+      text_len: 6743
+      final_url: https://www.sec.gov/newsroom/press-releases
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: nasdaqtrader
+    name: "Nasdaq Trader"
+    domain: quant
+    category: market-data
+    layer: breadth
+    authority: A
+    evidence: official-doc
+    kind: html
+    url: "https://www.nasdaqtrader.com/"
+    auth: none
+    iface: [ web ]
+    pit: no
+    free_tier: "free"
+    keywords: [ nasdaq, symbol directory, listing, trading halt, market status ]
+    notes: "Nasdaq 官方交易符号目录与市场状态；目录只含当前证券，做历史截面要自补退市样本。"
+    content_access: portal
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 7
+    license_class: site-terms
+    cache_policy: short-quote
+    attribution: recommended
+    probe:
+      status: 200
+      content_type: text/html; charset=utf-8
+      bytes: 171760
+      text_len: 11204
+      final_url: https://www.nasdaqtrader.com/
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: nyse
+    name: "New York Stock Exchange"
+    domain: quant
+    category: market-data
+    layer: breadth
+    authority: A
+    evidence: official-doc
+    kind: html
+    url: "https://www.nyse.com/index"
+    auth: none
+    iface: [ web ]
+    pit: no
+    free_tier: "free"
+    keywords: [ nyse, listing, market status, new york stock exchange ]
+    notes: "NYSE 官方页面：上市与市场信息；历史截面同样要处理幸存者偏差。"
+    content_access: portal
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 7
+    license_class: site-terms
+    cache_policy: short-quote
+    attribution: recommended
+    probe:
+      status: 200
+      content_type: text/html; charset=utf-8
+      bytes: 266947
+      text_len: 66826
+      final_url: https://www.nyse.com/index
+      checked_at: 2026-11-06
+      method: probe-v1

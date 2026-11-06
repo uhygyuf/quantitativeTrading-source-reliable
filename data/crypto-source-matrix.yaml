@@ -681,7 +681,7 @@ sources:
     pit: no
     free_tier: "paid"
     keywords: [ kaiko, institutional, tick, order book, research ]
-    notes: "机构级跨所行情与研究数据。"
+    notes: "机构级跨所行情与研究数据；2026-11-06 实测 amberdata.io 跳转到 Kaiko 收购 Amberdata 的公告（数据商整合，Amberdata 不再单列）。"
     content_access: static
     last_checked: 2026-11-06
     check_method: probe-v1
@@ -1350,5 +1350,130 @@ sources:
       bytes: 0
       text_len: 0
       final_url: https://research.binance.com/
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  # ---------- 2026-11-06 补充：公告 / 解锁 / ETF 资金流 ----------
+  - id: binance-announcements
+    name: "Binance Announcements"
+    domain: crypto
+    category: news
+    layer: depth
+    authority: A
+    evidence: official-doc
+    kind: html
+    url: "https://www.binance.com/en/support/announcement"
+    auth: none
+    iface: [ web ]
+    pit: partial
+    free_tier: "unverified"
+    keywords: [ binance, announcement, listing, delisting, maintenance, 公告, 上币 ]
+    notes: "上币/下币/维护/产品公告；.com 对本网络返回 202 挑战，正文不可读，只作引用线索。"
+    content_access: challenge
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 1
+    license_class: site-terms
+    cache_policy: metadata-only
+    attribution: recommended
+    probe:
+      status: 202
+      content_type: text/html; charset=UTF-8
+      bytes: 0
+      text_len: 0
+      final_url: https://www.binance.com/en/support/announcement
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: tokenomist
+    name: "Tokenomist (formerly TokenUnlocks)"
+    domain: crypto
+    category: onchain
+    layer: depth
+    authority: B
+    evidence: vendor-doc
+    kind: html
+    url: "https://tokenomist.ai/"
+    auth: none
+    iface: [ web ]
+    pit: partial
+    free_tier: "free tier + paid plans"
+    keywords: [ token unlock, tokenomist, tokenunlocks, vesting, 解锁, 归属 ]
+    notes: "代币解锁与归属时间表；token.unlocks.app 已跳转到 tokenomist.ai；2026-11-06 实测 Cloudflare 403，本网络不可读。"
+    content_access: challenge
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 7
+    license_class: site-terms
+    cache_policy: metadata-only
+    attribution: recommended
+    probe:
+      status: 403
+      content_type: text/html; charset=UTF-8
+      bytes: 5755
+      text_len: 513
+      final_url: https://tokenomist.ai/
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: farside-btc-etf
+    name: "Farside Bitcoin ETF Flows"
+    domain: crypto
+    category: market-data
+    layer: depth
+    authority: C
+    evidence: dataset
+    kind: html
+    url: "https://farside.co.uk/btc/"
+    auth: none
+    iface: [ web ]
+    pit: partial
+    free_tier: "free"
+    keywords: [ bitcoin etf, etf flow, farside, btc etf, 资金流, 净流入 ]
+    notes: "美国现货 BTC ETF 每日净流入表；单一维护者站点，引用前与发行人公告交叉核对；Cloudflare 403，本网络不可读。"
+    content_access: challenge
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 1
+    license_class: site-terms
+    cache_policy: metadata-only
+    attribution: recommended
+    probe:
+      status: 403
+      content_type: text/html; charset=UTF-8
+      bytes: 5767
+      text_len: 513
+      final_url: https://farside.co.uk/btc/
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: sosovalue
+    name: "SoSoValue"
+    domain: crypto
+    category: aggregator
+    layer: depth
+    authority: B
+    evidence: vendor-doc
+    kind: html
+    url: "https://sosovalue.com/"
+    auth: none
+    iface: [ web ]
+    pit: partial
+    free_tier: "free tier + paid API"
+    keywords: [ etf flow, crypto data, sosovalue, 资金流, 加密数据 ]
+    notes: "ETF 资金流与加密市场数据平台；Cloudflare 403，本网络不可读，引用前换网络或浏览器复核。"
+    content_access: challenge
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 1
+    license_class: site-terms
+    cache_policy: metadata-only
+    attribution: recommended
+    probe:
+      status: 403
+      content_type: text/html; charset=UTF-8
+      bytes: 4569
+      text_len: 818
+      final_url: https://sosovalue.com/
       checked_at: 2026-11-06
       method: probe-v1

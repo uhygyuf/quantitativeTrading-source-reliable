@@ -7,25 +7,25 @@
    "data/quant-source-matrix.yaml",
    "data/crypto-source-matrix.yaml"
   ],
-  "count": 100,
+  "count": 119,
   "by_domain": {
-   "quant": 58,
-   "crypto": 42
+   "quant": 73,
+   "crypto": 46
   },
   "categories": {
    "filing": 7,
-   "market-data": 16,
-   "china": 14,
-   "macro": 10,
+   "market-data": 19,
+   "china": 20,
+   "macro": 15,
    "fundamentals": 5,
    "execution": 2,
    "research": 4,
-   "news": 7,
+   "news": 10,
    "exchange": 17,
    "archive": 3,
-   "aggregator": 3,
+   "aggregator": 4,
    "derivatives": 1,
-   "onchain": 8,
+   "onchain": 9,
    "sdk": 3
   },
   "authority_legend": {
@@ -2206,6 +2206,557 @@
    "free_tier": "paid"
   },
   {
+   "id": "hkex-data-marketplace",
+   "name": "HKEX Data Marketplace",
+   "url": "https://www.hkex.com.hk/Services/Market-Data-Services/Historical-Data-Services/HKEX-Data-Marketplace?sc_lang=en",
+   "domain": "quant",
+   "category": "china",
+   "layer": "breadth",
+   "authority": "A",
+   "evidence": "dataset",
+   "kind": "html",
+   "content_access": "portal",
+   "verification": "semantic_verified",
+   "license_class": "site-terms",
+   "cache_policy": "metadata-only",
+   "attribution": "recommended",
+   "refresh_days": 90,
+   "last_checked": "2026-11-06",
+   "keywords": [
+    "hkex",
+    "data marketplace",
+    "full book",
+    "港股",
+    "historical",
+    "order book"
+   ],
+   "notes": "港交所官方历史数据平台：证券市场历史 Full Book 与衍生品逐笔；需订阅。2026-11-06 页面核实含 full book 说明。",
+   "auth": "none",
+   "iface": [
+    "web"
+   ],
+   "pit": "not_applicable",
+   "data_types": [
+    "historical_ticks",
+    "orderbook_l2",
+    "market_data"
+   ],
+   "free_tier": "paid subscription"
+  },
+  {
+   "id": "hkexnews",
+   "name": "HKEXnews 披露易",
+   "url": "https://www.hkexnews.hk/index.htm",
+   "domain": "quant",
+   "category": "china",
+   "layer": "breadth",
+   "authority": "A",
+   "evidence": "official-doc",
+   "kind": "html",
+   "content_access": "portal",
+   "verification": "semantic_verified",
+   "license_class": "site-terms",
+   "cache_policy": "short-quote",
+   "attribution": "recommended",
+   "refresh_days": 1,
+   "last_checked": "2026-11-06",
+   "keywords": [
+    "hkexnews",
+    "披露易",
+    "listed company",
+    "announcement",
+    "hong kong",
+    "公告"
+   ],
+   "notes": "港股上市公司公告与披露检索；按日期/代码检索，公告带首次发布日期。",
+   "auth": "none",
+   "iface": [
+    "web"
+   ],
+   "pit": "partial",
+   "data_types": [
+    "filings",
+    "disclosures"
+   ],
+   "free_tier": "free"
+  },
+  {
+   "id": "ccass",
+   "name": "CCASS Shareholding Search",
+   "url": "https://www3.hkexnews.hk/sdw/search/searchsdw.aspx",
+   "domain": "quant",
+   "category": "china",
+   "layer": "breadth",
+   "authority": "A",
+   "evidence": "official-doc",
+   "kind": "html",
+   "content_access": "portal",
+   "verification": "semantic_verified",
+   "license_class": "site-terms",
+   "cache_policy": "short-quote",
+   "attribution": "recommended",
+   "refresh_days": 1,
+   "last_checked": "2026-11-06",
+   "keywords": [
+    "ccass",
+    "hong kong",
+    "shareholding",
+    "中央结算",
+    "持仓",
+    "股权分布"
+   ],
+   "notes": "中央结算系统持股查询：按日期、股票代码、参与者查历史持仓快照。",
+   "auth": "none",
+   "iface": [
+    "web"
+   ],
+   "pit": "partial",
+   "data_types": [
+    "holdings",
+    "ownership"
+   ],
+   "free_tier": "free"
+  },
+  {
+   "id": "sfc",
+   "name": "香港证监会 SFC",
+   "url": "https://www.sfc.hk/en/",
+   "domain": "quant",
+   "category": "china",
+   "layer": "breadth",
+   "authority": "A",
+   "evidence": "official-doc",
+   "kind": "html",
+   "content_access": "static",
+   "verification": "reachable",
+   "license_class": "site-terms",
+   "cache_policy": "short-quote",
+   "attribution": "recommended",
+   "refresh_days": 7,
+   "last_checked": "2026-11-06",
+   "keywords": [
+    "sfc",
+    "hong kong",
+    "securities",
+    "regulatory",
+    "证监会",
+    "监管"
+   ],
+   "notes": "香港证监会：监管公告、执法与警示名单；监管口径以官方为准。",
+   "auth": "none",
+   "iface": [
+    "web"
+   ],
+   "pit": "partial",
+   "data_types": [
+    "regulatory",
+    "news"
+   ],
+   "free_tier": "free"
+  },
+  {
+   "id": "hkma",
+   "name": "香港金融管理局 HKMA",
+   "url": "https://www.hkma.gov.hk/eng/",
+   "domain": "quant",
+   "category": "china",
+   "layer": "breadth",
+   "authority": "A",
+   "evidence": "official-doc",
+   "kind": "html",
+   "content_access": "unknown",
+   "verification": "discovered",
+   "license_class": "site-terms",
+   "cache_policy": "metadata-only",
+   "attribution": "recommended",
+   "refresh_days": 30,
+   "last_checked": "2026-11-06",
+   "keywords": [
+    "hkma",
+    "hong kong",
+    "monetary",
+    "banking",
+    "金管局",
+    "利率"
+   ],
+   "notes": "香港货币、银行与金融数据；本网络 2026-11-06 无法解析域名（http/https 均失败），内容未核实，只作引用线索。",
+   "auth": "none",
+   "iface": [
+    "web"
+   ],
+   "pit": "unverified",
+   "data_types": [
+    "rates",
+    "macro_series",
+    "banking"
+   ],
+   "free_tier": "unverified"
+  },
+  {
+   "id": "censtatd",
+   "name": "香港政府统计处",
+   "url": "https://www.censtatd.gov.hk/en/",
+   "domain": "quant",
+   "category": "china",
+   "layer": "breadth",
+   "authority": "A",
+   "evidence": "official-doc",
+   "kind": "html",
+   "content_access": "unknown",
+   "verification": "discovered",
+   "license_class": "site-terms",
+   "cache_policy": "metadata-only",
+   "attribution": "recommended",
+   "refresh_days": 30,
+   "last_checked": "2026-11-06",
+   "keywords": [
+    "censustat",
+    "hong kong",
+    "statistics",
+    "gdp",
+    "cpi",
+    "统计处"
+   ],
+   "notes": "香港官方统计（GDP、CPI、人口等）；本网络 2026-11-06 无法解析域名，内容未核实。",
+   "auth": "none",
+   "iface": [
+    "web"
+   ],
+   "pit": "unverified",
+   "data_types": [
+    "macro_series"
+   ],
+   "free_tier": "unverified"
+  },
+  {
+   "id": "boj",
+   "name": "Bank of Japan",
+   "url": "https://www.boj.or.jp/en/",
+   "domain": "quant",
+   "category": "macro",
+   "layer": "breadth",
+   "authority": "A",
+   "evidence": "official-doc",
+   "kind": "html",
+   "content_access": "static",
+   "verification": "reachable",
+   "license_class": "site-terms",
+   "cache_policy": "short-quote",
+   "attribution": "recommended",
+   "refresh_days": 30,
+   "last_checked": "2026-11-06",
+   "keywords": [
+    "boj",
+    "japan",
+    "monetary policy",
+    "statistics",
+    "日本央行",
+    "利率"
+   ],
+   "notes": "日本央行：政策声明与统计数据；只发当前口径，无 vintage。",
+   "auth": "none",
+   "iface": [
+    "web"
+   ],
+   "pit": "no",
+   "data_types": [
+    "macro_series",
+    "rates"
+   ],
+   "free_tier": "free"
+  },
+  {
+   "id": "ons",
+   "name": "UK Office for National Statistics",
+   "url": "https://www.ons.gov.uk/",
+   "domain": "quant",
+   "category": "macro",
+   "layer": "breadth",
+   "authority": "A",
+   "evidence": "official-doc",
+   "kind": "html",
+   "content_access": "portal",
+   "verification": "reachable",
+   "license_class": "site-terms",
+   "cache_policy": "short-quote",
+   "attribution": "recommended",
+   "refresh_days": 30,
+   "last_checked": "2026-11-06",
+   "keywords": [
+    "ons",
+    "uk",
+    "inflation",
+    "labour",
+    "gdp",
+    "statistics"
+   ],
+   "notes": "英国官方统计；发布后会有修订，历史口径用版本页而不是最新值。",
+   "auth": "none",
+   "iface": [
+    "web"
+   ],
+   "pit": "no",
+   "data_types": [
+    "macro_series",
+    "employment",
+    "cpi",
+    "gdp"
+   ],
+   "free_tier": "free"
+  },
+  {
+   "id": "eurostat",
+   "name": "Eurostat",
+   "url": "https://ec.europa.eu/eurostat",
+   "domain": "quant",
+   "category": "macro",
+   "layer": "breadth",
+   "authority": "A",
+   "evidence": "official-doc",
+   "kind": "html",
+   "content_access": "portal",
+   "verification": "reachable",
+   "license_class": "site-terms",
+   "cache_policy": "short-quote",
+   "attribution": "recommended",
+   "refresh_days": 30,
+   "last_checked": "2026-11-06",
+   "keywords": [
+    "eurostat",
+    "europe",
+    "statistics",
+    "欧盟统计",
+    "宏观"
+   ],
+   "notes": "欧盟官方统计；只发当前修订值，PIT 回测需自建 vintage。",
+   "auth": "none",
+   "iface": [
+    "web"
+   ],
+   "pit": "no",
+   "data_types": [
+    "macro_series"
+   ],
+   "free_tier": "free"
+  },
+  {
+   "id": "boe",
+   "name": "Bank of England",
+   "url": "https://www.bankofengland.co.uk/",
+   "domain": "quant",
+   "category": "macro",
+   "layer": "breadth",
+   "authority": "A",
+   "evidence": "official-doc",
+   "kind": "html",
+   "content_access": "unknown",
+   "verification": "discovered",
+   "license_class": "site-terms",
+   "cache_policy": "metadata-only",
+   "attribution": "recommended",
+   "refresh_days": 30,
+   "last_checked": "2026-11-06",
+   "keywords": [
+    "boe",
+    "bank of england",
+    "uk",
+    "rates",
+    "monetary policy"
+   ],
+   "notes": "英国央行：利率决议、统计与货币政策；本网络 2026-11-06 不可达，内容未核实。",
+   "auth": "none",
+   "iface": [
+    "web"
+   ],
+   "pit": "unverified",
+   "data_types": [
+    "rates",
+    "macro_series"
+   ],
+   "free_tier": "unverified"
+  },
+  {
+   "id": "fed-fomc",
+   "name": "Federal Reserve FOMC calendars",
+   "url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
+   "domain": "quant",
+   "category": "macro",
+   "layer": "breadth",
+   "authority": "A",
+   "evidence": "official-doc",
+   "kind": "html",
+   "content_access": "static",
+   "verification": "semantic_verified",
+   "license_class": "public-domain",
+   "cache_policy": "short-quote",
+   "attribution": "recommended",
+   "refresh_days": 30,
+   "last_checked": "2026-11-06",
+   "keywords": [
+    "fomc",
+    "fed",
+    "calendar",
+    "meeting",
+    "议息",
+    "美联储"
+   ],
+   "notes": "FOMC 会议日历与纪要入口；事件驱动策略的官方时间表。",
+   "auth": "none",
+   "iface": [
+    "web"
+   ],
+   "pit": "not_applicable",
+   "data_types": [
+    "events",
+    "calendar"
+   ],
+   "free_tier": "free"
+  },
+  {
+   "id": "cftc-press",
+   "name": "CFTC Press Releases",
+   "url": "https://www.cftc.gov/PressRoom/PressReleases",
+   "domain": "quant",
+   "category": "news",
+   "layer": "depth",
+   "authority": "A",
+   "evidence": "official-doc",
+   "kind": "html",
+   "content_access": "portal",
+   "verification": "semantic_verified",
+   "license_class": "public-domain",
+   "cache_policy": "short-quote",
+   "attribution": "recommended",
+   "refresh_days": 7,
+   "last_checked": "2026-11-06",
+   "keywords": [
+    "cftc",
+    "press release",
+    "enforcement",
+    "regulation",
+    "监管"
+   ],
+   "notes": "CFTC 监管新闻与执法公告；带发布日期，属于事件驱动的一手来源。",
+   "auth": "none",
+   "iface": [
+    "web"
+   ],
+   "pit": "partial",
+   "data_types": [
+    "news",
+    "regulatory"
+   ],
+   "free_tier": "free"
+  },
+  {
+   "id": "sec-press",
+   "name": "SEC Press Releases",
+   "url": "https://www.sec.gov/newsroom/press-releases",
+   "domain": "quant",
+   "category": "news",
+   "layer": "depth",
+   "authority": "A",
+   "evidence": "official-doc",
+   "kind": "html",
+   "content_access": "portal",
+   "verification": "semantic_verified",
+   "license_class": "public-domain",
+   "cache_policy": "short-quote",
+   "attribution": "recommended",
+   "refresh_days": 7,
+   "last_checked": "2026-11-06",
+   "keywords": [
+    "sec",
+    "press release",
+    "enforcement",
+    "charges",
+    "监管"
+   ],
+   "notes": "SEC 新闻稿；原 /news/pressreleases 已迁移到 /newsroom/press-releases，引用时用新路径。",
+   "auth": "none",
+   "iface": [
+    "web"
+   ],
+   "pit": "partial",
+   "data_types": [
+    "news",
+    "regulatory"
+   ],
+   "free_tier": "free"
+  },
+  {
+   "id": "nasdaqtrader",
+   "name": "Nasdaq Trader",
+   "url": "https://www.nasdaqtrader.com/",
+   "domain": "quant",
+   "category": "market-data",
+   "layer": "breadth",
+   "authority": "A",
+   "evidence": "official-doc",
+   "kind": "html",
+   "content_access": "portal",
+   "verification": "reachable",
+   "license_class": "site-terms",
+   "cache_policy": "short-quote",
+   "attribution": "recommended",
+   "refresh_days": 7,
+   "last_checked": "2026-11-06",
+   "keywords": [
+    "nasdaq",
+    "symbol directory",
+    "listing",
+    "trading halt",
+    "market status"
+   ],
+   "notes": "Nasdaq 官方交易符号目录与市场状态；目录只含当前证券，做历史截面要自补退市样本。",
+   "auth": "none",
+   "iface": [
+    "web"
+   ],
+   "pit": "no",
+   "data_types": [
+    "listing",
+    "symbols",
+    "market_status"
+   ],
+   "free_tier": "free"
+  },
+  {
+   "id": "nyse",
+   "name": "New York Stock Exchange",
+   "url": "https://www.nyse.com/index",
+   "domain": "quant",
+   "category": "market-data",
+   "layer": "breadth",
+   "authority": "A",
+   "evidence": "official-doc",
+   "kind": "html",
+   "content_access": "portal",
+   "verification": "reachable",
+   "license_class": "site-terms",
+   "cache_policy": "short-quote",
+   "attribution": "recommended",
+   "refresh_days": 7,
+   "last_checked": "2026-11-06",
+   "keywords": [
+    "nyse",
+    "listing",
+    "market status",
+    "new york stock exchange"
+   ],
+   "notes": "NYSE 官方页面：上市与市场信息；历史截面同样要处理幸存者偏差。",
+   "auth": "none",
+   "iface": [
+    "web"
+   ],
+   "pit": "no",
+   "data_types": [
+    "listing",
+    "market_status"
+   ],
+   "free_tier": "free"
+  },
+  {
    "id": "binance-spot-api",
    "name": "Binance Spot API",
    "url": "https://developers.binance.info/en/docs/binance-spot-api-docs",
@@ -2999,7 +3550,7 @@
     "order book",
     "research"
    ],
-   "notes": "机构级跨所行情与研究数据。",
+   "notes": "机构级跨所行情与研究数据；2026-11-06 实测 amberdata.io 跳转到 Kaiko 收购 Amberdata 的公告（数据商整合，Amberdata 不再单列）。",
    "auth": "key",
    "iface": [
     "rest",
@@ -3776,6 +4327,152 @@
    "data_types": [
     "research"
    ]
+  },
+  {
+   "id": "binance-announcements",
+   "name": "Binance Announcements",
+   "url": "https://www.binance.com/en/support/announcement",
+   "domain": "crypto",
+   "category": "news",
+   "layer": "depth",
+   "authority": "A",
+   "evidence": "official-doc",
+   "kind": "html",
+   "content_access": "challenge",
+   "verification": "discovered",
+   "license_class": "site-terms",
+   "cache_policy": "metadata-only",
+   "attribution": "recommended",
+   "refresh_days": 1,
+   "last_checked": "2026-11-06",
+   "keywords": [
+    "binance",
+    "announcement",
+    "listing",
+    "delisting",
+    "maintenance",
+    "公告",
+    "上币"
+   ],
+   "notes": "上币/下币/维护/产品公告；.com 对本网络返回 202 挑战，正文不可读，只作引用线索。",
+   "auth": "none",
+   "iface": [
+    "web"
+   ],
+   "pit": "partial",
+   "data_types": [
+    "news",
+    "events"
+   ],
+   "free_tier": "unverified"
+  },
+  {
+   "id": "tokenomist",
+   "name": "Tokenomist (formerly TokenUnlocks)",
+   "url": "https://tokenomist.ai/",
+   "domain": "crypto",
+   "category": "onchain",
+   "layer": "depth",
+   "authority": "B",
+   "evidence": "vendor-doc",
+   "kind": "html",
+   "content_access": "challenge",
+   "verification": "discovered",
+   "license_class": "site-terms",
+   "cache_policy": "metadata-only",
+   "attribution": "recommended",
+   "refresh_days": 7,
+   "last_checked": "2026-11-06",
+   "keywords": [
+    "token unlock",
+    "tokenomist",
+    "tokenunlocks",
+    "vesting",
+    "解锁",
+    "归属"
+   ],
+   "notes": "代币解锁与归属时间表；token.unlocks.app 已跳转到 tokenomist.ai；2026-11-06 实测 Cloudflare 403，本网络不可读。",
+   "auth": "none",
+   "iface": [
+    "web"
+   ],
+   "pit": "partial",
+   "data_types": [
+    "token_unlocks"
+   ],
+   "free_tier": "free tier + paid plans"
+  },
+  {
+   "id": "farside-btc-etf",
+   "name": "Farside Bitcoin ETF Flows",
+   "url": "https://farside.co.uk/btc/",
+   "domain": "crypto",
+   "category": "market-data",
+   "layer": "depth",
+   "authority": "C",
+   "evidence": "dataset",
+   "kind": "html",
+   "content_access": "challenge",
+   "verification": "discovered",
+   "license_class": "site-terms",
+   "cache_policy": "metadata-only",
+   "attribution": "recommended",
+   "refresh_days": 1,
+   "last_checked": "2026-11-06",
+   "keywords": [
+    "bitcoin etf",
+    "etf flow",
+    "farside",
+    "btc etf",
+    "资金流",
+    "净流入"
+   ],
+   "notes": "美国现货 BTC ETF 每日净流入表；单一维护者站点，引用前与发行人公告交叉核对；Cloudflare 403，本网络不可读。",
+   "auth": "none",
+   "iface": [
+    "web"
+   ],
+   "pit": "partial",
+   "data_types": [
+    "etf_flows"
+   ],
+   "free_tier": "free"
+  },
+  {
+   "id": "sosovalue",
+   "name": "SoSoValue",
+   "url": "https://sosovalue.com/",
+   "domain": "crypto",
+   "category": "aggregator",
+   "layer": "depth",
+   "authority": "B",
+   "evidence": "vendor-doc",
+   "kind": "html",
+   "content_access": "challenge",
+   "verification": "discovered",
+   "license_class": "site-terms",
+   "cache_policy": "metadata-only",
+   "attribution": "recommended",
+   "refresh_days": 1,
+   "last_checked": "2026-11-06",
+   "keywords": [
+    "etf flow",
+    "crypto data",
+    "sosovalue",
+    "资金流",
+    "加密数据"
+   ],
+   "notes": "ETF 资金流与加密市场数据平台；Cloudflare 403，本网络不可读，引用前换网络或浏览器复核。",
+   "auth": "none",
+   "iface": [
+    "web"
+   ],
+   "pit": "partial",
+   "data_types": [
+    "etf_flows",
+    "market_data"
+   ],
+   "free_tier": "free tier + paid API"
   }
  ]
 }
