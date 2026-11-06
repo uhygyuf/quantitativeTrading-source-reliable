@@ -1,0 +1,164 @@
+{
+  "generated_at": "2026-11-06",
+  "method": "probe-v1",
+  "summary": {
+    "total": 8,
+    "ok": 8,
+    "non200": [],
+    "access": {
+      "static": 8
+    },
+    "flags": {}
+  },
+  "entries": [
+    {
+      "id": "binance-spot-api",
+      "url": "https://developers.binance.info/en/docs/binance-spot-api-docs",
+      "kind": "html",
+      "evidence": "spec",
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 66196,
+      "finalUrl": "https://developers.binance.info/en/docs/binance-spot-api-docs",
+      "textLen": 2350,
+      "linkCount": 44,
+      "jsMarkers": [
+        "<div id=\"root\"",
+        "id=\"root\""
+      ],
+      "access": "static",
+      "flags": [],
+      "error": null
+    },
+    {
+      "id": "binance-futures-api",
+      "url": "https://developers.binance.info/en/docs/derivatives/usds-margined-futures",
+      "kind": "html",
+      "evidence": "spec",
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 66196,
+      "finalUrl": "https://developers.binance.info/en/docs/derivatives/usds-margined-futures",
+      "textLen": 2350,
+      "linkCount": 44,
+      "jsMarkers": [
+        "<div id=\"root\"",
+        "id=\"root\""
+      ],
+      "access": "static",
+      "flags": [],
+      "error": null
+    },
+    {
+      "id": "binance-agent-native",
+      "url": "https://developers.binance.info/en/docs/agent-native/overview",
+      "kind": "html",
+      "evidence": "official-doc",
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 52354,
+      "finalUrl": "https://developers.binance.info/en/docs/agent-native/overview",
+      "textLen": 2235,
+      "linkCount": 38,
+      "jsMarkers": [
+        "<div id=\"root\"",
+        "id=\"root\""
+      ],
+      "access": "static",
+      "flags": [],
+      "error": null
+    },
+    {
+      "id": "binance-mcp",
+      "url": "https://developers.binance.info/en/docs/agent-native/mcp-server",
+      "kind": "html",
+      "evidence": "official-doc",
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 40554,
+      "finalUrl": "https://developers.binance.info/en/docs/agent-native/mcp-server",
+      "textLen": 1248,
+      "linkCount": 34,
+      "jsMarkers": [
+        "<div id=\"root\"",
+        "id=\"root\""
+      ],
+      "access": "static",
+      "flags": [],
+      "error": null
+    },
+    {
+      "id": "binance-ws-spot",
+      "url": "https://developers.binance.info/en/docs/binance-spot-api-docs/web-socket-streams",
+      "kind": "html",
+      "evidence": "spec",
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 66196,
+      "finalUrl": "https://developers.binance.info/en/docs/binance-spot-api-docs/web-socket-streams",
+      "textLen": 2350,
+      "linkCount": 44,
+      "jsMarkers": [
+        "<div id=\"root\"",
+        "id=\"root\""
+      ],
+      "access": "static",
+      "flags": [],
+      "error": null
+    },
+    {
+      "id": "binance-ws-futures",
+      "url": "https://developers.binance.info/en/docs/derivatives/usds-margined-futures/websocket-market-streams",
+      "kind": "html",
+      "evidence": "spec",
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 66196,
+      "finalUrl": "https://developers.binance.info/en/docs/derivatives/usds-margined-futures/websocket-market-streams",
+      "textLen": 2350,
+      "linkCount": 44,
+      "jsMarkers": [
+        "<div id=\"root\"",
+        "id=\"root\""
+      ],
+      "access": "static",
+      "flags": [],
+      "error": null
+    },
+    {
+      "id": "binance-options",
+      "url": "https://developers.binance.info/en/docs/derivatives/options-trading",
+      "kind": "html",
+      "evidence": "spec",
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 66196,
+      "finalUrl": "https://developers.binance.info/en/docs/derivatives/options-trading",
+      "textLen": 2350,
+      "linkCount": 44,
+      "jsMarkers": [
+        "<div id=\"root\"",
+        "id=\"root\""
+      ],
+      "access": "static",
+      "flags": [],
+      "error": null
+    },
+    {
+      "id": "defillama-api",
+      "url": "https://docs.llama.fi/",
+      "kind": "html",
+      "evidence": "vendor-doc",
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 32750,
+      "finalUrl": "https://docs.llama.fi/",
+      "textLen": 4701,
+      "linkCount": 67,
+      "jsMarkers": [],
+      "access": "static",
+      "flags": [],
+      "error": null
+    }
+  ]
+}

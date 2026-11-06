@@ -1,0 +1,4 @@
+- insert:
+    - id: quantitativeTrading-source-reliable
+      name: 'quantitativeTrading-source-reliable'
+      config: {}

@@ -1,0 +1,1835 @@
+# Quant source matrix (agent-collectable)
+# Generated: 2026-11-06. HTTP status is a same-day snapshot; re-probe before trusting it.
+# breadth = stable primary data / standards; depth = fast-moving APIs and docs.
+
+meta:
+  name: "Quantitative trading source matrix"
+  version: 1
+  domain: quant
+  generated_at: "2026-11-06"
+  scope: "Equities/ETF, macro, fundamentals, China A-share/HK, execution APIs"
+  authority_legend:
+    A: "一手事实：监管原始文件、官方统计、交易所/官方 API"
+    B: "权威解释：持牌数据商、学术机构、同行评审"
+    C: "可靠二手：开源聚合器 / 社区维护项目（需交叉验证）"
+    D: "线索：博客、媒体、未审来源（不可当结论）"
+  evidence_legend:
+    official-doc: "官方文档 / 监管机构页面"
+    dataset: "结构化数据文件 / 数据集"
+    vendor-doc: "商业数据商文档"
+    spec: "接口规范"
+    peer-reviewed: "同行评审论文"
+    preprint: "预印本（未审）"
+    index: "索引 / 目录"
+    community: "社区 / 开源项目"
+    blog: "官方博客"
+  category_legend:
+    filing: "监管申报与公司披露"
+    macro: "宏观经济与统计"
+    market-data: "行情与交易数据"
+    fundamentals: "财务基本面（含 PIT）"
+    china: "中国市场与中国官方数据"
+    execution: "券商 / 交易所执行接口"
+    research: "研究论文与工作论文"
+    news: "新闻与另类文本"
+  pit_legend:
+    yes: "提供 Point-in-Time / as-reported 版本"
+    partial: "部分字段或部分数据集提供 PIT"
+    no: "只给最新修订值，回测需自行处理未来函数"
+  content_access_legend:
+    static: "静态 HTML，可直接取正文"
+    portal: "落地页/目录页，需跟到正文"
+    js: "需要浏览器渲染（纯 fetch 拿不到正文）"
+    challenge: "反爬 / 人机校验 / 鉴权墙，需浏览器或人工确认"
+    api: "JSON / XML 结构化返回"
+    binary: "PDF / 二进制"
+  free_tier_note: "free_tier 只在核实过的日期上写；没核实就写 unverified，不许凭印象写数字。"
+
+sources:
+  # ---------- 监管申报 / 公司披露 ----------
+  - id: sec-edgar-search
+    name: "SEC EDGAR full-text search"
+    domain: quant
+    category: filing
+    layer: breadth
+    authority: A
+    evidence: official-doc
+    kind: html
+    url: "https://www.sec.gov/edgar/search/"
+    auth: none
+    iface: [ web ]
+    pit: no
+    keywords: [ sec, edgar, 10-k, 10-q, 8-k, filing, disclosure, 申报 ]
+    notes: "EDGAR 全文检索；结构化 XBRL 走 data.sec.gov。"
+    content_access: challenge
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 30
+    license_class: public-domain
+    cache_policy: short-quote
+    attribution: recommended
+    probe:
+      status: 403
+      content_type: text/html
+      bytes: 1924
+      text_len: 376
+      final_url: https://www.sec.gov/edgar/search/
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: sec-data-apis
+    name: "SEC EDGAR data APIs (data.sec.gov)"
+    domain: quant
+    category: filing
+    layer: breadth
+    authority: A
+    evidence: official-doc
+    kind: html
+    url: "https://www.sec.gov/search-filings/edgar-application-programming-interfaces"
+    auth: none
+    iface: [ rest ]
+    pit: partial
+    free_tier: "free, no API key (verified 2026-11-06)"
+    keywords: [ sec, xbrl, api, submissions, companyfacts, frames ]
+    notes: "官方说明：无需认证、无需 API key；用 UA 标识自己并控制频率。"
+    content_access: challenge
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 30
+    license_class: public-domain
+    cache_policy: short-quote
+    attribution: recommended
+    probe:
+      status: 403
+      content_type: text/html
+      bytes: 1924
+      text_len: 376
+      final_url: https://www.sec.gov/search-filings/edgar-application-programming-interfaces
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: sec-companyfacts
+    name: "SEC companyfacts XBRL API"
+    domain: quant
+    category: filing
+    layer: breadth
+    authority: A
+    evidence: official-doc
+    kind: api
+    url: "https://data.sec.gov/api/xbrl/companyfacts/CIK0000320193.json"
+    auth: none
+    iface: [ rest ]
+    pit: partial
+    as_reported: yes
+    free_tier: "free, no API key (verified 2026-11-06)"
+    keywords: [ xbrl, companyfacts, financial statements, as-reported ]
+    notes: "按 filing 保留各期数值，可重建 as-reported 序列；示例 CIK 为苹果。"
+    content_access: challenge
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 14
+    license_class: public-domain
+    cache_policy: short-quote
+    attribution: recommended
+    probe:
+      status: 403
+      content_type: text/html
+      bytes: 4819
+      text_len: 2992
+      final_url: https://data.sec.gov/api/xbrl/companyfacts/CIK0000320193.json
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: sec-submissions
+    name: "SEC submissions history API"
+    domain: quant
+    category: filing
+    layer: breadth
+    authority: A
+    evidence: official-doc
+    kind: api
+    url: "https://data.sec.gov/submissions/CIK0000320193.json"
+    auth: none
+    iface: [ rest ]
+    pit: no
+    free_tier: "free, no API key (verified 2026-11-06)"
+    keywords: [ submissions, filings, 10-k, 8-k, filing history ]
+    notes: "按 CIK 返回申报历史；示例 CIK 为苹果。"
+    content_access: challenge
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 14
+    license_class: public-domain
+    cache_policy: short-quote
+    attribution: recommended
+    probe:
+      status: 403
+      content_type: text/html
+      bytes: 4819
+      text_len: 2992
+      final_url: https://data.sec.gov/submissions/CIK0000320193.json
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: sec-financial-statement-data-sets
+    name: "SEC Financial Statement Data Sets"
+    domain: quant
+    category: filing
+    layer: breadth
+    authority: A
+    evidence: dataset
+    kind: dataset
+    url: "https://www.sec.gov/data-research/sec-markets-data/financial-statement-data-sets"
+    auth: none
+    iface: [ archive ]
+    pit: partial
+    as_reported: yes
+    keywords: [ financial statement, num, sub, xbrl, bulk, dataset ]
+    notes: "季度打包的 XBRL 数值表（num/sub 等），适合离线建库。"
+    content_access: challenge
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 14
+    license_class: public-domain
+    cache_policy: short-quote
+    attribution: recommended
+    probe:
+      status: 403
+      content_type: text/html
+      bytes: 1924
+      text_len: 376
+      final_url: https://www.sec.gov/data-research/sec-markets-data/financial-statement-data-sets
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: sec-form-13f-datasets
+    name: "SEC Form 13F data sets"
+    domain: quant
+    category: filing
+    layer: depth
+    authority: A
+    evidence: dataset
+    kind: dataset
+    url: "https://www.sec.gov/data-research/sec-markets-data/form-13f-data-sets"
+    auth: none
+    iface: [ archive ]
+    pit: partial
+    keywords: [ 13f, institutional holdings, hedge fund, bulk ]
+    notes: "13F 持仓结构化数据集；季度更新。"
+    content_access: challenge
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 14
+    license_class: public-domain
+    cache_policy: short-quote
+    attribution: recommended
+    probe:
+      status: 403
+      content_type: text/html
+      bytes: 1924
+      text_len: 376
+      final_url: https://www.sec.gov/data-research/sec-markets-data/form-13f-data-sets
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: sec-insider-transactions
+    name: "SEC insider transactions (Form 4) data sets"
+    domain: quant
+    category: filing
+    layer: depth
+    authority: A
+    evidence: dataset
+    kind: dataset
+    url: "https://www.sec.gov/data-research/sec-markets-data/insider-transactions-data-sets"
+    auth: none
+    iface: [ archive ]
+    pit: partial
+    keywords: [ form 4, insider, transactions, 内部人 ]
+    notes: "内部人交易结构化数据集。"
+    content_access: challenge
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 14
+    license_class: public-domain
+    cache_policy: short-quote
+    attribution: recommended
+    probe:
+      status: 403
+      content_type: text/html
+      bytes: 1924
+      text_len: 376
+      final_url: https://www.sec.gov/data-research/sec-markets-data/insider-transactions-data-sets
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: finra-short-interest
+    name: "FINRA equity short interest files"
+    domain: quant
+    category: market-data
+    layer: depth
+    authority: A
+    evidence: dataset
+    kind: dataset
+    url: "https://www.finra.org/finra-data/browse-catalog/equity-short-interest/files"
+    auth: none
+    iface: [ archive, web ]
+    pit: no
+    keywords: [ short interest, finra, 空头, settlement ]
+    notes: "双月结算的空头持仓文件；注意结算日与发布日不同。"
+    content_access: api
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 14
+    license_class: site-terms
+    cache_policy: metadata-only
+    attribution: recommended
+    probe:
+      status: 200
+      content_type: text/html; charset=UTF-8
+      bytes: 86816
+      text_len: 5609
+      final_url: https://www.finra.org/finra-data/browse-catalog/equity-short-interest/files
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: cftc-cot
+    name: "CFTC Commitments of Traders"
+    domain: quant
+    category: market-data
+    layer: breadth
+    authority: A
+    evidence: official-doc
+    kind: html
+    url: "https://www.cftc.gov/MarketReports/CommitmentsofTraders/index.htm"
+    auth: none
+    iface: [ web, archive ]
+    pit: no
+    keywords: [ cot, commitments of traders, futures, positioning, cftc ]
+    notes: "周度持仓报告；历史归档可下载。"
+    content_access: static
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 30
+    license_class: public-domain
+    cache_policy: short-quote
+    attribution: recommended
+    probe:
+      status: 200
+      content_type: text/html; charset=utf-8
+      bytes: 85324
+      text_len: 23843
+      final_url: https://www.cftc.gov/MarketReports/CommitmentsofTraders/index.htm
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: cboe-datashop
+    name: "Cboe DataShop"
+    domain: quant
+    category: market-data
+    layer: depth
+    authority: A
+    evidence: vendor-doc
+    kind: html
+    url: "https://datashop.cboe.com/"
+    auth: account
+    iface: [ web ]
+    pit: no
+    keywords: [ options, cboe, historical, option prices, volatility ]
+    notes: "交易所官方历史期权数据商店；付费。"
+    content_access: static
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 30
+    license_class: site-terms
+    cache_policy: metadata-only
+    attribution: recommended
+    probe:
+      status: 200
+      content_type: text/html; charset=utf-8
+      bytes: 49414
+      text_len: 3242
+      final_url: https://datashop.cboe.com/
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: cninfo
+    name: "巨潮资讯网 (CNINFO)"
+    domain: quant
+    category: china
+    layer: breadth
+    authority: A
+    evidence: official-doc
+    kind: html
+    url: "https://www.cninfo.com.cn/"
+    auth: none
+    iface: [ web ]
+    pit: no
+    keywords: [ a股, 公告, 年报, 巨潮, disclosure, china ]
+    notes: "A 股指定信息披露平台，公告/年报原始 PDF 的权威入口。"
+    content_access: static
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 30
+    license_class: site-terms
+    cache_policy: metadata-only
+    attribution: recommended
+    probe:
+      status: 200
+      content_type: text/html;charset=utf-8
+      bytes: 108466
+      text_len: 2984
+      final_url: https://www.cninfo.com.cn/
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: sse
+    name: "上海证券交易所"
+    domain: quant
+    category: china
+    layer: breadth
+    authority: A
+    evidence: official-doc
+    kind: html
+    url: "https://www.sse.com.cn/"
+    auth: none
+    iface: [ web ]
+    pit: no
+    keywords: [ a股, 上交所, 交易规则, 公告, sse ]
+    notes: "交易规则、公告、统计数据的官方来源。"
+    content_access: static
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 30
+    license_class: site-terms
+    cache_policy: metadata-only
+    attribution: recommended
+    probe:
+      status: 200
+      content_type: text/html
+      bytes: 64275
+      text_len: 2318
+      final_url: https://www.sse.com.cn/
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: szse
+    name: "深圳证券交易所"
+    domain: quant
+    category: china
+    layer: breadth
+    authority: A
+    evidence: official-doc
+    kind: html
+    url: "https://www.szse.cn/"
+    auth: none
+    iface: [ web ]
+    pit: no
+    keywords: [ a股, 深交所, 公告, 规则, szse ]
+    notes: "交易规则、公告、统计数据的官方来源。"
+    content_access: static
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 30
+    license_class: site-terms
+    cache_policy: metadata-only
+    attribution: recommended
+    probe:
+      status: 200
+      content_type: text/html
+      bytes: 88463
+      text_len: 985
+      final_url: https://www.szse.cn/index/index.html
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: hkex
+    name: "香港交易所 (HKEX)"
+    domain: quant
+    category: china
+    layer: breadth
+    authority: A
+    evidence: official-doc
+    kind: html
+    url: "https://www.hkex.com.hk/"
+    auth: none
+    iface: [ web ]
+    pit: no
+    keywords: [ 港股, hkex, 披露易, 公告, hong kong ]
+    notes: "港股披露与市场数据官方入口。"
+    content_access: static
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 30
+    license_class: site-terms
+    cache_policy: metadata-only
+    attribution: recommended
+    probe:
+      status: 200
+      content_type: text/html; charset=utf-8
+      bytes: 333019
+      text_len: 10020
+      final_url: https://www.hkex.com.hk/?sc_lang=en
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  # ---------- 宏观 ----------
+  - id: fred
+    name: "FRED (Federal Reserve Bank of St. Louis)"
+    domain: quant
+    category: macro
+    layer: breadth
+    authority: A
+    evidence: official-doc
+    kind: html
+    url: "https://fred.stlouisfed.org/"
+    auth: key
+    iface: [ rest, web ]
+    pit: no
+    free_tier: "free API key"
+    keywords: [ macro, gdp, cpi, interest rate, unemployment, fred, 宏观 ]
+    notes: "宏观时间序列权威库；给的是修订后数据，PIT 回测请用 ALFRED。"
+    content_access: static
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 30
+    license_class: public-domain
+    cache_policy: short-quote
+    attribution: recommended
+    probe:
+      status: 200
+      content_type: text/html; charset=UTF-8
+      bytes: 59192
+      text_len: 3726
+      final_url: https://fred.stlouisfed.org/
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: alfred
+    name: "ALFRED (Archival FRED)"
+    domain: quant
+    category: macro
+    layer: depth
+    authority: A
+    evidence: official-doc
+    kind: html
+    url: "https://alfred.stlouisfed.org/"
+    auth: key
+    iface: [ rest, web ]
+    pit: yes
+    free_tier: "free API key"
+    keywords: [ vintage, real-time, point-in-time, macro, revision, alfred ]
+    notes: "按历史日期提供当时的版本（vintages），是宏观 PIT 数据的关键来源。"
+    content_access: static
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 30
+    license_class: public-domain
+    cache_policy: short-quote
+    attribution: recommended
+    probe:
+      status: 200
+      content_type: text/html; charset=UTF-8
+      bytes: 24754
+      text_len: 1068
+      final_url: https://alfred.stlouisfed.org/
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: bls-api
+    name: "U.S. Bureau of Labor Statistics API"
+    domain: quant
+    category: macro
+    layer: breadth
+    authority: A
+    evidence: official-doc
+    kind: html
+    url: "https://www.bls.gov/developers/"
+    auth: key
+    iface: [ rest, web ]
+    pit: no
+    free_tier: "free API key"
+    keywords: [ cpi, ppi, employment, bls, labor, 就业, 通胀 ]
+    notes: "劳工统计局官方 API；注意数据发布滞后与基准修订。"
+    content_access: challenge
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 30
+    license_class: public-domain
+    cache_policy: short-quote
+    attribution: recommended
+    probe:
+      status: 403
+      content_type: text/html
+      bytes: 1325
+      text_len: 551
+      final_url: https://www.bls.gov/developers/
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: bea-api
+    name: "U.S. Bureau of Economic Analysis API"
+    domain: quant
+    category: macro
+    layer: breadth
+    authority: A
+    evidence: official-doc
+    kind: html
+    url: "https://apps.bea.gov/API/signup/"
+    auth: key
+    iface: [ rest, web ]
+    pit: no
+    free_tier: "free API key"
+    keywords: [ gdp, national accounts, bea, 国民账户 ]
+    notes: "GDP 等国民账户官方 API。"
+    content_access: static
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 30
+    license_class: public-domain
+    cache_policy: short-quote
+    attribution: recommended
+    probe:
+      status: 200
+      content_type: text/html
+      bytes: 43554
+      text_len: 4421
+      final_url: https://apps.bea.gov/API/signup/
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: treasury-fiscal-data
+    name: "U.S. Treasury Fiscal Data API"
+    domain: quant
+    category: macro
+    layer: breadth
+    authority: A
+    evidence: official-doc
+    kind: html
+    url: "https://fiscaldata.treasury.gov/api-documentation/"
+    auth: none
+    iface: [ rest, web ]
+    pit: no
+    free_tier: "free, no key"
+    keywords: [ treasury, debt, fiscal, interest rate, auctions ]
+    notes: "财政与国债数据的官方 API。"
+    content_access: static
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 30
+    license_class: public-domain
+    cache_policy: short-quote
+    attribution: recommended
+    probe:
+      status: 200
+      content_type: text/html
+      bytes: 553607
+      text_len: 22755
+      final_url: https://fiscaldata.treasury.gov/api-documentation/
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: imf-data
+    name: "IMF Data"
+    domain: quant
+    category: macro
+    layer: breadth
+    authority: A
+    evidence: official-doc
+    kind: html
+    url: "https://data.imf.org/"
+    auth: none
+    iface: [ web, rest ]
+    pit: no
+    keywords: [ imf, international, balance of payments, macro ]
+    notes: "国际货币基金组织统计数据库。"
+    content_access: static
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 30
+    license_class: public-domain
+    cache_policy: short-quote
+    attribution: recommended
+    probe:
+      status: 200
+      content_type: text/html; charset=utf-8
+      bytes: 315449
+      text_len: 9239
+      final_url: https://data.imf.org/en
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: world-bank-data
+    name: "World Bank Open Data"
+    domain: quant
+    category: macro
+    layer: breadth
+    authority: A
+    evidence: official-doc
+    kind: html
+    url: "https://data.worldbank.org/"
+    auth: none
+    iface: [ web, rest ]
+    pit: no
+    keywords: [ world bank, development, macro, indicators ]
+    notes: "世界银行国别指标。"
+    content_access: unknown
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 30
+    license_class: public-domain
+    cache_policy: short-quote
+    attribution: recommended
+    probe:
+      status: null
+      content_type: ""
+      bytes: 0
+      text_len: null
+      final_url: ""
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: bis-data
+    name: "BIS Statistics"
+    domain: quant
+    category: macro
+    layer: breadth
+    authority: A
+    evidence: official-doc
+    kind: html
+    url: "https://data.bis.org/"
+    auth: none
+    iface: [ web, rest ]
+    pit: no
+    keywords: [ bis, banking, cross-border, credit, macro ]
+    notes: "国际清算银行统计：跨境信贷、银行与流动性指标。"
+    content_access: static
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 30
+    license_class: site-terms
+    cache_policy: metadata-only
+    attribution: recommended
+    probe:
+      status: 200
+      content_type: text/html; charset=utf-8
+      bytes: 212590
+      text_len: 4284
+      final_url: https://data.bis.org/
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: oecd-data
+    name: "OECD Data"
+    domain: quant
+    category: macro
+    layer: breadth
+    authority: A
+    evidence: official-doc
+    kind: html
+    url: "https://data-explorer.oecd.org/"
+    auth: none
+    iface: [ web, rest ]
+    pit: no
+    keywords: [ oecd, macro, indicators, leading indicators ]
+    notes: "OECD 国别指标与领先指标。"
+    content_access: js
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 30
+    license_class: site-terms
+    cache_policy: metadata-only
+    attribution: recommended
+    probe:
+      status: 200
+      content_type: text/html; charset=utf-8
+      bytes: 174503
+      text_len: 0
+      final_url: https://data-explorer.oecd.org/
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: ecb-data
+    name: "ECB Data Portal"
+    domain: quant
+    category: macro
+    layer: breadth
+    authority: A
+    evidence: official-doc
+    kind: html
+    url: "https://data.ecb.europa.eu/"
+    auth: none
+    iface: [ web, rest ]
+    pit: no
+    keywords: [ ecb, euro area, rates, monetary policy, macro ]
+    notes: "欧洲央行数据门户。"
+    content_access: static
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 30
+    license_class: site-terms
+    cache_policy: metadata-only
+    attribution: recommended
+    probe:
+      status: 200
+      content_type: text/html; charset=UTF-8
+      bytes: 272331
+      text_len: 21151
+      final_url: https://data.ecb.europa.eu/
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: nbs-china
+    name: "国家统计局 (NBS China)"
+    domain: quant
+    category: china
+    layer: breadth
+    authority: A
+    evidence: official-doc
+    kind: html
+    url: "https://data.stats.gov.cn/"
+    auth: none
+    iface: [ web ]
+    pit: no
+    keywords: [ 中国, 统计局, gdp, cpi, 宏观, nbs ]
+    notes: "中国宏观经济官方统计。"
+    content_access: portal
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 30
+    license_class: public-domain
+    cache_policy: short-quote
+    attribution: recommended
+    probe:
+      status: 200
+      content_type: text/html
+      bytes: 3198
+      text_len: 0
+      final_url: https://data.stats.gov.cn/dg/website/page.html
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: pbc-china
+    name: "中国人民银行 (PBOC)"
+    domain: quant
+    category: china
+    layer: breadth
+    authority: A
+    evidence: official-doc
+    kind: html
+    url: "http://www.pbc.gov.cn/"
+    auth: none
+    iface: [ web ]
+    pit: no
+    keywords: [ 中国, 央行, 货币政策, 利率, pboc ]
+    notes: "货币政策、社融与金融统计数据。"
+    content_access: static
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 30
+    license_class: public-domain
+    cache_policy: short-quote
+    attribution: recommended
+    probe:
+      status: 200
+      content_type: text/html
+      bytes: 141343
+      text_len: 3100
+      final_url: https://www.pbc.gov.cn/
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: chinamoney
+    name: "中国货币网 (ChinaMoney)"
+    domain: quant
+    category: china
+    layer: breadth
+    authority: A
+    evidence: official-doc
+    kind: html
+    url: "https://www.chinamoney.com.cn/"
+    auth: none
+    iface: [ web ]
+    pit: no
+    keywords: [ 中国, 银行间, 利率, 汇率, 债券, chinamoney ]
+    notes: "银行间市场利率、汇率与债券数据。"
+    content_access: portal
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 30
+    license_class: site-terms
+    cache_policy: metadata-only
+    attribution: recommended
+    probe:
+      status: 200
+      content_type: text/html
+      bytes: 13390
+      text_len: 131
+      final_url: https://www.chinamoney.com.cn/chinese/index.html
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  # ---------- 行情 / 数据商 ----------
+  - id: massive
+    name: "Massive (formerly Polygon.io)"
+    domain: quant
+    category: market-data
+    layer: depth
+    authority: B
+    evidence: vendor-doc
+    kind: html
+    url: "https://massive.com/"
+    auth: key
+    iface: [ rest, ws, archive ]
+    pit: no
+    keywords: [ stocks, options, futures, forex, crypto, websocket, polygon ]
+    notes: "polygon.io 已跳转到 massive.com（2026-11-06 实测）；官网个人档显示 $199/月。"
+    content_access: static
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 30
+    license_class: site-terms
+    cache_policy: metadata-only
+    attribution: recommended
+    probe:
+      status: 200
+      content_type: text/html; charset=utf-8
+      bytes: 315344
+      text_len: 7346
+      final_url: https://massive.com/
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: alpaca-data
+    name: "Alpaca Market Data API"
+    domain: quant
+    category: market-data
+    layer: depth
+    authority: B
+    evidence: vendor-doc
+    kind: html
+    url: "https://alpaca.markets/data"
+    auth: key
+    iface: [ rest, ws ]
+    pit: no
+    free_tier: "free tier API data is 15-min delayed; real-time SIP needs Algo Trader Plus $99/mo (verified 2026-11-06)"
+    keywords: [ alpaca, us equities, options, crypto, data api ]
+    notes: "免费档不是实时；实时 SIP 要付费档。"
+    content_access: static
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 30
+    license_class: site-terms
+    cache_policy: metadata-only
+    attribution: recommended
+    probe:
+      status: 200
+      content_type: text/html; charset=utf-8
+      bytes: 92663
+      text_len: 13423
+      final_url: https://alpaca.markets/data
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: databento
+    name: "Databento"
+    domain: quant
+    category: market-data
+    layer: depth
+    authority: B
+    evidence: vendor-doc
+    kind: html
+    url: "https://databento.com/"
+    auth: key
+    iface: [ rest, ws, archive ]
+    pit: no
+    keywords: [ tick, order book, l2, l3, market replay, databento ]
+    notes: "机构级 tick / 订单簿与市场重放，按量计费。"
+    content_access: js
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 30
+    license_class: site-terms
+    cache_policy: metadata-only
+    attribution: recommended
+    probe:
+      status: 200
+      content_type: text/html
+      bytes: 17876
+      text_len: 25
+      final_url: https://databento.com/
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: tiingo
+    name: "Tiingo"
+    domain: quant
+    category: market-data
+    layer: depth
+    authority: B
+    evidence: vendor-doc
+    kind: html
+    url: "https://www.tiingo.com/"
+    auth: key
+    iface: [ rest, ws ]
+    pit: no
+    free_tier: "unverified (pricing page is client-rendered)"
+    keywords: [ eod, iex, news, tiingo, api ]
+    notes: "EOD 与新闻数据；价格档位未核实，别照抄旧教程的 $30/月。"
+    content_access: portal
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 30
+    license_class: site-terms
+    cache_policy: metadata-only
+    attribution: recommended
+    probe:
+      status: 200
+      content_type: text/html;charset=utf-8
+      bytes: 20325
+      text_len: 35
+      final_url: https://www.tiingo.com/
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: alpha-vantage
+    name: "Alpha Vantage"
+    domain: quant
+    category: market-data
+    layer: depth
+    authority: B
+    evidence: vendor-doc
+    kind: html
+    url: "https://www.alphavantage.co/"
+    auth: key
+    iface: [ rest, mcp ]
+    pit: no
+    free_tier: "free tier 25 requests/day; premium from $49.99/mo (verified 2026-11-06)"
+    keywords: [ alpha vantage, technical indicators, forex, crypto, mcp ]
+    notes: "官方 MCP server 存在（mcp.alphavantage.co）；免费额度对 agent 循环基本不够用。"
+    content_access: static
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 30
+    license_class: site-terms
+    cache_policy: metadata-only
+    attribution: recommended
+    probe:
+      status: 200
+      content_type: text/html; charset=utf-8
+      bytes: 16288
+      text_len: 2547
+      final_url: https://www.alphavantage.co/
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: finnhub
+    name: "Finnhub"
+    domain: quant
+    category: market-data
+    layer: depth
+    authority: B
+    evidence: vendor-doc
+    kind: html
+    url: "https://finnhub.io/"
+    auth: key
+    iface: [ rest, ws ]
+    pit: no
+    free_tier: "unverified"
+    keywords: [ finnhub, real-time, fundamentals, news, alternative ]
+    notes: "免费档限流严格；具体额度以官网定价页为准。"
+    content_access: js
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 30
+    license_class: site-terms
+    cache_policy: metadata-only
+    attribution: recommended
+    probe:
+      status: 200
+      content_type: text/html; charset=utf-8
+      bytes: 6226
+      text_len: 99
+      final_url: https://finnhub.io/
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: twelve-data
+    name: "Twelve Data"
+    domain: quant
+    category: market-data
+    layer: depth
+    authority: B
+    evidence: vendor-doc
+    kind: html
+    url: "https://twelvedata.com/"
+    auth: key
+    iface: [ rest, ws ]
+    pit: no
+    free_tier: "free: 8 credits/min, 800/day; Grow $79/mo (verified 2026-11-06)"
+    keywords: [ twelve data, multi asset, forex, crypto, technical ]
+    notes: "免费档只够原型。"
+    content_access: static
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 30
+    license_class: site-terms
+    cache_policy: metadata-only
+    attribution: recommended
+    probe:
+      status: 200
+      content_type: text/html; charset=utf-8
+      bytes: 834824
+      text_len: 19560
+      final_url: https://twelvedata.com/
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: nasdaq-data-link
+    name: "Nasdaq Data Link (formerly Quandl)"
+    domain: quant
+    category: market-data
+    layer: depth
+    authority: B
+    evidence: vendor-doc
+    kind: html
+    url: "https://data.nasdaq.com/"
+    auth: key
+    iface: [ rest, web ]
+    pit: no
+    keywords: [ quandl, nasdaq data link, alternative data, datasets ]
+    notes: "数据市场；注意 Sharadar 现在主推自有 API，旧教程按 NDL 写会踩坑。"
+    content_access: js
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 30
+    license_class: site-terms
+    cache_policy: metadata-only
+    attribution: recommended
+    probe:
+      status: 200
+      content_type: text/html; charset=utf-8
+      bytes: 3184
+      text_len: 195
+      final_url: https://data.nasdaq.com/
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: openbb
+    name: "OpenBB"
+    domain: quant
+    category: market-data
+    layer: depth
+    authority: C
+    evidence: vendor-doc
+    kind: html
+    url: "https://openbb.co/"
+    auth: none
+    iface: [ sdk, mcp, web ]
+    pit: no
+    free_tier: "open source (AGPL-3.0)"
+    keywords: [ openbb, open source, aggregator, research, mcp ]
+    notes: "开源聚合层，适合把多源拼成一个接口；数据质量随上游源变化，结论要回到一手源核对。"
+    content_access: static
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 30
+    license_class: open-source
+    cache_policy: metadata-only
+    attribution: required
+    probe:
+      status: 200
+      content_type: text/html; charset=utf-8
+      bytes: 211841
+      text_len: 16519
+      final_url: https://openbb.co/
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  # ---------- 基本面 / PIT ----------
+  - id: sharadar
+    name: "Sharadar (SF1 / SEP)"
+    domain: quant
+    category: fundamentals
+    layer: depth
+    authority: B
+    evidence: vendor-doc
+    kind: html
+    url: "https://sharadar.com/"
+    auth: key
+    iface: [ rest, archive ]
+    pit: yes
+    as_reported: yes
+    survivorship: bias-free
+    free_tier: "paid subscription"
+    keywords: [ sharadar, sf1, sep, point-in-time, survivorship bias, fundamentals ]
+    notes: "官方文档自称 Point-in-time 且 survivorship-bias-free；现在是自有 API（api.sharadar.com），不要再用 data.nasdaq.com。"
+    content_access: static
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 30
+    license_class: site-terms
+    cache_policy: metadata-only
+    attribution: recommended
+    probe:
+      status: 200
+      content_type: text/html
+      bytes: 124017
+      text_len: 4571
+      final_url: https://sharadar.com/
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: compustat-wrds
+    name: "Compustat via WRDS"
+    domain: quant
+    category: fundamentals
+    layer: depth
+    authority: A
+    evidence: dataset
+    kind: html
+    url: "https://wrds-www.wharton.upenn.edu/"
+    auth: account
+    iface: [ web, sdk ]
+    pit: partial
+    as_reported: yes
+    survivorship: bias-free
+    free_tier: "institutional subscription"
+    keywords: [ compustat, wrds, fundamentals, point-in-time, academic ]
+    notes: "学术金标准；PIT 版本需单独订阅（Compustat PIT）。"
+    content_access: static
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 30
+    license_class: site-terms
+    cache_policy: metadata-only
+    attribution: recommended
+    probe:
+      status: 200
+      content_type: text/html; charset=utf-8
+      bytes: 83298
+      text_len: 6832
+      final_url: https://wrds-www.wharton.upenn.edu/
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: crsp
+    name: "CRSP"
+    domain: quant
+    category: market-data
+    layer: depth
+    authority: A
+    evidence: dataset
+    kind: html
+    url: "https://www.crsp.org/"
+    auth: account
+    iface: [ web, sdk ]
+    pit: partial
+    survivorship: bias-free
+    free_tier: "institutional subscription"
+    keywords: [ crsp, survivorship bias, delisting, academic, returns ]
+    notes: "含退市股，回测生存偏差处理的标准来源。"
+    content_access: static
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 30
+    license_class: site-terms
+    cache_policy: metadata-only
+    attribution: recommended
+    probe:
+      status: 200
+      content_type: text/html; charset=utf-8
+      bytes: 974826
+      text_len: 3613
+      final_url: https://indexes.morningstar.com/morningstar-market-indexes
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: optionmetrics
+    name: "OptionMetrics"
+    domain: quant
+    category: market-data
+    layer: depth
+    authority: B
+    evidence: vendor-doc
+    kind: html
+    url: "https://optionmetrics.com/"
+    auth: account
+    iface: [ web, archive ]
+    pit: partial
+    free_tier: "paid / academic subscription"
+    keywords: [ options, implied volatility, optionmetrics, academic ]
+    notes: "期权历史与研究级波动率曲面。"
+    content_access: static
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 30
+    license_class: site-terms
+    cache_policy: metadata-only
+    attribution: recommended
+    probe:
+      status: 200
+      content_type: text/html; charset=UTF-8
+      bytes: 161868
+      text_len: 7442
+      final_url: https://optionmetrics.com/
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: fmp
+    name: "Financial Modeling Prep"
+    domain: quant
+    category: fundamentals
+    layer: depth
+    authority: B
+    evidence: vendor-doc
+    kind: html
+    url: "https://site.financialmodelingprep.com/"
+    auth: key
+    iface: [ rest ]
+    pit: no
+    free_tier: "unverified (docs site blocked bots on 2026-11-06)"
+    keywords: [ fmp, fundamentals, earnings, financial statements, api ]
+    notes: "默认返回最新修订值，不是 as-reported；文档站对机器人返回 403，需人工/浏览器核对。"
+    content_access: static
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 30
+    license_class: site-terms
+    cache_policy: metadata-only
+    attribution: recommended
+    probe:
+      status: 200
+      content_type: text/html; charset=utf-8
+      bytes: 224180
+      text_len: 9838
+      final_url: https://site.financialmodelingprep.com/
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: financial-datasets
+    name: "Financial Datasets"
+    domain: quant
+    category: fundamentals
+    layer: depth
+    authority: B
+    evidence: vendor-doc
+    kind: html
+    url: "https://financialdatasets.ai/"
+    auth: key
+    iface: [ rest, mcp ]
+    pit: no
+    free_tier: "unverified"
+    keywords: [ financial datasets, ai agent, fundamentals, prices, mcp ]
+    notes: "面向 AI agent，官方 MCP server 在 GitHub；默认最新修订值，不保证 PIT。"
+    content_access: static
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 30
+    license_class: site-terms
+    cache_policy: metadata-only
+    attribution: recommended
+    probe:
+      status: 200
+      content_type: text/html; charset=utf-8
+      bytes: 107697
+      text_len: 5154
+      final_url: https://www.financialdatasets.ai/
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: equibles
+    name: "Equibles"
+    domain: quant
+    category: fundamentals
+    layer: depth
+    authority: C
+    evidence: vendor-doc
+    kind: html
+    url: "https://equibles.com/"
+    auth: key
+    iface: [ rest ]
+    pit: no
+    free_tier: "unverified"
+    keywords: [ equibles, fundamentals, sec filings, ai agent ]
+    notes: "定位 AI agent 财务数据；规模较小，关键结论要回到 SEC 原始文件。"
+    content_access: static
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 30
+    license_class: site-terms
+    cache_policy: metadata-only
+    attribution: recommended
+    probe:
+      status: 200
+      content_type: text/html; charset=utf-8
+      bytes: 259951
+      text_len: 16296
+      final_url: https://equibles.com/
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  # ---------- 中国市场数据商 ----------
+  - id: tushare
+    name: "Tushare Pro"
+    domain: quant
+    category: china
+    layer: depth
+    authority: B
+    evidence: vendor-doc
+    kind: html
+    url: "https://tushare.pro/"
+    auth: key
+    iface: [ rest ]
+    pit: partial
+    free_tier: "free tier limited by points/积分"
+    keywords: [ tushare, a股, 行情, 财务, 积分, china ]
+    notes: "覆盖广但免费档受积分限制；生产建议准备备用源。"
+    content_access: portal
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 30
+    license_class: site-terms
+    cache_policy: metadata-only
+    attribution: recommended
+    probe:
+      status: 200
+      content_type: text/html
+      bytes: 754
+      text_len: 9
+      final_url: https://tushare.pro/home/
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: akshare
+    name: "AKShare"
+    domain: quant
+    category: china
+    layer: depth
+    authority: C
+    evidence: community
+    kind: html
+    url: "https://akshare.akfamily.xyz/"
+    auth: none
+    iface: [ sdk ]
+    pit: no
+    free_tier: "open source, free"
+    keywords: [ akshare, a股, 免费, 开源, china, python ]
+    notes: "开源免费，数据来自公开页面抓取；字段与可用性会随上游站点变化，生产需自建缓存与校验。"
+    content_access: static
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 30
+    license_class: open-source
+    cache_policy: metadata-only
+    attribution: required
+    probe:
+      status: 200
+      content_type: text/html; charset=utf-8
+      bytes: 29177
+      text_len: 1413
+      final_url: https://akshare.akfamily.xyz/
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: cnequity
+    name: "CNEquity"
+    domain: quant
+    category: china
+    layer: depth
+    authority: C
+    evidence: community
+    kind: html
+    url: "https://github.com/rootSunc/CNEquity"
+    auth: none
+    iface: [ archive, mcp ]
+    pit: yes
+    survivorship: bias-free
+    free_tier: "open source, self-hosted"
+    keywords: [ cnequity, a股, 数据湖, parquet, mcp, 退市股 ]
+    notes: "开源 A 股本地数据湖：55 个日更数据集、PIT、退市股、原生 MCP、免 token 自托管（2026-11-06 仓库描述）。项目较年轻，生产前核对数据来源与许可。"
+    content_access: static
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 30
+    license_class: varies
+    cache_policy: metadata-only
+    attribution: required
+    probe:
+      status: 200
+      content_type: text/html; charset=utf-8
+      bytes: 347094
+      text_len: 7551
+      final_url: https://github.com/rootSunc/CNEquity
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: wind
+    name: "Wind 金融终端"
+    domain: quant
+    category: china
+    layer: breadth
+    authority: B
+    evidence: vendor-doc
+    kind: html
+    url: "https://www.wind.com.cn/"
+    auth: account
+    iface: [ sdk, web ]
+    pit: partial
+    free_tier: "paid license"
+    keywords: [ wind, 万得, a股, 港股, 债券, 宏观 ]
+    notes: "国内机构标准数据源；API 需终端授权。"
+    content_access: portal
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 30
+    license_class: site-terms
+    cache_policy: metadata-only
+    attribution: recommended
+    probe:
+      status: 200
+      content_type: text/html; charset=utf-8
+      bytes: 9191
+      text_len: 803
+      final_url: https://www.wind.com.cn/
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: ifind
+    name: "同花顺 iFinD"
+    domain: quant
+    category: china
+    layer: breadth
+    authority: B
+    evidence: vendor-doc
+    kind: html
+    url: "https://www.51ifind.com/"
+    auth: account
+    iface: [ sdk, web ]
+    pit: partial
+    free_tier: "paid license"
+    keywords: [ ifind, 同花顺, a股, 数据接口 ]
+    notes: "商业终端，接口需授权。"
+    content_access: portal
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 30
+    license_class: site-terms
+    cache_policy: metadata-only
+    attribution: recommended
+    probe:
+      status: 200
+      content_type: text/html; charset=UTF-8
+      bytes: 6399
+      text_len: 8
+      final_url: https://www.51ifind.com/
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: joinquant
+    name: "JoinQuant 聚宽"
+    domain: quant
+    category: china
+    layer: depth
+    authority: B
+    evidence: vendor-doc
+    kind: html
+    url: "https://www.joinquant.com/"
+    auth: account
+    iface: [ sdk, web ]
+    pit: partial
+    free_tier: "free tier + paid plans"
+    keywords: [ joinquant, 聚宽, jqdata, 回测, a股 ]
+    notes: "JQData 数据接口需登录；社区策略可参考但不可当数据来源。"
+    content_access: portal
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 30
+    license_class: site-terms
+    cache_policy: metadata-only
+    attribution: recommended
+    probe:
+      status: 200
+      content_type: text/html
+      bytes: 801
+      text_len: 8
+      final_url: https://www.joinquant.com/
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: ricequant
+    name: "RiceQuant 米筐"
+    domain: quant
+    category: china
+    layer: depth
+    authority: B
+    evidence: vendor-doc
+    kind: html
+    url: "https://www.ricequant.com/"
+    auth: account
+    iface: [ sdk, web ]
+    pit: partial
+    free_tier: "free tier + paid plans"
+    keywords: [ ricequant, 米筐, rqdata, 回测, a股 ]
+    notes: "RQData 数据服务，需账号/授权。"
+    content_access: portal
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 30
+    license_class: site-terms
+    cache_policy: metadata-only
+    attribution: recommended
+    probe:
+      status: 200
+      content_type: text/html; charset=utf-8
+      bytes: 3502
+      text_len: 6
+      final_url: https://www.ricequant.com/welcome/
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  # ---------- 执行 / 券商 ----------
+  - id: ibkr-api
+    name: "Interactive Brokers API (TWS / Client Portal)"
+    domain: quant
+    category: execution
+    layer: depth
+    authority: B
+    evidence: vendor-doc
+    kind: html
+    url: "https://www.interactivebrokers.com/campus/ibkr-api-page/"
+    auth: account
+    iface: [ rest, ws, sdk ]
+    pit: no
+    free_tier: "requires funded account"
+    keywords: [ ibkr, interactive brokers, tws, client portal, execution, 盈透 ]
+    notes: "研究到下单的闭环；TWS/Client Portal 两套接口，注意会话与网关进程管理。"
+    content_access: static
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 30
+    license_class: site-terms
+    cache_policy: metadata-only
+    attribution: recommended
+    probe:
+      status: 200
+      content_type: text/html; charset=UTF-8
+      bytes: 381221
+      text_len: 20507
+      final_url: https://www.interactivebrokers.com/campus/ibkr-api-page/
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: alpaca-trading
+    name: "Alpaca Trading API"
+    domain: quant
+    category: execution
+    layer: depth
+    authority: B
+    evidence: vendor-doc
+    kind: html
+    url: "https://docs.alpaca.markets/docs/trading-api"
+    auth: key
+    iface: [ rest, ws ]
+    pit: no
+    free_tier: "paper trading free"
+    keywords: [ alpaca, trading api, paper trading, orders, execution ]
+    notes: "纸交易与实盘同一套接口；先用 paper 验证。"
+    content_access: static
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 30
+    license_class: site-terms
+    cache_policy: metadata-only
+    attribution: recommended
+    probe:
+      status: 200
+      content_type: text/html; charset=utf-8
+      bytes: 455697
+      text_len: 6648
+      final_url: https://docs.alpaca.markets/us/docs/trading-api
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  # ---------- 研究 / 新闻 / 另类 ----------
+  - id: nber
+    name: "NBER Working Papers"
+    domain: quant
+    category: research
+    layer: depth
+    authority: B
+    evidence: index
+    kind: html
+    url: "https://www.nber.org/papers"
+    auth: none
+    iface: [ web ]
+    pit: no
+    keywords: [ nber, working paper, economics, asset pricing, research ]
+    notes: "经济与金融工作论文索引；未审，引用时标注 working paper。"
+    content_access: static
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 30
+    license_class: site-terms
+    cache_policy: metadata-only
+    attribution: recommended
+    probe:
+      status: 200
+      content_type: text/html; charset=UTF-8
+      bytes: 72269
+      text_len: 5071
+      final_url: https://www.nber.org/papers
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: ssrn
+    name: "SSRN"
+    domain: quant
+    category: research
+    layer: depth
+    authority: C
+    evidence: index
+    kind: html
+    url: "https://www.ssrn.com/"
+    auth: account
+    iface: [ web ]
+    pit: no
+    keywords: [ ssrn, working paper, finance, preprint, research ]
+    notes: "预印本平台，质量参差；结论需同行评审或一手数据支撑。"
+    content_access: challenge
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 30
+    license_class: site-terms
+    cache_policy: metadata-only
+    attribution: recommended
+    probe:
+      status: 403
+      content_type: text/html; charset=UTF-8
+      bytes: 896436
+      text_len: 369
+      final_url: https://www.ssrn.com/
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: arxiv-qfin
+    name: "arXiv q-fin"
+    domain: quant
+    category: research
+    layer: depth
+    authority: B
+    evidence: preprint
+    kind: html
+    url: "https://arxiv.org/list/q-fin/recent"
+    auth: none
+    iface: [ web, rest ]
+    pit: no
+    keywords: [ arxiv, q-fin, quantitative finance, preprint, research ]
+    notes: "量化金融预印本；未审，不能当结论。"
+    content_access: static
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 30
+    license_class: open-access-paper
+    cache_policy: short-quote
+    attribution: recommended
+    probe:
+      status: 200
+      content_type: text/html; charset=utf-8
+      bytes: 79495
+      text_len: 16692
+      final_url: https://arxiv.org/list/q-fin/recent
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: gdelt
+    name: "GDELT Project"
+    domain: quant
+    category: news
+    layer: depth
+    authority: A
+    evidence: dataset
+    kind: html
+    url: "https://www.gdeltproject.org/"
+    auth: none
+    iface: [ archive, rest ]
+    pit: no
+    free_tier: "free, open"
+    keywords: [ gdelt, news, events, global, alternative data, 新闻 ]
+    notes: "全球新闻事件库，免费开放；实体/情绪噪声大，需自行清洗。"
+    content_access: static
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 30
+    license_class: public-domain
+    cache_policy: short-quote
+    attribution: recommended
+    probe:
+      status: 200
+      content_type: text/html
+      bytes: 46205
+      text_len: 17946
+      final_url: https://gdeltproject.org/
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: benzinga-api
+    name: "Benzinga API"
+    domain: quant
+    category: news
+    layer: depth
+    authority: B
+    evidence: vendor-doc
+    kind: html
+    url: "https://www.benzinga.com/apis/"
+    auth: key
+    iface: [ rest ]
+    pit: no
+    free_tier: "paid"
+    keywords: [ benzinga, news, earnings, analyst, api ]
+    notes: "新闻与财报电话会数据；注意许可与延迟。"
+    content_access: challenge
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 30
+    license_class: site-terms
+    cache_policy: metadata-only
+    attribution: recommended
+    probe:
+      status: 403
+      content_type: text/html; charset=UTF-8
+      bytes: 5682
+      text_len: 770
+      final_url: https://www.benzinga.com/apis/
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: ravenpack
+    name: "RavenPack"
+    domain: quant
+    category: news
+    layer: depth
+    authority: B
+    evidence: vendor-doc
+    kind: html
+    url: "https://www.ravenpack.com/"
+    auth: account
+    iface: [ rest, archive ]
+    pit: no
+    free_tier: "paid"
+    keywords: [ ravenpack, news analytics, sentiment, alternative data ]
+    notes: "机构级新闻情绪与事件数据，价格高。"
+    content_access: static
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 30
+    license_class: site-terms
+    cache_policy: metadata-only
+    attribution: recommended
+    probe:
+      status: 200
+      content_type: text/html; charset=UTF-8
+      bytes: 110008
+      text_len: 5644
+      final_url: https://www.ravenpack.com/
+      checked_at: 2026-11-06
+      method: probe-v1

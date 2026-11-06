@@ -1,0 +1,1160 @@
+# Crypto source matrix (agent-collectable)
+# Generated: 2026-11-06. Endpoint details verified against official docs on that date.
+# Market data from an exchange is a primary source for that exchange only; cross-exchange claims need a second venue or an aggregator.
+
+meta:
+  name: "Crypto trading source matrix"
+  version: 1
+  domain: crypto
+  generated_at: "2026-11-06"
+  scope: "Exchange APIs, derivatives metrics, on-chain data, archives, SDKs"
+  authority_legend:
+    A: "一手事实：交易所官方文档 / 规范 / 官方归档"
+    B: "权威解释：机构级数据商、官方研究"
+    C: "可靠二手：开源聚合器 / 社区项目（需交叉验证）"
+    D: "线索：博客、媒体、未审来源（不可当结论）"
+  evidence_legend:
+    spec: "交易所接口规范"
+    official-doc: "官方文档"
+    vendor-doc: "商业数据商文档"
+    dataset: "官方归档 / 结构化数据"
+    community: "社区 / 开源项目"
+    index: "索引 / 目录"
+    preprint: "预印本"
+  category_legend:
+    exchange: "交易所官方 API"
+    aggregator: "跨所聚合与币种数据"
+    derivatives: "衍生品指标（资金费率 / OI / 强平）"
+    onchain: "链上数据与地址标签"
+    archive: "历史归档（tick / 订单簿）"
+    sdk: "客户端库"
+    research: "研究"
+  content_access_legend:
+    static: "静态 HTML，可直接取正文"
+    portal: "落地页/目录页，需跟到正文"
+    js: "需要浏览器渲染（纯 fetch 拿不到正文）"
+    challenge: "反爬 / 人机校验 / 鉴权墙，需浏览器或人工确认"
+    api: "JSON / XML 结构化返回"
+    binary: "PDF / 二进制"
+  free_tier_note: "免费额度与限流必须在核实日期上写；没核实写 unverified。"
+
+sources:
+  # ---------- Binance 官方 ----------
+  - id: binance-spot-api
+    name: "Binance Spot API"
+    domain: crypto
+    category: exchange
+    layer: breadth
+    authority: A
+    evidence: spec
+    kind: html
+    url: "https://developers.binance.info/en/docs/binance-spot-api-docs"
+    auth: none
+    iface: [ rest, ws ]
+    pit: no
+    free_tier: "public market data free, no key"
+    keywords: [ binance, spot, klines, order book, rest, websocket, 现货 ]
+    notes: "公开行情免 key；私有账户接口需 key。受交易所 API 条款约束，再分发需授权。"
+    content_access: static
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 90
+    license_class: site-terms
+    cache_policy: metadata-only
+    attribution: recommended
+    probe:
+      status: 200
+      content_type: text/html; charset=utf-8
+      bytes: 66196
+      text_len: 2350
+      final_url: https://developers.binance.info/en/docs/binance-spot-api-docs
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: binance-futures-api
+    name: "Binance USD-M Futures API"
+    domain: crypto
+    category: exchange
+    layer: breadth
+    authority: A
+    evidence: spec
+    kind: html
+    url: "https://developers.binance.info/en/docs/derivatives/usds-margined-futures"
+    auth: none
+    iface: [ rest, ws ]
+    pit: no
+    free_tier: "public market data free, no key"
+    keywords: [ binance, futures, funding rate, open interest, um, 合约 ]
+    notes: "合约行情与资金费率；衍生品历史接口只给最近窗口，长历史用归档或第三方。"
+    content_access: static
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 90
+    license_class: site-terms
+    cache_policy: metadata-only
+    attribution: recommended
+    probe:
+      status: 200
+      content_type: text/html; charset=utf-8
+      bytes: 66196
+      text_len: 2350
+      final_url: https://developers.binance.info/en/docs/derivatives/usds-margined-futures
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: binance-agent-native
+    name: "Binance Agent Native"
+    domain: crypto
+    category: exchange
+    layer: depth
+    authority: A
+    evidence: official-doc
+    kind: html
+    url: "https://developers.binance.info/en/docs/agent-native/overview"
+    auth: none
+    iface: [ web, rest, mcp ]
+    pit: no
+    verified_on: "2026-11-06"
+    keywords: [ binance, agent, llm, mcp, llms.txt, agent rest api ]
+    notes: "官方确认三种接入：llms.txt、Agent REST API、MCP Server（2026-11-06 文档）。"
+    content_access: static
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 30
+    license_class: site-terms
+    cache_policy: metadata-only
+    attribution: recommended
+    probe:
+      status: 200
+      content_type: text/html; charset=utf-8
+      bytes: 52354
+      text_len: 2235
+      final_url: https://developers.binance.info/en/docs/agent-native/overview
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: binance-llms-txt
+    name: "Binance llms.txt / llms-full.txt"
+    domain: crypto
+    category: exchange
+    layer: depth
+    authority: A
+    evidence: official-doc
+    kind: api
+    url: "https://developers.binance.com/en/docs/llms.txt"
+    auth: none
+    iface: [ rest ]
+    pit: no
+    free_tier: "free"
+    verified_on: "2026-11-06"
+    keywords: [ binance, llms.txt, llms-full.txt, documentation index, agent ]
+    notes: "索引约 66 KB；全文在 /en/docs/llms-full.txt（约 8.3 MB）。裸路径 /llms.txt 是 404。"
+    content_access: api
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 14
+    license_class: site-terms
+    cache_policy: metadata-only
+    attribution: recommended
+    probe:
+      status: 200
+      content_type: text/plain; charset=utf-8
+      bytes: 175048
+      text_len: 2000
+      final_url: https://developers.binance.com/en/docs/llms.txt
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: binance-mcp
+    name: "Binance MCP Server"
+    domain: crypto
+    category: exchange
+    layer: depth
+    authority: A
+    evidence: official-doc
+    kind: html
+    url: "https://developers.binance.info/en/docs/agent-native/mcp-server"
+    auth: account
+    iface: [ mcp ]
+    pit: no
+    verified_on: "2026-11-06"
+    keywords: [ binance, mcp, agentic sub-account, trading, ai agent ]
+    notes: "官方 MCP：读行情、查余额、在专用 Agentic 子账户内交易 Spot/Margin/Convert/Futures；不要把主账户直接接上去。"
+    content_access: static
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 30
+    license_class: site-terms
+    cache_policy: metadata-only
+    attribution: recommended
+    probe:
+      status: 200
+      content_type: text/html; charset=utf-8
+      bytes: 40554
+      text_len: 1248
+      final_url: https://developers.binance.info/en/docs/agent-native/mcp-server
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: binance-ws-spot
+    name: "Binance Spot WebSocket Streams"
+    domain: crypto
+    category: exchange
+    layer: depth
+    authority: A
+    evidence: spec
+    kind: html
+    url: "https://developers.binance.info/en/docs/binance-spot-api-docs/web-socket-streams"
+    auth: none
+    iface: [ ws ]
+    pit: no
+    verified_on: "2026-11-06"
+    keywords: [ binance, websocket, stream, 24 hours, reconnect, 行情推送 ]
+    notes: "Base: wss://stream.binance.com:9443 或 :443；单连接最长 24 小时，到点断开，必须内置重连。"
+    content_access: static
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 90
+    license_class: site-terms
+    cache_policy: metadata-only
+    attribution: recommended
+    probe:
+      status: 200
+      content_type: text/html; charset=utf-8
+      bytes: 66196
+      text_len: 2350
+      final_url: https://developers.binance.info/en/docs/binance-spot-api-docs/web-socket-streams
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: binance-ws-futures
+    name: "Binance USD-M Futures WebSocket Streams"
+    domain: crypto
+    category: exchange
+    layer: depth
+    authority: A
+    evidence: spec
+    kind: html
+    url: "https://developers.binance.info/en/docs/derivatives/usds-margined-futures/websocket-market-streams"
+    auth: none
+    iface: [ ws ]
+    pit: no
+    verified_on: "2026-11-06"
+    keywords: [ binance, futures, websocket, fstream, listenkey, 合约推送 ]
+    notes: "公开行情 wss://fstream.binance.com/ws/<stream>（或 /stream?streams=）；私有用户流 /private/ws/<listenKey>。不存在 /public 或 /market 路径。"
+    content_access: static
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 90
+    license_class: site-terms
+    cache_policy: metadata-only
+    attribution: recommended
+    probe:
+      status: 200
+      content_type: text/html; charset=utf-8
+      bytes: 66196
+      text_len: 2350
+      final_url: https://developers.binance.info/en/docs/derivatives/usds-margined-futures/websocket-market-streams
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: binance-data-archive
+    name: "Binance Data Collection (data.binance.vision)"
+    domain: crypto
+    category: archive
+    layer: depth
+    authority: A
+    evidence: dataset
+    kind: html
+    url: "https://data.binance.vision/"
+    auth: none
+    iface: [ archive ]
+    pit: no
+    free_tier: "free"
+    history_start: "2019-12 (UM futures 1m; spot earlier)"
+    verified_on: "2026-11-06"
+    keywords: [ binance, archive, csv, klines, historical, 下载 ]
+    notes: "官方 S3 归档，含日/月 K 线与 CHECKSUM；实测 UM futures 1m 从 2019-12-31 起。"
+    content_access: portal
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 30
+    license_class: site-terms
+    cache_policy: metadata-only
+    attribution: recommended
+    probe:
+      status: 200
+      content_type: text/html
+      bytes: 2712
+      text_len: 72
+      final_url: https://data.binance.vision/
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: binance-testnet-spot
+    name: "Binance Spot Testnet"
+    domain: crypto
+    category: exchange
+    layer: depth
+    authority: A
+    evidence: official-doc
+    kind: html
+    url: "https://testnet.binance.vision/"
+    auth: key
+    iface: [ rest, ws ]
+    pit: no
+    free_tier: "free testnet"
+    keywords: [ binance, testnet, paper, sandbox, 测试网 ]
+    notes: "现货演练环境；先 testnet 再小额实盘。"
+    content_access: static
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 30
+    license_class: site-terms
+    cache_policy: metadata-only
+    attribution: recommended
+    probe:
+      status: 200
+      content_type: text/html; charset=utf-8
+      bytes: 36060
+      text_len: 9672
+      final_url: https://testnet.binance.vision/
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: binance-testnet-futures
+    name: "Binance Futures Testnet"
+    domain: crypto
+    category: exchange
+    layer: depth
+    authority: A
+    evidence: official-doc
+    kind: html
+    url: "https://testnet.binancefuture.com/"
+    auth: key
+    iface: [ rest, ws ]
+    pit: no
+    free_tier: "free testnet"
+    keywords: [ binance, futures testnet, demo, sandbox ]
+    notes: "合约演练环境；文档另有 demo-fstream 环境可用。"
+    content_access: challenge
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 30
+    license_class: site-terms
+    cache_policy: metadata-only
+    attribution: recommended
+    probe:
+      status: 202
+      content_type: text/html; charset=UTF-8
+      bytes: 0
+      text_len: 0
+      final_url: https://demo.binance.com/en/futures/BTCUSDT
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: binance-options
+    name: "Binance Options API"
+    domain: crypto
+    category: exchange
+    layer: depth
+    authority: A
+    evidence: spec
+    kind: html
+    url: "https://developers.binance.info/en/docs/derivatives/options-trading"
+    auth: none
+    iface: [ rest, ws ]
+    pit: no
+    keywords: [ binance, options, greeks, implied volatility, 期权 ]
+    notes: "期权行情与希腊字母；流动性弱于 Deribit，跨所比较更稳。"
+    content_access: static
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 90
+    license_class: site-terms
+    cache_policy: metadata-only
+    attribution: recommended
+    probe:
+      status: 200
+      content_type: text/html; charset=utf-8
+      bytes: 66196
+      text_len: 2350
+      final_url: https://developers.binance.info/en/docs/derivatives/options-trading
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  # ---------- 其他交易所 ----------
+  - id: bybit-v5
+    name: "Bybit V5 API"
+    domain: crypto
+    category: exchange
+    layer: depth
+    authority: A
+    evidence: spec
+    kind: html
+    url: "https://bybit-exchange.github.io/docs/v5/intro"
+    auth: none
+    iface: [ rest, ws ]
+    pit: no
+    keywords: [ bybit, v5, perpetual, api, 永续 ]
+    notes: "统一的 V5 接口；用于跨所验证。"
+    content_access: static
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 90
+    license_class: site-terms
+    cache_policy: metadata-only
+    attribution: recommended
+    probe:
+      status: 200
+      content_type: text/html; charset=utf-8
+      bytes: 25377
+      text_len: 4650
+      final_url: https://bybit-exchange.github.io/docs/v5/intro
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: okx-v5
+    name: "OKX V5 API"
+    domain: crypto
+    category: exchange
+    layer: depth
+    authority: A
+    evidence: spec
+    kind: html
+    url: "https://www.okx.com/docs-v5/en/"
+    auth: none
+    iface: [ rest, ws ]
+    pit: no
+    keywords: [ okx, v5, api, perpetual, 欧易 ]
+    notes: "跨所验证与套利比价的常用第二所。"
+    content_access: static
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 90
+    license_class: site-terms
+    cache_policy: metadata-only
+    attribution: recommended
+    probe:
+      status: 200
+      content_type: text/html; charset=UTF-8
+      bytes: 5280641
+      text_len: 1193249
+      final_url: https://www.okx.com/docs-v5/en/
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: coinbase-advanced-trade
+    name: "Coinbase Advanced Trade API"
+    domain: crypto
+    category: exchange
+    layer: depth
+    authority: A
+    evidence: spec
+    kind: html
+    url: "https://docs.cdp.coinbase.com/advanced-trade/docs/welcome"
+    auth: key
+    iface: [ rest, ws ]
+    pit: no
+    keywords: [ coinbase, advanced trade, api, us ]
+    notes: "美国合规路径；与 Binance.com 的地域限制互补。"
+    content_access: static
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 90
+    license_class: site-terms
+    cache_policy: metadata-only
+    attribution: recommended
+    probe:
+      status: 200
+      content_type: text/html; charset=utf-8
+      bytes: 492159
+      text_len: 297309
+      final_url: https://docs.cdp.coinbase.com/coinbase-app/advanced-trade-apis/overview
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: kraken-api
+    name: "Kraken REST/WebSocket API"
+    domain: crypto
+    category: exchange
+    layer: depth
+    authority: A
+    evidence: spec
+    kind: html
+    url: "https://docs.kraken.com/api/"
+    auth: key
+    iface: [ rest, ws ]
+    pit: no
+    keywords: [ kraken, api, spot, futures, 海妖 ]
+    notes: "欧美合规交易所，跨所验证用。"
+    content_access: static
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 90
+    license_class: site-terms
+    cache_policy: metadata-only
+    attribution: recommended
+    probe:
+      status: 200
+      content_type: text/html; charset=utf-8
+      bytes: 197695
+      text_len: 68897
+      final_url: https://docs.kraken.com/
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: deribit
+    name: "Deribit API"
+    domain: crypto
+    category: exchange
+    layer: depth
+    authority: A
+    evidence: spec
+    kind: html
+    url: "https://docs.deribit.com/"
+    auth: none
+    iface: [ rest, ws ]
+    pit: no
+    keywords: [ deribit, options, futures, volatility, 期权 ]
+    notes: "加密期权流动性的主要场所；期权策略数据优先看这里。"
+    content_access: static
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 90
+    license_class: site-terms
+    cache_policy: metadata-only
+    attribution: recommended
+    probe:
+      status: 200
+      content_type: text/html; charset=utf-8
+      bytes: 305062
+      text_len: 167432
+      final_url: https://docs.deribit.com/
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  # ---------- 聚合 / 衍生品指标 ----------
+  - id: coingecko-api
+    name: "CoinGecko API"
+    domain: crypto
+    category: aggregator
+    layer: depth
+    authority: B
+    evidence: vendor-doc
+    kind: html
+    url: "https://docs.coingecko.com/"
+    auth: key
+    iface: [ rest ]
+    pit: no
+    free_tier: "demo key; limits unverified"
+    keywords: [ coingecko, market cap, ohlcv, coin discovery, 币种 ]
+    notes: "币种全景与历史价格；网页有反爬（403 challenge），API 走 key。"
+    content_access: static
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 30
+    license_class: site-terms
+    cache_policy: metadata-only
+    attribution: recommended
+    probe:
+      status: 200
+      content_type: text/html; charset=utf-8
+      bytes: 146497
+      text_len: 32625
+      final_url: https://docs.coingecko.com/
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: coingecko-mcp
+    name: "CoinGecko MCP"
+    domain: crypto
+    category: aggregator
+    layer: depth
+    authority: B
+    evidence: official-doc
+    kind: html
+    url: "https://docs.coingecko.com/ai-integration/mcp-server"
+    auth: none
+    iface: [ mcp ]
+    pit: no
+    free_tier: "keyless server shares rate limits"
+    verified_on: "2026-11-06"
+    keywords: [ coingecko, mcp, ai agent, keyless ]
+    notes: "免费无 key：https://mcp.api.coingecko.com/mcp（共享限流）；带 key：mcp.pro-api.coingecko.com。"
+    content_access: static
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 30
+    license_class: site-terms
+    cache_policy: metadata-only
+    attribution: recommended
+    probe:
+      status: 200
+      content_type: text/html; charset=utf-8
+      bytes: 270236
+      text_len: 70979
+      final_url: https://docs.coingecko.com/ai-integration/mcp-server
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: coinmarketcap-api
+    name: "CoinMarketCap API"
+    domain: crypto
+    category: aggregator
+    layer: depth
+    authority: B
+    evidence: vendor-doc
+    kind: html
+    url: "https://coinmarketcap.com/api/documentation/v1/"
+    auth: key
+    iface: [ rest ]
+    pit: no
+    free_tier: "unverified"
+    keywords: [ coinmarketcap, cmc, rankings, market cap ]
+    notes: "聚合数据，口径与交易所原始数据可能不同；关键数字回到交易所核对。"
+    content_access: static
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 30
+    license_class: site-terms
+    cache_policy: metadata-only
+    attribution: recommended
+    probe:
+      status: 200
+      content_type: text/html
+      bytes: 80671
+      text_len: 5263
+      final_url: https://coinmarketcap.com/api/documentation/
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: coinglass-api
+    name: "CoinGlass API"
+    domain: crypto
+    category: derivatives
+    layer: depth
+    authority: B
+    evidence: vendor-doc
+    kind: html
+    url: "https://docs.coinglass.com/"
+    auth: key
+    iface: [ rest ]
+    pit: no
+    free_tier: "unverified"
+    keywords: [ coinglass, funding rate, open interest, liquidation, 多空比 ]
+    notes: "跨所衍生品指标（资金费率/OI/强平/多空比）；口径以文档为准。"
+    content_access: static
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 30
+    license_class: site-terms
+    cache_policy: metadata-only
+    attribution: recommended
+    probe:
+      status: 200
+      content_type: text/html; charset=utf-8
+      bytes: 345149
+      text_len: 8686
+      final_url: https://docs.coinglass.com/reference/getting-started-with-your-api
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: kaiko
+    name: "Kaiko"
+    domain: crypto
+    category: market-data
+    layer: depth
+    authority: B
+    evidence: vendor-doc
+    kind: html
+    url: "https://www.kaiko.com/"
+    auth: key
+    iface: [ rest, archive ]
+    pit: no
+    free_tier: "paid"
+    keywords: [ kaiko, institutional, tick, order book, research ]
+    notes: "机构级跨所行情与研究数据。"
+    content_access: static
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 30
+    license_class: site-terms
+    cache_policy: metadata-only
+    attribution: recommended
+    probe:
+      status: 200
+      content_type: text/html
+      bytes: 221936
+      text_len: 12153
+      final_url: https://www.kaiko.com/
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: coinmetrics
+    name: "Coin Metrics"
+    domain: crypto
+    category: market-data
+    layer: depth
+    authority: B
+    evidence: vendor-doc
+    kind: html
+    url: "https://coinmetrics.io/"
+    auth: key
+    iface: [ rest, archive ]
+    pit: no
+    free_tier: "community tier"
+    keywords: [ coin metrics, network data, market data, reference rates ]
+    notes: "网络与市场指标的机构级口径，含参考汇率。"
+    content_access: static
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 30
+    license_class: site-terms
+    cache_policy: metadata-only
+    attribution: recommended
+    probe:
+      status: 200
+      content_type: text/html; charset=utf-8
+      bytes: 165626
+      text_len: 8475
+      final_url: https://www.talos.com/our-solutions/data/overview
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  # ---------- 链上 ----------
+  - id: glassnode
+    name: "Glassnode"
+    domain: crypto
+    category: onchain
+    layer: depth
+    authority: B
+    evidence: vendor-doc
+    kind: html
+    url: "https://glassnode.com/"
+    auth: key
+    iface: [ rest, web ]
+    pit: no
+    free_tier: "free tier + paid"
+    keywords: [ glassnode, on-chain, metrics, hodl, 链上 ]
+    notes: "链上指标与实体调整口径；定义以文档为准。"
+    content_access: static
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 30
+    license_class: site-terms
+    cache_policy: metadata-only
+    attribution: recommended
+    probe:
+      status: 200
+      content_type: text/html; charset=utf-8
+      bytes: 160513
+      text_len: 8786
+      final_url: https://glassnode.com/
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: nansen
+    name: "Nansen"
+    domain: crypto
+    category: onchain
+    layer: depth
+    authority: B
+    evidence: vendor-doc
+    kind: html
+    url: "https://www.nansen.ai/"
+    auth: account
+    iface: [ web, rest ]
+    pit: no
+    free_tier: "paid"
+    keywords: [ nansen, smart money, wallet labels, on-chain ]
+    notes: "地址标签与聪明钱追踪；标签质量需抽样验证。"
+    content_access: static
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 30
+    license_class: site-terms
+    cache_policy: metadata-only
+    attribution: recommended
+    probe:
+      status: 200
+      content_type: text/html
+      bytes: 694933
+      text_len: 6037
+      final_url: https://nansen.ai/
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: cryptoquant
+    name: "CryptoQuant"
+    domain: crypto
+    category: onchain
+    layer: depth
+    authority: B
+    evidence: vendor-doc
+    kind: html
+    url: "https://cryptoquant.com/"
+    auth: account
+    iface: [ web, rest ]
+    pit: no
+    free_tier: "paid"
+    keywords: [ cryptoquant, exchange flows, miner, on-chain ]
+    notes: "交易所流入流出与矿工指标。"
+    content_access: challenge
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 30
+    license_class: site-terms
+    cache_policy: metadata-only
+    attribution: recommended
+    probe:
+      status: 403
+      content_type: text/html; charset=UTF-8
+      bytes: 5872
+      text_len: 16
+      final_url: https://cryptoquant.com/
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: etherscan-api
+    name: "Etherscan API"
+    domain: crypto
+    category: onchain
+    layer: depth
+    authority: B
+    evidence: vendor-doc
+    kind: html
+    url: "https://etherscan.io/apis"
+    auth: key
+    iface: [ rest ]
+    pit: no
+    free_tier: "free tier + paid"
+    keywords: [ etherscan, ethereum, transactions, contract, 以太坊 ]
+    notes: "以太坊原始交易与合约数据；多链需对应浏览器 API。"
+    content_access: static
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 30
+    license_class: site-terms
+    cache_policy: metadata-only
+    attribution: recommended
+    probe:
+      status: 200
+      content_type: text/html; charset=utf-8
+      bytes: 196451
+      text_len: 12376
+      final_url: https://etherscan.io/api/pricing
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: dune-docs
+    name: "Dune"
+    domain: crypto
+    category: onchain
+    layer: depth
+    authority: B
+    evidence: vendor-doc
+    kind: html
+    url: "https://dune.com/docs/"
+    auth: key
+    iface: [ rest, web ]
+    pit: no
+    free_tier: "free tier + paid"
+    keywords: [ dune, sql, on-chain, dashboard, 链上查询 ]
+    notes: "SQL 查询链上数据；社区看板质量差异大，关键指标自己写查询。"
+    content_access: static
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 30
+    license_class: site-terms
+    cache_policy: metadata-only
+    attribution: recommended
+    probe:
+      status: 200
+      content_type: text/html; charset=utf-8
+      bytes: 207932
+      text_len: 35184
+      final_url: https://docs.dune.com/
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: defillama-api
+    name: "DefiLlama API"
+    domain: crypto
+    category: onchain
+    layer: depth
+    authority: B
+    evidence: vendor-doc
+    kind: html
+    url: "https://docs.llama.fi/"
+    auth: none
+    iface: [ rest ]
+    pit: no
+    free_tier: "free"
+    keywords: [ defillama, tvl, dex, yields, 锁仓量 ]
+    notes: "DeFi TVL 与收益率聚合；免费公开接口。"
+    content_access: static
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 30
+    license_class: site-terms
+    cache_policy: metadata-only
+    attribution: recommended
+    probe:
+      status: 200
+      content_type: text/html; charset=utf-8
+      bytes: 32750
+      text_len: 4701
+      final_url: https://docs.llama.fi/
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: blockchair-api
+    name: "Blockchair API"
+    domain: crypto
+    category: onchain
+    layer: depth
+    authority: B
+    evidence: vendor-doc
+    kind: html
+    url: "https://blockchair.com/api/docs"
+    auth: key
+    iface: [ rest ]
+    pit: no
+    free_tier: "free tier + paid"
+    keywords: [ blockchair, bitcoin, utxo, blockchain, 比特币 ]
+    notes: "多链区块浏览器 API，适合 UTXO 分析。"
+    content_access: challenge
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 30
+    license_class: site-terms
+    cache_policy: metadata-only
+    attribution: recommended
+    probe:
+      status: 401
+      content_type: text/html
+      bytes: 265
+      text_len: 0
+      final_url: https://blockchair.com/api/docs
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: mempool-api
+    name: "mempool.space API"
+    domain: crypto
+    category: onchain
+    layer: depth
+    authority: B
+    evidence: vendor-doc
+    kind: html
+    url: "https://mempool.space/docs/api"
+    auth: none
+    iface: [ rest ]
+    pit: no
+    free_tier: "free, self-hostable"
+    keywords: [ mempool, bitcoin, fees, blocks, 内存池 ]
+    notes: "比特币内存池与手续费估算；可自托管。"
+    content_access: portal
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 30
+    license_class: site-terms
+    cache_policy: metadata-only
+    attribution: recommended
+    probe:
+      status: 200
+      content_type: text/html
+      bytes: 3115
+      text_len: 26
+      final_url: https://mempool.space/docs/api
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  # ---------- 归档 ----------
+  - id: tardis
+    name: "Tardis.dev"
+    domain: crypto
+    category: archive
+    layer: depth
+    authority: B
+    evidence: vendor-doc
+    kind: html
+    url: "https://tardis.dev/"
+    auth: key
+    iface: [ rest, archive ]
+    pit: no
+    free_tier: "paid, first day of each month free"
+    keywords: [ tardis, tick, order book, historical, replay, 订单簿 ]
+    notes: "tick 级订单簿与成交流，回测微观结构用。"
+    content_access: static
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 30
+    license_class: site-terms
+    cache_policy: metadata-only
+    attribution: recommended
+    probe:
+      status: 200
+      content_type: text/html
+      bytes: 330320
+      text_len: 28949
+      final_url: https://tardis.dev/
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: cryptohftdata
+    name: "CryptoHFTData"
+    domain: crypto
+    category: archive
+    layer: depth
+    authority: B
+    evidence: vendor-doc
+    kind: html
+    url: "https://www.cryptohftdata.com/"
+    auth: key
+    iface: [ rest, archive ]
+    pit: no
+    free_tier: "paid"
+    keywords: [ cryptohftdata, order book, liquidation, historical, 高频 ]
+    notes: "高频历史（订单簿/强平/资金费率），按数据集购买。"
+    content_access: static
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 30
+    license_class: site-terms
+    cache_policy: metadata-only
+    attribution: recommended
+    probe:
+      status: 200
+      content_type: text/html; charset=utf-8
+      bytes: 266723
+      text_len: 7800
+      final_url: https://www.cryptohftdata.com/
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  # ---------- SDK ----------
+  - id: ccxt
+    name: "CCXT"
+    domain: crypto
+    category: sdk
+    layer: depth
+    authority: B
+    evidence: community
+    kind: html
+    url: "https://github.com/ccxt/ccxt"
+    auth: none
+    iface: [ sdk ]
+    pit: no
+    free_tier: "open source (MIT)"
+    keywords: [ ccxt, unified api, multi exchange, python, javascript ]
+    notes: "44.8k stars（2026-11-06）；统一多所 REST/WS，适合当执行层适配器。"
+    content_access: static
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 30
+    license_class: open-source
+    cache_policy: metadata-only
+    attribution: required
+    probe:
+      status: 200
+      content_type: text/html; charset=utf-8
+      bytes: 1415590
+      text_len: 42376
+      final_url: https://github.com/ccxt/ccxt
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: binance-connector-python
+    name: "binance-connector-python"
+    domain: crypto
+    category: sdk
+    layer: depth
+    authority: A
+    evidence: official-doc
+    kind: html
+    url: "https://github.com/binance/binance-connector-python"
+    auth: none
+    iface: [ sdk ]
+    pit: no
+    free_tier: "open source"
+    keywords: [ binance, official sdk, python, connector ]
+    notes: "Binance 官方 Python SDK；频繁更新，跟官方文档版本。"
+    content_access: static
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 30
+    license_class: open-source
+    cache_policy: metadata-only
+    attribution: required
+    probe:
+      status: 200
+      content_type: text/html; charset=utf-8
+      bytes: 260406
+      text_len: 8322
+      final_url: https://github.com/binance/binance-connector-python
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  - id: python-binance
+    name: "python-binance"
+    domain: crypto
+    category: sdk
+    layer: depth
+    authority: B
+    evidence: community
+    kind: html
+    url: "https://github.com/sammchardy/python-binance"
+    auth: none
+    iface: [ sdk ]
+    pit: no
+    free_tier: "open source (MIT)"
+    keywords: [ python-binance, community sdk, python ]
+    notes: "社区 SDK，7.2k stars，仍在维护（2026-11-06）；非官方，接口覆盖滞后时回到官方文档。"
+    content_access: static
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 30
+    license_class: open-source
+    cache_policy: metadata-only
+    attribution: required
+    probe:
+      status: 200
+      content_type: text/html; charset=utf-8
+      bytes: 372112
+      text_len: 14645
+      final_url: https://github.com/sammchardy/python-binance
+      checked_at: 2026-11-06
+      method: probe-v1
+
+  # ---------- 研究 ----------
+  - id: binance-research
+    name: "Binance Research"
+    domain: crypto
+    category: research
+    layer: depth
+    authority: B
+    evidence: official-doc
+    kind: html
+    url: "https://research.binance.com/"
+    auth: none
+    iface: [ web ]
+    pit: no
+    keywords: [ binance research, crypto research, market report ]
+    notes: "交易所研究部门报告；有立场，数据需回到原始来源核实。"
+    content_access: challenge
+    last_checked: 2026-11-06
+    check_method: probe-v1
+    refresh_days: 30
+    license_class: site-terms
+    cache_policy: metadata-only
+    attribution: recommended
+    probe:
+      status: 202
+      content_type: text/html; charset=UTF-8
+      bytes: 0
+      text_len: 0
+      final_url: https://research.binance.com/
+      checked_at: 2026-11-06
+      method: probe-v1

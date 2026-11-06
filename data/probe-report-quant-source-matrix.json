@@ -1,0 +1,41 @@
+{
+  "generated_at": "2026-11-06",
+  "method": "probe-v1",
+  "summary": {
+    "total": 1,
+    "ok": 1,
+    "non200": [],
+    "access": {
+      "js": 1
+    },
+    "flags": {
+      "js-shell": 1,
+      "low-text": 1
+    }
+  },
+  "entries": [
+    {
+      "id": "oecd-data",
+      "url": "https://data-explorer.oecd.org/",
+      "kind": "html",
+      "evidence": "official-doc",
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 174503,
+      "finalUrl": "https://data-explorer.oecd.org/",
+      "textLen": 0,
+      "linkCount": 0,
+      "jsMarkers": [
+        "<div id=\"root\"",
+        "id=\"root\"",
+        "enable JavaScript"
+      ],
+      "access": "js",
+      "flags": [
+        "js-shell",
+        "low-text"
+      ],
+      "error": null
+    }
+  ]
+}
