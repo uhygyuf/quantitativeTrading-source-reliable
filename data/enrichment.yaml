@@ -155,6 +155,32 @@ fallback_id:
   coingecko-api: coinmarketcap-api
   farside-btc-etf: sosovalue
 
+# api_hosts: endpoint hosts documented by a source (host only; endpoint path not verified).
+# Used by qt_source_audit when the cited host is not itself a registered source URL.
+api_hosts:
+  binance-futures-api: [ fapi.binance.com, dapi.binance.com ]
+  binance-ws-futures: [ fstream.binance.com, dstream.binance.com ]
+  binance-options: [ eapi.binance.com ]
+  coingecko-api: [ api.coingecko.com ]
+  coinmarketcap-api: [ pro-api.coinmarketcap.com ]
+  coinglass-api: [ open-api.coinglass.com ]
+  glassnode: [ api.glassnode.com ]
+  etherscan-api: [ api.etherscan.io ]
+  blockchair-api: [ api.blockchair.com ]
+  tardis: [ api.tardis.dev ]
+  fred: [ api.stlouisfed.org ]
+  bls-api: [ api.bls.gov ]
+  treasury-fiscal-data: [ api.fiscaldata.treasury.gov ]
+  sharadar: [ api.sharadar.com ]
+  fmp: [ financialmodelingprep.com ]
+  twelve-data: [ api.twelvedata.com ]
+  tiingo: [ api.tiingo.com ]
+  bybit-v5: [ api.bybit.com ]
+  kraken-api: [ api.kraken.com ]
+  coinbase-advanced-trade: [ api.coinbase.com ]
+  cryptoquant: [ api.cryptoquant.com ]
+  deribit: [ test.deribit.com ]
+
 # data_types: dataset-level tags; every tag must exist in data/datasets.yaml.
 data_types:
   sec-edgar-search: [ filings ]

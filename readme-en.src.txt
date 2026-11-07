@@ -11,6 +11,7 @@ A plugin for DeepSeek Harness (`dsh`). The registry ships as data; both tools ar
 - **119 sources** — 73 `quant` (filings, macro, fundamentals, China A-share/HK, execution, global official statistics) and 46 `crypto` (exchanges, derivatives, on-chain, archives, SDKs, news, ETF flows).
 - Per source: domain, category, authority tier (`A` regulator/exchange/official docs, `B` institutional vendor/peer-reviewed, `C` curated secondary, `D` lead only), evidence type, `content_access`, `verification` (`discovered` / `reachable` / `schema_verified` / `semantic_verified` / `production_approved`), `license_class`, `cache_policy`, `attribution`, `refresh_days`, `last_checked`, `pit` (`yes` / `partial` / `no` / `not_applicable` / `unverified`), `revision_risk` (`none` / `rare` / `possible` / `routine` / `unknown`), `data_types` (dataset tags), `redistribution` (`allowed` / `restricted` / `prohibited` / `unknown`), and where verified `rate_limit`, `license_url`, `freshness_sla`, `fallback_id`, plus `free_tier`, `auth`, `iface`, `history_start`.
 - `data_types` is a controlled vocabulary (`data/datasets.yaml`, 87 tags); `tools/build-data.cjs` rejects unknown tags, bad ids, bad enums and dangling `fallback_id`.
+- `api_hosts` maps real API endpoint hosts to the source that documents them (22 sources, e.g. `fapi.binance.com` → `binance-futures-api`), so a genuine API URL is attributed even when the docs live on another host.
 - A curation layer (`data/enrichment.yaml`, version 2) records what was verified after the probe — PIT corrections, verification states, revision-risk overrides, optional attributes and per-source dataset tags.
 - `sources.json` carries `meta.data_version: 2` and `meta.build` (built_at, source_count, matrix/enrichment/dataset versions).
 - **Two tools**: `qt_source_find` and `qt_source_audit`.
@@ -83,6 +84,7 @@ Audit the URL citations in a draft with an explicit confidence per URL:
 
 - `exact_url` (high) — the normalized URL matches a registry entry exactly;
 - `canonical_page` (medium) — same host and the cited path is a parent/child of the registered page;
+- `api_host` (medium) — the cited host is a documented API host of exactly one source (e.g. `fapi.binance.com` → `binance-futures-api`); the host is attributed, the endpoint path is not verified;
 - `same_host_ambiguous` (low) — same host but no path relation: counts as **not known**, lists candidates, and asks you to pin the exact page;
 - `unknown` — foreign host.
 
@@ -119,14 +121,14 @@ The plugin does not intercept requests. The model decides, guided by a system-pr
 | Item | Measured |
 |---|---|
 | `qt_source_find` schema (name + description + parameters) | 1,054 chars ≈ 264 tokens |
-| `qt_source_audit` schema | 583 chars ≈ 146 tokens |
+| `qt_source_audit` schema | 594 chars ≈ 149 tokens |
 | Guidance section | 1,199 chars ≈ 300 tokens |
-| **Combined per-request overhead** | **≈ 709 tokens** (schemas + guidance) |
+| **Combined per-request overhead** | **≈ 712 tokens** (schemas + guidance) |
 | Registry load | 2.3 ms |
 | `qt_source_find` latency | avg 0.136 ms, p95 0.289 ms (5,000 calls) |
 | `qt_source_audit` latency | avg 0.051 ms (3,008-char draft, 500 calls) |
 
-Token counts are character-based estimates at 4 chars/token. If both this plugin and `cs-source-reliable` are installed, expect ≈ 1,210 tokens of combined per-request overhead.
+Token counts are character-based estimates at 4 chars/token. If both this plugin and `cs-source-reliable` are installed, expect ≈ 1,215 tokens of combined per-request overhead.
 
 ## Install
 
@@ -161,7 +163,7 @@ npm install                 # dev dependency: yaml
 node tools/probe-sources.cjs --file=quant --apply    # probe + write snapshot (adds snapshot_id)
 node tools/probe-sources.cjs --file=crypto --apply
 npm run build:data          # merge matrices + enrichment + vocabulary into data/sources.json
-node test/check.mjs         # 103 checks: registry, matching confidence, redaction, vocabulary, latency budgets
+node test/check.mjs         # 108 checks: registry, matching confidence, redaction, api_hosts, vocabulary, latency budgets
 npm run health              # weekly reachability diff with snapshot ids, writes reports/source-health-<date>.txt
 ```
 
@@ -202,6 +204,7 @@ Deliberately not reused as reliability mechanisms: multi-agent debate over news,
 - `qt_source_audit` is a mechanical check (URL extraction, match confidence, tier mapping, uncited-paragraph count). It does not judge whether a cited source actually supports a sentence.
 - Redaction covers common credential parameter names and userinfo; a nonstandard parameter name may pass through. The raw URL is used for matching and is not logged by the plugin.
 - `same_host_ambiguous` matches are reported as not known; a legitimate deep link that is not registered will stay ambiguous until the registry records it.
+- `api_host` attribution maps the host only; it does not prove that the cited endpoint path or parameters are the documented ones.
 - A/B tiers reduce risk; they do not guarantee correctness. `verification` records what was checked and when — `reachable` is not a data-quality score. Fees, limits and endpoints change — re-probe before relying on a number.
 - Non-registry URLs are flagged as unknown even when legitimate.
 - The plugin does not execute trades, store API keys, or give legal/compliance advice. Trading requires a deterministic risk layer between the model and the exchange.

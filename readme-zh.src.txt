@@ -11,6 +11,7 @@
 - **119 个信源** —— 73 个 `quant`（监管申报、宏观、基本面、A股/港股、执行接口、全球官方统计）+ 46 个 `crypto`（交易所、衍生品、链上、归档、SDK、新闻、ETF 资金流）。
 - 每条源包含：域、类别、权威级（`A` 监管/交易所/官方文档，`B` 机构数据商/同行评审，`C` 可靠二手，`D` 仅线索）、证据类型、`content_access`、`verification`（`discovered` / `reachable` / `schema_verified` / `semantic_verified` / `production_approved`）、`license_class`、`cache_policy`、`attribution`、`refresh_days`、`last_checked`、`pit`（`yes` / `partial` / `no` / `not_applicable` / `unverified`）、`revision_risk`（`none` / `rare` / `possible` / `routine` / `unknown`）、`data_types`（数据集标签）、`redistribution`（`allowed` / `restricted` / `prohibited` / `unknown`），以及按需出现的 `rate_limit`、`license_url`、`freshness_sla`、`fallback_id`、`free_tier`、`auth`、`iface`、`history_start`。
 - `data_types` 是受控词表（`data/datasets.yaml`，87 个 tag）；`tools/build-data.cjs` 拒绝未知 tag、错误枚举、悬空 `fallback_id`。
+- `api_hosts` 把真实 API 端点主机映射到记录它的源（22 个源，如 `fapi.binance.com` → `binance-futures-api`），这样文档在另一个主机上时，真实 API URL 仍能归到正确源。
 - 人工核验层（`data/enrichment.yaml`，version 2）记录探测之后才核实的内容——PIT 修正、验证状态、修订风险覆盖、可选字段与每条源的数据集标签。
 - `sources.json` 带 `meta.data_version: 2` 与 `meta.build`（built_at、source_count、矩阵/核验层/词表版本）。
 - **两个工具**：`qt_source_find`、`qt_source_audit`。
@@ -83,6 +84,7 @@
 
 - `exact_url`（high）—— 规范化后与注册表条目完全一致；
 - `canonical_page`（medium）—— 同 host，且引用路径与注册页面是父子路径关系；
+- `api_host`（medium）—— 引用主机是某条源登记的真实 API 主机（如 `fapi.binance.com` → `binance-futures-api`）；只归因主机，不验证端点路径；
 - `same_host_ambiguous`（low）—— 同 host 但路径无关系：**不算 known**，列出候选源，要求固定到具体页面；
 - `unknown` —— 外部域名。
 
@@ -119,14 +121,14 @@ Suggestions:
 | 项目 | 实测 |
 |---|---|
 | `qt_source_find` schema（名称+描述+参数） | 1,054 字符 ≈ 264 tokens |
-| `qt_source_audit` schema | 583 字符 ≈ 146 tokens |
+| `qt_source_audit` schema | 594 字符 ≈ 149 tokens |
 | 引导段 | 1,199 字符 ≈ 300 tokens |
-| **每请求合计开销** | **≈ 709 tokens**（schema + 引导） |
+| **每请求合计开销** | **≈ 712 tokens**（schema + 引导） |
 | 注册表加载 | 2.3 ms |
 | `qt_source_find` 延迟 | 平均 0.136 ms，p95 0.289 ms（5000 次） |
 | `qt_source_audit` 延迟 | 平均 0.051 ms（3008 字符草稿，500 次） |
 
-token 数是按 4 字符/token 的字符估算。若与 `cs-source-reliable` 同装，合计约 1,210 tokens/请求。
+token 数是按 4 字符/token 的字符估算。若与 `cs-source-reliable` 同装，合计约 1,215 tokens/请求。
 
 ## 安装
 
@@ -161,7 +163,7 @@ npm install                 # 开发依赖：yaml
 node tools/probe-sources.cjs --file=quant --apply    # 探测并写回快照（带 snapshot_id）
 node tools/probe-sources.cjs --file=crypto --apply
 npm run build:data          # 合并矩阵 + 核验层 + 词表，生成 data/sources.json
-node test/check.mjs         # 103 项检查：注册表、匹配置信度、脱敏、词表、延迟预算
+node test/check.mjs         # 108 项检查：注册表、匹配置信度、脱敏、api_hosts、词表、延迟预算
 npm run health              # 每周可达性巡检（带 snapshot id），输出 reports/source-health-<日期>.txt
 ```
 
@@ -202,6 +204,7 @@ BCBS 239 四维对应现有字段：准确性 → `semantic_verified` / `product
 - `qt_source_audit` 是机械检查（抽 URL、匹配置信度、映射等级、统计无来源段落），不判断被引源是否真的支持那句话。
 - 脱敏只覆盖常见凭据参数名与 userinfo；非标准参数名可能漏过。原始 URL 只用于匹配，插件不记录它。
 - `same_host_ambiguous` 一律按 not known 报告；未注册的合法深层链接会一直 ambiguous，直到注册表补录。
+- `api_host` 只归因主机，不证明被引端点路径或参数就是文档里的那个。
 - A/B 级降低风险，但不保证正确。`verification` 只记录核过什么、什么时候核的——`reachable` 不是数据质量分。费用、限额、端点都会变——依赖数字前重新探测。
 - 不在注册表里的 URL 一律标 unknown，即使它本身合法。
 - 插件不执行交易、不存 API key、不提供法律/合规意见。交易需要在模型与交易所之间加一层确定性的风控。

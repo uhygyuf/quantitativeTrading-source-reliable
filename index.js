@@ -93,6 +93,7 @@ const findTool = defineTool({
               pit: { type: 'string' },
               revision_risk: { type: 'string' },
               data_types: { type: 'array', items: { type: 'string' } },
+              api_hosts: { type: 'array', items: { type: 'string' } },
               redistribution: { type: 'string' },
               rate_limit: { type: 'string' },
               license_url: { type: 'string' },

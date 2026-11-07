@@ -1,6 +1,6 @@
 {
   "meta": {
     "title": "Quantitative trading source reliability",
-    "description": "Bundled registry of 119 curated quant-finance and crypto sources with authority tiers, verification states, five-state point-in-time flags, revision risk and dataset tags, plus tools to find sources and audit citations with match confidence and credential redaction."
+    "description": "Bundled registry of 119 curated quant-finance and crypto sources with authority tiers, verification states, five-state point-in-time flags, revision risk and dataset tags, plus tools to find sources and audit citations with match confidence, API-host attribution and credential redaction."
   }
 }

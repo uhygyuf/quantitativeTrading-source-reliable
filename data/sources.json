@@ -4,7 +4,7 @@
   "data_version": 2,
   "generated_at": "2026-11-06",
   "build": {
-   "built_at": "2026-11-07T02:44:09.442Z",
+   "built_at": "2026-11-07T03:00:54.153Z",
    "source_count": 119,
    "matrices": [
     "data/quant-source-matrix.yaml",
@@ -664,6 +664,9 @@
    "data_types": [
     "macro_series"
    ],
+   "api_hosts": [
+    "api.stlouisfed.org"
+   ],
    "redistribution": "allowed",
    "freshness_sla": "series-dependent (daily to quarterly)",
    "fallback_id": "alfred",
@@ -748,6 +751,9 @@
     "employment",
     "cpi"
    ],
+   "api_hosts": [
+    "api.bls.gov"
+   ],
    "redistribution": "allowed",
    "free_tier": "free API key"
   },
@@ -825,6 +831,9 @@
     "fiscal",
     "debt",
     "rates"
+   ],
+   "api_hosts": [
+    "api.fiscaldata.treasury.gov"
    ],
    "redistribution": "allowed",
    "free_tier": "free, no key"
@@ -1287,6 +1296,9 @@
     "fundamentals",
     "news"
    ],
+   "api_hosts": [
+    "api.tiingo.com"
+   ],
    "redistribution": "restricted",
    "free_tier": "unverified (pricing page is client-rendered)"
   },
@@ -1408,6 +1420,9 @@
     "ohlcv",
     "fundamentals"
    ],
+   "api_hosts": [
+    "api.twelvedata.com"
+   ],
    "redistribution": "restricted",
    "rate_limit": "8 credits/min, 800/day (free tier)",
    "free_tier": "free: 8 credits/min, 800/day; Grow $79/mo (verified 2026-11-06)"
@@ -1525,6 +1540,9 @@
    "data_types": [
     "fundamentals",
     "pit"
+   ],
+   "api_hosts": [
+    "api.sharadar.com"
    ],
    "redistribution": "restricted",
    "free_tier": "paid subscription",
@@ -1684,6 +1702,9 @@
    "revision_risk": "routine",
    "data_types": [
     "fundamentals"
+   ],
+   "api_hosts": [
+    "financialmodelingprep.com"
    ],
    "redistribution": "restricted",
    "free_tier": "unverified (docs site blocked bots on 2026-11-06)"
@@ -3022,6 +3043,10 @@
     "account",
     "orders"
    ],
+   "api_hosts": [
+    "fapi.binance.com",
+    "dapi.binance.com"
+   ],
    "redistribution": "restricted",
    "free_tier": "public market data free, no key"
   },
@@ -3224,6 +3249,10 @@
     "liquidations",
     "long_short_ratio"
    ],
+   "api_hosts": [
+    "fstream.binance.com",
+    "dstream.binance.com"
+   ],
    "redistribution": "restricted",
    "freshness_sla": "realtime (websocket)",
    "verified_on": "2026-11-06"
@@ -3382,6 +3411,9 @@
     "iv",
     "greeks"
    ],
+   "api_hosts": [
+    "eapi.binance.com"
+   ],
    "redistribution": "restricted"
   },
   {
@@ -3422,6 +3454,9 @@
     "orderbook_l2",
     "funding",
     "open_interest"
+   ],
+   "api_hosts": [
+    "api.bybit.com"
    ],
    "redistribution": "restricted"
   },
@@ -3505,6 +3540,9 @@
     "orders",
     "account"
    ],
+   "api_hosts": [
+    "api.coinbase.com"
+   ],
    "redistribution": "restricted"
   },
   {
@@ -3544,6 +3582,9 @@
     "trades",
     "orderbook_l2",
     "funding"
+   ],
+   "api_hosts": [
+    "api.kraken.com"
    ],
    "redistribution": "restricted"
   },
@@ -3586,6 +3627,9 @@
     "futures",
     "funding"
    ],
+   "api_hosts": [
+    "test.deribit.com"
+   ],
    "redistribution": "restricted"
   },
   {
@@ -3623,6 +3667,9 @@
     "spot_price",
     "market_cap",
     "metadata"
+   ],
+   "api_hosts": [
+    "api.coingecko.com"
    ],
    "redistribution": "restricted",
    "fallback_id": "coinmarketcap-api",
@@ -3701,6 +3748,9 @@
     "market_cap",
     "metadata"
    ],
+   "api_hosts": [
+    "pro-api.coinmarketcap.com"
+   ],
    "redistribution": "restricted",
    "free_tier": "unverified"
   },
@@ -3740,6 +3790,9 @@
     "open_interest",
     "liquidations",
     "long_short_ratio"
+   ],
+   "api_hosts": [
+    "open-api.coinglass.com"
    ],
    "redistribution": "restricted",
    "free_tier": "unverified"
@@ -3860,6 +3913,9 @@
     "exchange_flows",
     "stablecoin_supply"
    ],
+   "api_hosts": [
+    "api.glassnode.com"
+   ],
    "redistribution": "restricted",
    "free_tier": "free tier + paid"
   },
@@ -3937,6 +3993,9 @@
     "miner_flow",
     "whale_behavior"
    ],
+   "api_hosts": [
+    "api.cryptoquant.com"
+   ],
    "redistribution": "restricted",
    "free_tier": "paid"
   },
@@ -3975,6 +4034,9 @@
     "transactions",
     "token_transfers",
     "contract"
+   ],
+   "api_hosts": [
+    "api.etherscan.io"
    ],
    "redistribution": "restricted",
    "free_tier": "free tier + paid"
@@ -4092,6 +4154,9 @@
     "transactions",
     "onchain_metrics"
    ],
+   "api_hosts": [
+    "api.blockchair.com"
+   ],
    "redistribution": "restricted",
    "free_tier": "free tier + paid"
   },
@@ -4171,6 +4236,9 @@
     "historical_ticks",
     "orderbook_l2",
     "derivatives"
+   ],
+   "api_hosts": [
+    "api.tardis.dev"
    ],
    "redistribution": "restricted",
    "free_tier": "paid, first day of each month free"

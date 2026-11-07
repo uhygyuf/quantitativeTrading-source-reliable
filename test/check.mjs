@@ -200,6 +200,23 @@ ok(ambiguousMatch.match_type === 'same_host_ambiguous' && ambiguousMatch.source 
 const unknownMatch = matchCitation('https://example.com/x', registry.sources);
 ok(unknownMatch.match_type === 'unknown' && unknownMatch.source === null, 'matchCitation returns unknown for a foreign host', JSON.stringify(unknownMatch));
 
+const apiHostMatch = matchCitation('https://fapi.binance.com/fapi/v1/fundingRate?symbol=BTCUSDT', registry.sources);
+ok(
+  apiHostMatch.match_type === 'api_host' && apiHostMatch.source?.id === 'binance-futures-api' && apiHostMatch.confidence === 'medium',
+  'matchCitation maps a documented API host to its source',
+  JSON.stringify(apiHostMatch),
+);
+const apiHostTagged = registry.sources.find((s) => s.api_hosts?.includes('fapi.binance.com'));
+ok(apiHostTagged?.id === 'binance-futures-api', 'api_hosts metadata is present on the futures source', JSON.stringify(apiHostTagged?.api_hosts));
+const badApiHosts = registry.sources.filter((s) => (s.api_hosts ?? []).some((h) => !/^[a-z0-9.-]+\.[a-z]{2,}$/.test(h)));
+ok(badApiHosts.length === 0, 'every api_hosts entry is a hostname', badApiHosts.map((s) => s.id).join(','));
+const urlHostWins = matchCitation('https://api.binance.com/api/v3/klines?symbol=BTCUSDT', registry.sources);
+ok(
+  urlHostWins.match_type === 'same_host_ambiguous' && urlHostWins.source === null,
+  'a registered URL host still wins over api_host mapping',
+  JSON.stringify(urlHostWins),
+);
+
 const secretUrl = redactUrl('https://api.example.com/v1/data?token=abc123&symbol=BTC');
 ok(secretUrl.redacted && secretUrl.url.includes('token=***') && !secretUrl.url.includes('abc123'), 'redactUrl masks credential-like query params', secretUrl.url);
 const userInfoUrl = redactUrl('https://user:pass@example.com/x');
@@ -260,6 +277,13 @@ ok(
 );
 ok(ambiguousAudit.summary.ambiguous === 1, 'audit summarizes ambiguous matches', String(ambiguousAudit.summary.ambiguous));
 ok(ambiguousAudit.suggestions.some((s) => s.includes('host level')), 'audit suggests pinning the exact page', JSON.stringify(ambiguousAudit.suggestions));
+
+const apiHostAudit = auditText(registry, { text: 'Funding: https://fapi.binance.com/fapi/v1/fundingRate?symbol=BTCUSDT' });
+ok(
+  apiHostAudit.citations[0]?.match_type === 'api_host' && apiHostAudit.citations[0]?.known === true,
+  'audit counts a documented API host as known',
+  JSON.stringify(apiHostAudit.citations[0]),
+);
 
 // ---------- prompt footprint ----------
 const guidance = buildGuidance(stats);

@@ -34,6 +34,7 @@ const LICENSE_URL_OVERRIDES = ENRICH.license_url ?? {};
 const REDISTRIBUTION_OVERRIDES = ENRICH.redistribution ?? {};
 const FRESHNESS_OVERRIDES = ENRICH.freshness_sla ?? {};
 const FALLBACK_OVERRIDES = ENRICH.fallback_id ?? {};
+const API_HOST_OVERRIDES = ENRICH.api_hosts ?? {};
 const OVERRIDE_IDS = new Set([
   ...Object.keys(PIT_OVERRIDES),
   ...Object.keys(VERIFICATION_OVERRIDES),
@@ -44,6 +45,7 @@ const OVERRIDE_IDS = new Set([
   ...Object.keys(REDISTRIBUTION_OVERRIDES),
   ...Object.keys(FRESHNESS_OVERRIDES),
   ...Object.keys(FALLBACK_OVERRIDES),
+  ...Object.keys(API_HOST_OVERRIDES),
 ]);
 
 // Controlled vocabulary for source.data_types.
@@ -56,7 +58,7 @@ const FIELDS = [
   'id', 'name', 'url', 'domain', 'category', 'layer', 'authority', 'evidence', 'kind',
   'content_access', 'verification', 'license_class', 'cache_policy', 'attribution',
   'refresh_days', 'last_checked', 'keywords', 'notes', 'auth', 'iface', 'pit',
-  'revision_risk', 'data_types', 'redistribution', 'rate_limit', 'license_url',
+  'revision_risk', 'data_types', 'api_hosts', 'redistribution', 'rate_limit', 'license_url',
   'freshness_sla', 'fallback_id', 'free_tier', 'as_reported', 'survivorship',
   'history_start', 'verified_on', 'terms',
 ];
@@ -164,6 +166,15 @@ for (const file of FILES) {
       }
     }
     if (FALLBACK_OVERRIDES[src.id] !== undefined) src.fallback_id = String(FALLBACK_OVERRIDES[src.id]);
+    if (API_HOST_OVERRIDES[src.id] !== undefined) {
+      const hosts = API_HOST_OVERRIDES[src.id];
+      const list = Array.isArray(hosts) ? hosts : [hosts];
+      const cleaned = list.map((host) => String(host).trim().toLowerCase());
+      const invalid = cleaned.filter((host) => !/^[a-z0-9](?:[a-z0-9.-]*[a-z0-9])?\.[a-z]{2,}$/.test(host));
+      if (invalid.length) errors.push(`${file}:${src.id}: invalid api_hosts ${invalid.join(', ')}`);
+      else if (new Set(cleaned).size !== cleaned.length) errors.push(`${file}:${src.id}: duplicate api_hosts`);
+      else src.api_hosts = cleaned;
+    }
     domains[src.domain] = (domains[src.domain] || 0) + 1;
 
     const row = {};
