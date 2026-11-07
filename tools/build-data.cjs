@@ -28,24 +28,74 @@ const ENRICH = YAML.parse(fs.readFileSync(ENRICH_FILE, 'utf8')) ?? {};
 const PIT_OVERRIDES = ENRICH.pit ?? {};
 const VERIFICATION_OVERRIDES = ENRICH.verification ?? {};
 const DATA_TYPE_OVERRIDES = ENRICH.data_types ?? {};
+const REVISION_OVERRIDES = ENRICH.revision_risk ?? {};
+const RATE_LIMIT_OVERRIDES = ENRICH.rate_limit ?? {};
+const LICENSE_URL_OVERRIDES = ENRICH.license_url ?? {};
+const REDISTRIBUTION_OVERRIDES = ENRICH.redistribution ?? {};
+const FRESHNESS_OVERRIDES = ENRICH.freshness_sla ?? {};
+const FALLBACK_OVERRIDES = ENRICH.fallback_id ?? {};
 const OVERRIDE_IDS = new Set([
   ...Object.keys(PIT_OVERRIDES),
   ...Object.keys(VERIFICATION_OVERRIDES),
   ...Object.keys(DATA_TYPE_OVERRIDES),
+  ...Object.keys(REVISION_OVERRIDES),
+  ...Object.keys(RATE_LIMIT_OVERRIDES),
+  ...Object.keys(LICENSE_URL_OVERRIDES),
+  ...Object.keys(REDISTRIBUTION_OVERRIDES),
+  ...Object.keys(FRESHNESS_OVERRIDES),
+  ...Object.keys(FALLBACK_OVERRIDES),
 ]);
+
+// Controlled vocabulary for source.data_types.
+const DATASETS_FILE = path.join(ROOT, 'data', 'datasets.yaml');
+const DATASETS = YAML.parse(fs.readFileSync(DATASETS_FILE, 'utf8')) ?? {};
+const DATASET_TAGS = new Set(Object.keys(DATASETS.tags ?? {}));
+if (DATASET_TAGS.size === 0) throw new Error('data/datasets.yaml has no tags');
 
 const FIELDS = [
   'id', 'name', 'url', 'domain', 'category', 'layer', 'authority', 'evidence', 'kind',
   'content_access', 'verification', 'license_class', 'cache_policy', 'attribution',
   'refresh_days', 'last_checked', 'keywords', 'notes', 'auth', 'iface', 'pit',
-  'data_types', 'free_tier', 'as_reported', 'survivorship', 'history_start',
-  'verified_on', 'rate_limit', 'terms',
+  'revision_risk', 'data_types', 'redistribution', 'rate_limit', 'license_url',
+  'freshness_sla', 'fallback_id', 'free_tier', 'as_reported', 'survivorship',
+  'history_start', 'verified_on', 'terms',
 ];
 
 const PIT = new Set(['yes', 'partial', 'no', 'not_applicable', 'unverified']);
 const VERIFICATION = new Set([
   'discovered', 'reachable', 'schema_verified', 'semantic_verified', 'production_approved',
 ]);
+const REVISION_RISK = new Set(['none', 'rare', 'possible', 'routine', 'unknown']);
+const REDISTRIBUTION = new Set(['allowed', 'restricted', 'prohibited', 'unknown']);
+
+// Default revision risk by category; enrichment can override per source.
+const REVISION_DEFAULT = {
+  exchange: 'none',
+  archive: 'none',
+  sdk: 'none',
+  derivatives: 'none',
+  execution: 'none',
+  research: 'none',
+  onchain: 'rare',
+  'market-data': 'possible',
+  aggregator: 'possible',
+  news: 'possible',
+  china: 'possible',
+  macro: 'routine',
+  fundamentals: 'routine',
+  filing: 'routine',
+};
+
+// Redistribution is a policy default derived from license_class, not legal advice.
+const REDISTRIBUTION_DEFAULT = {
+  'public-domain': 'allowed',
+  'open-source': 'allowed',
+  'site-terms': 'restricted',
+  'open-access-paper': 'restricted',
+  'cc-by-sa': 'allowed',
+  varies: 'unknown',
+  unknown: 'unknown',
+};
 // The probe could not read these from this network; they are citations only.
 const UNREACHABLE_ACCESS = new Set(['challenge', 'unknown']);
 const DOMAINS = new Set(['quant', 'crypto']);
@@ -85,6 +135,35 @@ for (const file of FILES) {
     if (!Array.isArray(src.data_types) || src.data_types.some((t) => typeof t !== 'string' || !t)) {
       errors.push(`${file}:${src.id}: data_types must be an array of non-empty strings`);
     }
+    for (const tag of src.data_types) {
+      if (!DATASET_TAGS.has(tag)) errors.push(`${file}:${src.id}: unknown data_types tag "${tag}" (add it to data/datasets.yaml)`);
+    }
+    src.revision_risk = REVISION_OVERRIDES[src.id] ?? REVISION_DEFAULT[src.category] ?? 'unknown';
+    if (!REVISION_RISK.has(src.revision_risk)) errors.push(`${file}:${src.id}: bad revision_risk ${src.revision_risk}`);
+    src.redistribution = REDISTRIBUTION_OVERRIDES[src.id] ?? REDISTRIBUTION_DEFAULT[src.license_class] ?? 'unknown';
+    if (!REDISTRIBUTION.has(src.redistribution)) errors.push(`${file}:${src.id}: bad redistribution ${src.redistribution}`);
+    if (RATE_LIMIT_OVERRIDES[src.id] !== undefined) {
+      const value = RATE_LIMIT_OVERRIDES[src.id];
+      if (typeof value !== 'string' || value.length === 0 || value.length > 120) {
+        errors.push(`${file}:${src.id}: rate_limit must be a 1-120 char string`);
+      } else {
+        src.rate_limit = value;
+      }
+    }
+    if (LICENSE_URL_OVERRIDES[src.id] !== undefined) {
+      const value = String(LICENSE_URL_OVERRIDES[src.id]);
+      if (!/^https:\/\//.test(value)) errors.push(`${file}:${src.id}: license_url must start with https://`);
+      else src.license_url = value;
+    }
+    if (FRESHNESS_OVERRIDES[src.id] !== undefined) {
+      const value = FRESHNESS_OVERRIDES[src.id];
+      if (typeof value !== 'string' || value.length === 0 || value.length > 80) {
+        errors.push(`${file}:${src.id}: freshness_sla must be a 1-80 char string`);
+      } else {
+        src.freshness_sla = value;
+      }
+    }
+    if (FALLBACK_OVERRIDES[src.id] !== undefined) src.fallback_id = String(FALLBACK_OVERRIDES[src.id]);
     domains[src.domain] = (domains[src.domain] || 0) + 1;
 
     const row = {};
@@ -99,6 +178,12 @@ for (const id of OVERRIDE_IDS) {
   if (!seenIds.has(id)) errors.push(`enrichment.yaml: unknown source id ${id}`);
 }
 
+for (const row of sources) {
+  if (!row.fallback_id) continue;
+  if (row.fallback_id === row.id) errors.push(`data:${row.id}: fallback_id points to itself`);
+  else if (!seenIds.has(row.fallback_id)) errors.push(`data:${row.id}: fallback_id "${row.fallback_id}" is not in the registry`);
+}
+
 if (errors.length) {
   console.error('build errors:\n - ' + errors.join('\n - '));
   process.exit(1);
@@ -107,8 +192,17 @@ if (errors.length) {
 const out = {
   meta: {
     name: 'Quant/crypto source registry',
-    data_version: 1,
+    data_version: 2,
     generated_at: generatedAt || new Date().toISOString().slice(0, 10),
+    build: {
+      built_at: new Date().toISOString(),
+      source_count: sources.length,
+      matrices: FILES.map((f) => `data/${f}`),
+      enrichment: 'data/enrichment.yaml',
+      enrichment_version: ENRICH.meta?.version ?? 1,
+      datasets: 'data/datasets.yaml',
+      datasets_version: DATASETS.meta?.version ?? 1,
+    },
     source_matrices: FILES.map((f) => `data/${f}`),
     count: sources.length,
     by_domain: domains,
@@ -145,7 +239,7 @@ const out = {
       yes: '提供 Point-in-Time / as-reported 版本',
       partial: '部分字段或部分数据集提供 PIT',
       no: '只给最新修订值，回测需自行处理未来函数',
-      not_applicable: '数据不可修订（原始行情/逐笔/链上/归档）或条目本身是工具，PIT 不适用',
+      not_applicable: 'PIT 不是这个源合适的控制手段（原始逐笔/快照/工具/沙盒），不代表历史值永不修订',
       unverified: '尚未核实，不能假设有或没有 PIT',
     },
     verification_legend: {
@@ -155,9 +249,21 @@ const out = {
       semantic_verified: '核对过具体口径（费率、限频、端点、PIT、更名等）',
       production_approved: '在真实任务里端到端用过',
     },
-    data_types_note: 'data_types 是数据集级标签（如 orderbook_l2、funding、xbrl），用于核对某条引用是否真的覆盖所引数据。',
-    enrichment: 'data/enrichment.yaml',
-    license_note: 'license_class 是策略分桶，不是法律意见；绑定许可以源站条款为准。',
+    revision_risk_legend: {
+      none: '官方原始归档/逐笔/交易记录，未观察到重建',
+      rare: '链上数据（重组、回填少）',
+      possible: '行情聚合器、供应商重建历史、新闻更正',
+      routine: '宏观/基本面等经常修订的数据',
+      unknown: '未核实',
+    },
+    redistribution_legend: {
+      allowed: 'license_class 为公有领域/开源，默认允许再分发（仍需核对具体条款）',
+      restricted: '站点条款保留，默认只链接 + 短引用',
+      prohibited: '明确禁止再分发',
+      unknown: '未核实，按最严格策略处理',
+    },
+    data_types_note: 'data_types 是数据集级标签（如 orderbook_l2、funding、xbrl），来自受控词表 data/datasets.yaml；未知标签会让构建失败。',
+    license_note: 'license_class / redistribution 是策略分桶，不是法律意见；绑定许可以源站条款为准。',
   },
   sources,
 };

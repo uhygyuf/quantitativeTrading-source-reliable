@@ -27,6 +27,7 @@ function loadYaml() {
   throw new Error('yaml package not found (npm install)');
 }
 const YAML = loadYaml();
+const { classify, classifyFailure, JS_MARKERS } = require('./probe-classify.cjs');
 
 const args = process.argv.slice(2);
 const DOMAIN = (args.find((a) => a.startsWith('--file=')) || '--file=quant').slice('--file='.length);
@@ -41,6 +42,8 @@ const TODAY = new Date().toISOString().slice(0, 10);
 const TIMEOUT_MS = 25000;
 const ANALYSIS_CAP = 4 * 1024 * 1024;
 const CONCURRENCY = 4;
+const SNAPSHOT_ID = `probe-${new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d{3}Z$/, 'Z')}-${Math.random().toString(36).slice(2, 6)}`;
+const STARTED_AT = new Date().toISOString();
 const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126 Safari/537.36 dsh-quant-source-probe/0.1 (contact: uhygyuf@users.noreply.github.com)';
 
 const doc = YAML.parseDocument(fs.readFileSync(MATRIX_PATH, 'utf8'));
@@ -53,12 +56,6 @@ const sources = data.sources || [];
 if (!sources.length) { console.error('no sources found'); process.exit(2); }
 
 // ---------- heuristics ----------
-const JS_MARKERS = [
-  '<div id="root"', 'id="root"', '__NEXT_DATA__', '__NUXT__', 'window.__INITIAL_STATE__',
-  'requires JavaScript', 'enable JavaScript', 'data-reactroot', 'ng-version',
-  'Please turn on JavaScript', 'JavaScript must be enabled', 'Enabling JavaScript',
-];
-
 function visibleText(html) {
   return html
     .replace(/<script[\s\S]*?<\/script>/gi, ' ')
@@ -70,31 +67,7 @@ function visibleText(html) {
     .trim();
 }
 
-function classify(src, res) {
-  if (['api', 'rss', 'atom', 'xml', 'dataset'].includes(src.kind)) {
-    // A 403/429 on an API endpoint is a challenge or an auth wall, not a data response.
-    if ([401, 403, 429, 503, 202].includes(res.status)) return 'challenge';
-    return 'api';
-  }
-  if (src.kind === 'pdf') return 'binary';
-  if ([401, 403, 429, 503, 202].includes(res.status)) return 'challenge';
-  const ct = (res.contentType || '').toLowerCase();
-  if (ct.includes('json')) return 'api';
-  if (ct.includes('html') || ct.includes('xhtml')) {
-    const html = res.htmlSnippet || '';
-    const head = html.slice(0, 5000);
-    if (/http-equiv\s*=\s*["']?refresh/i.test(head) && /url\s*=/i.test(head)) return 'redirect';
-    if (/<frameset/i.test(head)) return 'frameset';
-    const hasJsMarkers = JS_MARKERS.some((m) => html.includes(m));
-    if (hasJsMarkers && (res.textLen ?? 0) < 1200) return 'js';
-    if (res.textLen < 250) return 'portal';
-    if (res.textLen < 900 && (res.linkCount || 0) >= 8) return 'portal';
-    return 'static';
-  }
-  if (ct.includes('xml') || ct.includes('rss') || ct.includes('atom')) return 'api';
-  if (ct.includes('text/')) return 'static';
-  return 'binary';
-}
+
 
 const REFRESH_BY_EVIDENCE = {
   spec: 90,
@@ -234,8 +207,9 @@ async function probeOne(src) {
     }
     out.access = classify(src, out);
   } catch (err) {
-    out.error = err && err.name ? `${err.name}: ${err.message}` : String(err);
-    out.flags.push('error');
+    const failure = classifyFailure(err);
+    out.error = failure.error;
+    out.flags.push(...failure.flags);
   } finally {
     delete out.htmlSnippet;
   }
@@ -297,6 +271,7 @@ function applyResults(sources, results) {
       text_len: r.textLen,
       final_url: r.finalUrl,
       checked_at: TODAY,
+      snapshot_id: SNAPSHOT_ID,
       method: 'probe-v1',
     }));
   }
@@ -317,7 +292,17 @@ const selected = ONLY ? sources.filter((s) => ONLY.split(',').includes(s.id)) : 
     access: results.reduce((a, r) => { const k = r.access ?? 'error'; a[k] = (a[k] || 0) + 1; return a; }, {}),
     flags: results.reduce((a, r) => { for (const f of r.flags) a[f] = (a[f] || 0) + 1; return a; }, {}),
   };
-  fs.writeFileSync(REPORT_PATH, JSON.stringify({ generated_at: TODAY, method: 'probe-v1', summary, entries: results }, null, 2), 'utf8');
+  fs.writeFileSync(REPORT_PATH, JSON.stringify({
+    generated_at: TODAY,
+    method: 'probe-v1',
+    snapshot_id: SNAPSHOT_ID,
+    started_at: STARTED_AT,
+    completed_at: new Date().toISOString(),
+    concurrency: CONCURRENCY,
+    source_count: results.length,
+    summary,
+    entries: results,
+  }, null, 2), 'utf8');
   console.log('\nsummary:', JSON.stringify(summary, null, 2));
   console.log('report:', REPORT_PATH);
   if (CHECK) process.exit(0);

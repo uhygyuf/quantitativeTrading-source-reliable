@@ -3,8 +3,8 @@
 # verified afterwards, and adds dataset-level tags and PIT corrections.
 # tools/build-data.cjs merges this on top of the matrices and rejects unknown ids.
 meta:
-  version: 1
-  applied_at: "2026-11-06"
+  version: 2
+  applied_at: "2026-11-07"
 
 # pit states:
 #   yes            as-of / as-reported vintages available
@@ -118,8 +118,44 @@ verification:
   cftc-press: semantic_verified
   sec-press: semantic_verified
 
-# data_types: dataset-level tags so a citation can be matched to the dataset
-# it actually covers. Free-form lowercase tags, not a closed vocabulary.
+# revision_risk: whether historical values can be restated independently of PIT.
+# Build derives a category default; these overrides encode verified exceptions.
+revision_risk:
+  sec-edgar-search: none
+  sec-data-apis: none
+  sec-companyfacts: possible
+  sec-submissions: none
+  sec-financial-statement-data-sets: none
+  sec-form-13f-datasets: none
+  sec-insider-transactions: none
+  alfred: routine
+  fred: routine
+  sharadar: routine
+  compustat-wrds: routine
+  binance-data-archive: none
+  tardis: none
+  cryptohftdata: none
+  hkex-data-marketplace: none
+
+# Optional verified attributes. Only fill what was checked; absent means unverified.
+rate_limit:
+  alpha-vantage: "25 requests/day (free tier)"
+  twelve-data: "8 credits/min, 800/day (free tier)"
+freshness_sla:
+  binance-ws-spot: "realtime (websocket)"
+  binance-ws-futures: "realtime (websocket)"
+  binance-market-data-api: "realtime (REST)"
+  coindesk: "minutes (RSS)"
+  farside-btc-etf: "daily"
+  fred: "series-dependent (daily to quarterly)"
+  sec-submissions: "event-driven (filings)"
+fallback_id:
+  fred: alfred
+  binance-market-data-api: binance-data-api-vision
+  coingecko-api: coinmarketcap-api
+  farside-btc-etf: sosovalue
+
+# data_types: dataset-level tags; every tag must exist in data/datasets.yaml.
 data_types:
   sec-edgar-search: [ filings ]
   sec-data-apis: [ filings, xbrl, ownership ]

@@ -31,7 +31,9 @@ function renderFind(value) {
       `verify=${s.verification}`,
       `access=${s.content_access}`,
       s.pit ? `pit=${s.pit}` : undefined,
+      s.revision_risk ? `rev=${s.revision_risk}` : undefined,
       shownTypes ? `data=${shownTypes}` : undefined,
+      s.redistribution ? `redist=${s.redistribution}` : undefined,
       s.free_tier ? `free=${String(s.free_tier).slice(0, 80)}` : undefined,
       s.auth ? `auth=${s.auth}` : undefined,
       `refresh=${s.refresh_days}d`,
@@ -45,12 +47,14 @@ function renderFind(value) {
 function renderAudit(value) {
   const s = value.summary;
   const lines = [
-    `Citations: ${s.audited}/${s.total_urls} audited, ${s.known} known, ${s.unknown} unknown; A=${s.by_authority.A} B=${s.by_authority.B} C=${s.by_authority.C} D=${s.by_authority.D}; uncited paragraphs=${s.uncited_paragraphs}.`,
+    `Citations: ${s.audited}/${s.total_urls} audited, ${s.known} known, ${s.unknown} unknown${s.ambiguous ? ` (${s.ambiguous} same-host ambiguous)` : ''}${s.redacted ? `, ${s.redacted} redacted` : ''}; A=${s.by_authority.A} B=${s.by_authority.B} C=${s.by_authority.C} D=${s.by_authority.D}; uncited paragraphs=${s.uncited_paragraphs}.`,
   ];
   for (const c of value.citations) {
     const where = c.known
-      ? `${c.source_id} (${c.domain ?? '?'}, ${c.authority}/${c.evidence}${c.pit ? `, pit=${c.pit}` : ''}${c.verification ? `, verify=${c.verification}` : ''})`
-      : 'unknown';
+      ? `${c.source_id} (${c.domain ?? '?'}, ${c.authority}/${c.evidence}${c.pit ? `, pit=${c.pit}` : ''}${c.verification ? `, verify=${c.verification}` : ''}${c.revision_risk ? `, rev=${c.revision_risk}` : ''}; match=${c.match_type})`
+      : c.match_type === 'same_host_ambiguous'
+        ? `same-host ambiguous${c.candidates?.length ? ` (candidates: ${c.candidates.join(', ')})` : ''}`
+        : 'unknown';
     lines.push(`- ${c.url} -> ${where}${c.note ? `; ${c.note}` : ''}`);
   }
   if (value.suggestions.length) {
@@ -87,7 +91,13 @@ const findTool = defineTool({
               verification: { type: 'string' },
               license_class: { type: 'string' },
               pit: { type: 'string' },
+              revision_risk: { type: 'string' },
               data_types: { type: 'array', items: { type: 'string' } },
+              redistribution: { type: 'string' },
+              rate_limit: { type: 'string' },
+              license_url: { type: 'string' },
+              freshness_sla: { type: 'string' },
+              fallback_id: { type: 'string' },
               free_tier: { type: 'string' },
               auth: { type: 'string' },
               iface: { type: 'array', items: { type: 'string' } },

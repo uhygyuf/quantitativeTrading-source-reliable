@@ -2,8 +2,22 @@
  * Unit + performance checks for quantitativeTrading-source-reliable (no DSH runtime required).
  * Run: node test/check.mjs
  */
-import { loadRegistry, findSources, auditText, registryStats, DOMAINS } from '../lib/registry.js';import { buildGuidance, SECTION_ORDER } from '../lib/guidance.js';
+import { readFileSync } from 'node:fs';
+import { createRequire } from 'node:module';
+import { loadRegistry, findSources, auditText, registryStats, DOMAINS, normalizeUrl, matchCitation, redactUrl } from '../lib/registry.js';
+import { buildGuidance, SECTION_ORDER } from '../lib/guidance.js';
 import { FIND_TOOL, AUDIT_TOOL, declarationChars } from '../lib/tool-defs.js';
+
+const require = createRequire(import.meta.url);
+function loadYamlLib() {
+  for (const candidate of ['yaml', 'C:/Users/leo wang/.dsh/profiles/desktop/node_modules/yaml']) {
+    try { return require(candidate); } catch { /* try next */ }
+  }
+  throw new Error('yaml package not found');
+}
+const YAML = loadYamlLib();
+const { classify, classifyFailure } = require('../tools/probe-classify.cjs');
+const { diffEntries } = require('../tools/health-diff.cjs');
 
 const DATA = new URL('../data/sources.json', import.meta.url);
 let failures = 0;
@@ -88,6 +102,32 @@ ok(
 ok(stats.by_verification.production_approved >= 1, 'at least one source is production approved', JSON.stringify(stats.by_verification));
 ok(stats.by_verification.semantic_verified >= 18, 'at least 18 sources were semantically checked', JSON.stringify(stats.by_verification));
 
+const REVISION_RISK = ['none', 'rare', 'possible', 'routine', 'unknown'];
+const badRevision = registry.sources.filter((s) => !REVISION_RISK.includes(s.revision_risk));
+ok(badRevision.length === 0, 'every source has a known revision_risk', badRevision.map((s) => s.id).join(','));
+const revisionSum = Object.values(stats.by_revision_risk).reduce((a, b) => a + b, 0);
+ok(revisionSum === stats.count, 'every source has exactly one revision_risk', String(revisionSum));
+const REDISTRIBUTION = ['allowed', 'restricted', 'prohibited', 'unknown'];
+const badRedistribution = registry.sources.filter((s) => !REDISTRIBUTION.includes(s.redistribution));
+ok(badRedistribution.length === 0, 'every source has a known redistribution bucket', badRedistribution.map((s) => s.id).join(','));
+
+const datasets = YAML.parse(readFileSync(new URL('../data/datasets.yaml', import.meta.url), 'utf8'));
+const vocabulary = new Set(Object.keys(datasets.tags ?? {}));
+const strayTags = [...new Set(registry.sources.flatMap((s) => s.data_types))].filter((tag) => !vocabulary.has(tag));
+ok(strayTags.length === 0, 'all data_types tags are in the controlled vocabulary', strayTags.join(','));
+const undescribed = Object.entries(datasets.tags ?? {}).filter(([, description]) => !description);
+ok(undescribed.length === 0, 'every vocabulary tag has a description', undescribed.map(([tag]) => tag).join(','));
+ok(vocabulary.size >= 87, 'vocabulary keeps at least 87 tags', String(vocabulary.size));
+
+const buildMeta = registry.meta.build;
+ok(registry.meta.data_version === 2, 'registry data_version is 2', String(registry.meta.data_version));
+ok(
+  buildMeta && typeof buildMeta.built_at === 'string' && !Number.isNaN(Date.parse(buildMeta.built_at)),
+  'sources.json meta.build has a parseable built_at',
+  JSON.stringify(buildMeta),
+);
+ok(buildMeta?.source_count === registry.sources.length, 'meta.build source_count matches', String(buildMeta?.source_count));
+
 // ---------- find ----------
 const byUrl = findSources(registry, { url: 'https://alfred.stlouisfed.org/' });
 ok(byUrl.results[0]?.id === 'alfred', 'find by ALFRED URL', byUrl.results[0]?.id);
@@ -149,6 +189,24 @@ let badDomainThrew = false;
 try { findSources(registry, { domain: 'equities' }); } catch { badDomainThrew = true; }
 ok(badDomainThrew, 'unknown domain throws');
 
+// ---------- matching & redaction ----------
+ok(normalizeUrl('https://Example.COM/a/b/?q=1#x') === 'https://example.com/a/b?q=1', 'normalizeUrl lowercases host, keeps query, drops fragment', normalizeUrl('https://Example.COM/a/b/?q=1#x'));
+const exactMatch = matchCitation('https://alfred.stlouisfed.org/', registry.sources);
+ok(exactMatch.match_type === 'exact_url' && exactMatch.source?.id === 'alfred', 'matchCitation classifies exact URLs', JSON.stringify(exactMatch));
+const canonicalMatch = matchCitation('https://developers.binance.info/en/docs/derivatives/usds-margined-futures/market-data/rest-api', registry.sources);
+ok(canonicalMatch.match_type === 'canonical_page' && canonicalMatch.source?.id === 'binance-futures-api', 'matchCitation classifies a deeper page as canonical', JSON.stringify(canonicalMatch));
+const ambiguousMatch = matchCitation('https://www.hkex.com.hk/financials/annual-report-2025.pdf', registry.sources);
+ok(ambiguousMatch.match_type === 'same_host_ambiguous' && ambiguousMatch.source === null && ambiguousMatch.candidates.includes('hkex'), 'matchCitation refuses a same-host-only guess', JSON.stringify(ambiguousMatch));
+const unknownMatch = matchCitation('https://example.com/x', registry.sources);
+ok(unknownMatch.match_type === 'unknown' && unknownMatch.source === null, 'matchCitation returns unknown for a foreign host', JSON.stringify(unknownMatch));
+
+const secretUrl = redactUrl('https://api.example.com/v1/data?token=abc123&symbol=BTC');
+ok(secretUrl.redacted && secretUrl.url.includes('token=***') && !secretUrl.url.includes('abc123'), 'redactUrl masks credential-like query params', secretUrl.url);
+const userInfoUrl = redactUrl('https://user:pass@example.com/x');
+ok(userInfoUrl.redacted && userInfoUrl.url.includes('***@example.com') && !userInfoUrl.url.includes('pass'), 'redactUrl masks URL userinfo', userInfoUrl.url);
+const cleanUrlValue = redactUrl('https://alfred.stlouisfed.org/');
+ok(!cleanUrlValue.redacted && cleanUrlValue.url === 'https://alfred.stlouisfed.org/', 'redactUrl leaves clean URLs unchanged', cleanUrlValue.url);
+
 // ---------- audit ----------
 const draft = [
   'US CPI vintages are available in ALFRED (see https://alfred.stlouisfed.org/).',
@@ -185,15 +243,35 @@ ok(
   JSON.stringify(discoveredAudit.suggestions),
 );
 
+const secretAudit = auditText(registry, { text: 'Data: https://api.binance.com/api/v3/ticker/24hr?api_key=secret123&symbol=BTCUSDT' });
+ok(secretAudit.summary.redacted === 1, 'audit counts redacted citations', String(secretAudit.summary.redacted));
+ok(
+  secretAudit.citations[0]?.url_redacted === true && !JSON.stringify(secretAudit).includes('secret123'),
+  'audit output never contains the credential value',
+  JSON.stringify(secretAudit.citations[0]),
+);
+ok(secretAudit.citations[0]?.known === true, 'redaction does not break source matching', JSON.stringify(secretAudit.citations[0]));
+
+const ambiguousAudit = auditText(registry, { text: 'Annual report: https://www.hkex.com.hk/financials/annual-report-2025.pdf' });
+ok(
+  ambiguousAudit.citations[0]?.match_type === 'same_host_ambiguous' && ambiguousAudit.citations[0]?.known === false,
+  'audit marks same-host-only matches ambiguous',
+  JSON.stringify(ambiguousAudit.citations[0]),
+);
+ok(ambiguousAudit.summary.ambiguous === 1, 'audit summarizes ambiguous matches', String(ambiguousAudit.summary.ambiguous));
+ok(ambiguousAudit.suggestions.some((s) => s.includes('host level')), 'audit suggests pinning the exact page', JSON.stringify(ambiguousAudit.suggestions));
+
 // ---------- prompt footprint ----------
 const guidance = buildGuidance(stats);
 const estTokens = (text) => Math.ceil(text.length / 4);
 console.log(`\n[prompt] guidance ${guidance.length} chars (~${estTokens(guidance)} tokens at 4 chars/token), section order ${SECTION_ORDER}`);
 ok(guidance.length < 1200, 'guidance stays under 1200 chars', String(guidance.length));
-ok(guidance.includes('119 curated sources'), 'guidance states the current registry size', 'missing 119');
+ok(guidance.includes('119 sources'), 'guidance states the current registry size', 'missing 119');
 ok(guidance.includes('first publication time'), 'guidance requires news first-published time', 'missing news-time rule');
 ok(guidance.includes('HTTP 200'), 'guidance decouples reachability from data correctness', 'missing HTTP-200 caveat');
 ok(guidance.includes('not_applicable'), 'guidance explains the not_applicable PIT state', 'missing PIT state');
+ok(guidance.includes('revision_risk'), 'guidance explains revision_risk', 'missing revision_risk');
+ok(guidance.includes('redacts'), 'guidance mentions audit redaction', 'missing redaction');
 
 const findChars = declarationChars(FIND_TOOL);
 const auditChars = declarationChars(AUDIT_TOOL);
@@ -201,7 +279,33 @@ const totalChars = findChars + auditChars + guidance.length;
 const totalTokens = Math.ceil(totalChars / 4);
 console.log(`[tokens] find schema ${findChars} chars (~${Math.ceil(findChars / 4)} tokens), audit schema ${auditChars} chars (~${Math.ceil(auditChars / 4)} tokens), combined ~${totalTokens} tokens per request (schemas + guidance)`);
 ok(findChars + auditChars < 2600, 'two tool schemas under 2600 chars', String(findChars + auditChars));
-ok(totalTokens < 750, 'combined per-request overhead under 750 tokens', String(totalTokens));
+ok(totalTokens < 780, 'combined per-request overhead under 780 tokens', String(totalTokens));
+ok(!FIND_TOOL.description.includes('verified quantitative'), 'find description no longer claims every source is verified', FIND_TOOL.description.slice(0, 80));
+ok(FIND_TOOL.description.includes('verification state'), 'find description names the verification state');
+ok(AUDIT_TOOL.description.includes('exact_url') && AUDIT_TOOL.description.includes('same_host_ambiguous'), 'audit description names the match confidence levels');
+ok(AUDIT_TOOL.description.includes('redact'), 'audit description mentions redaction');
+
+// ---------- probe classification & weekly diff (no network) ----------
+ok(classify({ kind: 'html' }, { status: 403, contentType: 'text/html', textLen: 10 }) === 'challenge', 'classify: 403 is challenge');
+ok(classify({ kind: 'html' }, { status: 429, contentType: 'text/html', textLen: 10 }) === 'challenge', 'classify: 429 is challenge');
+ok(classify({ kind: 'html' }, { status: 202, contentType: 'text/html', textLen: 0 }) === 'challenge', 'classify: 202 is challenge');
+ok(classify({ kind: 'api' }, { status: 200, contentType: 'application/json' }) === 'api', 'classify: JSON is api');
+ok(classify({ kind: 'html' }, { status: 200, contentType: 'text/html', htmlSnippet: '', textLen: 120, linkCount: 2 }) === 'portal', 'classify: low text is portal');
+ok(classify({ kind: 'html' }, { status: 200, contentType: 'text/html', htmlSnippet: '', textLen: 400, linkCount: 10 }) === 'portal', 'classify: link-heavy page is portal');
+ok(classify({ kind: 'html' }, { status: 200, contentType: 'text/html', htmlSnippet: '<div id="root"></div>', textLen: 300 }) === 'js', 'classify: JS shell is js');
+ok(classify({ kind: 'html' }, { status: 200, contentType: 'text/html', htmlSnippet: '<p>ok</p>', textLen: 2000 }) === 'static', 'classify: normal HTML is static');
+ok(classify({ kind: 'pdf' }, { status: 200, contentType: 'application/pdf' }) === 'binary', 'classify: PDF is binary');
+const failure = classifyFailure(new TypeError('fetch failed'));
+ok(failure.access === null && failure.error.startsWith('TypeError:') && failure.flags.includes('error'), 'classifyFailure shapes network errors', JSON.stringify(failure));
+
+const statusDiff = diffEntries({ a: { status: 200, access: 'static', final_url: 'x' } }, { a: { status: 403, access: 'challenge', final_url: 'x' } });
+ok(statusDiff.changes.includes('a: status 200 -> 403') && statusDiff.changes.includes('a: access static -> challenge'), 'diffEntries reports status/access changes', JSON.stringify(statusDiff));
+const addedDiff = diffEntries({}, { b: { status: 200, access: 'static', final_url: 'y' } });
+ok(addedDiff.added.includes('b') && addedDiff.changes.some((c) => c.startsWith('b: new')), 'diffEntries reports new sources', JSON.stringify(addedDiff));
+const removedDiff = diffEntries({ c: { status: 200, access: 'static', final_url: 'z' } }, {});
+ok(removedDiff.removed.includes('c') && removedDiff.changes.some((c) => c.startsWith('c: no longer')), 'diffEntries reports dropped sources', JSON.stringify(removedDiff));
+const quietDiff = diffEntries({ a: { status: 200, access: 'static', final_url: 'x' } }, { a: { status: 200, access: 'static', final_url: 'x' } });
+ok(quietDiff.changes.length === 0, 'diffEntries reports no change for identical entries', JSON.stringify(quietDiff));
 
 // ---------- performance ----------
 const queries = [

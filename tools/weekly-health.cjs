@@ -14,6 +14,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const { execFileSync } = require('node:child_process');
+const { diffEntries } = require('./health-diff.cjs');
 
 const ROOT = path.join(__dirname, '..');
 const REPORTS = path.join(ROOT, 'reports');
@@ -52,6 +53,7 @@ const registry = readJson(path.join(ROOT, 'data', 'sources.json'), { sources: []
 const authority = new Map(registry.sources.map((s) => [s.id, s.authority]));
 const previous = readJson(STATE, { entries: {} });
 const now = {};
+const snapshots = {};
 
 function runProbe(domain) {
   execFileSync(process.execPath, [PROBE, `--file=${domain}`, '--check'], { cwd: ROOT, stdio: 'inherit' });
@@ -66,6 +68,12 @@ try {
       console.error(`missing probe report: ${reportFile}`);
       continue;
     }
+    snapshots[domain] = {
+      snapshot_id: report.snapshot_id ?? null,
+      started_at: report.started_at ?? null,
+      completed_at: report.completed_at ?? null,
+      concurrency: report.concurrency ?? null,
+    };
     for (const entry of report.entries ?? []) {
       now[entry.id] = {
         domain,
@@ -90,29 +98,16 @@ for (const id of ids) {
   accessCounts[key] = (accessCounts[key] ?? 0) + 1;
 }
 
-const changes = [];
 const hasBaseline = Object.keys(previous.entries ?? {}).length > 0;
-if (hasBaseline) {
-  for (const id of ids) {
-    const old = previous.entries[id];
-    const cur = now[id];
-    if (!old) {
-      changes.push(`${id}: new in registry`);
-      continue;
-    }
-    if (old.status !== cur.status) changes.push(`${id}: status ${old.status ?? 'ERR'} -> ${cur.status ?? 'ERR'}`);
-    if (old.access !== cur.access) changes.push(`${id}: access ${old.access ?? '-'} -> ${cur.access ?? '-'}`);
-    if (cur.final_url && old.final_url !== cur.final_url) changes.push(`${id}: final_url -> ${cur.final_url}`);
-  }
-  for (const id of Object.keys(previous.entries ?? {})) {
-    if (!now[id]) changes.push(`${id}: no longer probed`);
-  }
-}
+const diff = hasBaseline ? diffEntries(previous.entries, now) : { changes: [], added: [], removed: [] };
+const changes = diff.changes;
 
 const lines = [
   `# quantitativeTrading-source-reliable weekly source health — ${date}`,
   '',
   `Sources probed: ${ids.length} (quant ${ids.filter((id) => now[id].domain === 'quant').length}, crypto ${ids.filter((id) => now[id].domain === 'crypto').length})`,
+  `Snapshot IDs: quant=${snapshots.quant?.snapshot_id ?? '-'}, crypto=${snapshots.crypto?.snapshot_id ?? '-'}`,
+  `Batch: concurrent probe (not the matrix single-source snapshot); started ${snapshots.quant?.started_at ?? '-'} / ${snapshots.crypto?.started_at ?? '-'}`,
   `HTTP 200: ${ok.length}; non-200: ${non200.length}`,
   `access: ${Object.entries(accessCounts).map(([key, value]) => `${key}=${value}`).join(', ')}`,
   '',
@@ -150,7 +145,14 @@ const reportFile = path.join(REPORTS, `source-health-${date}.txt`);
 fs.writeFileSync(reportFile, `${lines.join('\n')}\n`, 'utf8');
 
 const stateFile = path.join(REPORTS, 'source-health-state.json');
-fs.writeFileSync(stateFile, `${JSON.stringify({ generated_at: date, entries: now }, null, 1)}\n`, 'utf8');
+fs.writeFileSync(stateFile, `${JSON.stringify({
+  generated_at: date,
+  snapshot_ids: {
+    quant: snapshots.quant?.snapshot_id ?? null,
+    crypto: snapshots.crypto?.snapshot_id ?? null,
+  },
+  entries: now,
+}, null, 1)}\n`, 'utf8');
 
 console.log(`[health] ${date}: ${ok.length}/${ids.length} HTTP 200, ${non200.length} non-200, ${changes.length} change(s)`);
 if (non200.length) {

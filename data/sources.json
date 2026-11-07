@@ -1,8 +1,20 @@
 {
  "meta": {
   "name": "Quant/crypto source registry",
-  "data_version": 1,
+  "data_version": 2,
   "generated_at": "2026-11-06",
+  "build": {
+   "built_at": "2026-11-07T02:44:09.442Z",
+   "source_count": 119,
+   "matrices": [
+    "data/quant-source-matrix.yaml",
+    "data/crypto-source-matrix.yaml"
+   ],
+   "enrichment": "data/enrichment.yaml",
+   "enrichment_version": 2,
+   "datasets": "data/datasets.yaml",
+   "datasets_version": 1
+  },
   "source_matrices": [
    "data/quant-source-matrix.yaml",
    "data/crypto-source-matrix.yaml"
@@ -60,7 +72,7 @@
    "yes": "提供 Point-in-Time / as-reported 版本",
    "partial": "部分字段或部分数据集提供 PIT",
    "no": "只给最新修订值，回测需自行处理未来函数",
-   "not_applicable": "数据不可修订（原始行情/逐笔/链上/归档）或条目本身是工具，PIT 不适用",
+   "not_applicable": "PIT 不是这个源合适的控制手段（原始逐笔/快照/工具/沙盒），不代表历史值永不修订",
    "unverified": "尚未核实，不能假设有或没有 PIT"
   },
   "verification_legend": {
@@ -70,9 +82,21 @@
    "semantic_verified": "核对过具体口径（费率、限频、端点、PIT、更名等）",
    "production_approved": "在真实任务里端到端用过"
   },
-  "data_types_note": "data_types 是数据集级标签（如 orderbook_l2、funding、xbrl），用于核对某条引用是否真的覆盖所引数据。",
-  "enrichment": "data/enrichment.yaml",
-  "license_note": "license_class 是策略分桶，不是法律意见；绑定许可以源站条款为准。"
+  "revision_risk_legend": {
+   "none": "官方原始归档/逐笔/交易记录，未观察到重建",
+   "rare": "链上数据（重组、回填少）",
+   "possible": "行情聚合器、供应商重建历史、新闻更正",
+   "routine": "宏观/基本面等经常修订的数据",
+   "unknown": "未核实"
+  },
+  "redistribution_legend": {
+   "allowed": "license_class 为公有领域/开源，默认允许再分发（仍需核对具体条款）",
+   "restricted": "站点条款保留，默认只链接 + 短引用",
+   "prohibited": "明确禁止再分发",
+   "unknown": "未核实，按最严格策略处理"
+  },
+  "data_types_note": "data_types 是数据集级标签（如 orderbook_l2、funding、xbrl），来自受控词表 data/datasets.yaml；未知标签会让构建失败。",
+  "license_note": "license_class / redistribution 是策略分桶，不是法律意见；绑定许可以源站条款为准。"
  },
  "sources": [
   {
@@ -108,9 +132,11 @@
     "web"
    ],
    "pit": "no",
+   "revision_risk": "none",
    "data_types": [
     "filings"
-   ]
+   ],
+   "redistribution": "allowed"
   },
   {
    "id": "sec-data-apis",
@@ -143,11 +169,13 @@
     "rest"
    ],
    "pit": "partial",
+   "revision_risk": "none",
    "data_types": [
     "filings",
     "xbrl",
     "ownership"
    ],
+   "redistribution": "allowed",
    "free_tier": "free, no API key (verified 2026-11-06)"
   },
   {
@@ -179,10 +207,12 @@
     "rest"
    ],
    "pit": "partial",
+   "revision_risk": "possible",
    "data_types": [
     "xbrl",
     "fundamentals"
    ],
+   "redistribution": "allowed",
    "free_tier": "free, no API key (verified 2026-11-06)",
    "as_reported": "yes"
   },
@@ -216,10 +246,13 @@
     "rest"
    ],
    "pit": "no",
+   "revision_risk": "none",
    "data_types": [
     "filings",
     "ownership"
    ],
+   "redistribution": "allowed",
+   "freshness_sla": "event-driven (filings)",
    "free_tier": "free, no API key (verified 2026-11-06)"
   },
   {
@@ -253,10 +286,12 @@
     "archive"
    ],
    "pit": "partial",
+   "revision_risk": "none",
    "data_types": [
     "xbrl",
     "fundamentals"
    ],
+   "redistribution": "allowed",
    "as_reported": "yes"
   },
   {
@@ -288,10 +323,12 @@
     "archive"
    ],
    "pit": "partial",
+   "revision_risk": "none",
    "data_types": [
     "ownership",
     "13f"
-   ]
+   ],
+   "redistribution": "allowed"
   },
   {
    "id": "sec-insider-transactions",
@@ -322,10 +359,12 @@
     "archive"
    ],
    "pit": "partial",
+   "revision_risk": "none",
    "data_types": [
     "ownership",
     "form4"
-   ]
+   ],
+   "redistribution": "allowed"
   },
   {
    "id": "finra-short-interest",
@@ -357,9 +396,11 @@
     "web"
    ],
    "pit": "no",
+   "revision_risk": "possible",
    "data_types": [
     "short_interest"
-   ]
+   ],
+   "redistribution": "restricted"
   },
   {
    "id": "cftc-cot",
@@ -392,10 +433,12 @@
     "archive"
    ],
    "pit": "no",
+   "revision_risk": "possible",
    "data_types": [
     "positioning",
     "futures"
-   ]
+   ],
+   "redistribution": "allowed"
   },
   {
    "id": "cboe-datashop",
@@ -427,11 +470,13 @@
     "web"
    ],
    "pit": "not_applicable",
+   "revision_risk": "possible",
    "data_types": [
     "options",
     "vix",
     "historical_ticks"
-   ]
+   ],
+   "redistribution": "restricted"
   },
   {
    "id": "cninfo",
@@ -464,10 +509,12 @@
     "web"
    ],
    "pit": "no",
+   "revision_risk": "possible",
    "data_types": [
     "filings",
     "disclosures"
-   ]
+   ],
+   "redistribution": "restricted"
   },
   {
    "id": "sse",
@@ -499,10 +546,12 @@
     "web"
    ],
    "pit": "no",
+   "revision_risk": "possible",
    "data_types": [
     "filings",
     "market_data"
-   ]
+   ],
+   "redistribution": "restricted"
   },
   {
    "id": "szse",
@@ -534,10 +583,12 @@
     "web"
    ],
    "pit": "no",
+   "revision_risk": "possible",
    "data_types": [
     "filings",
     "market_data"
-   ]
+   ],
+   "redistribution": "restricted"
   },
   {
    "id": "hkex",
@@ -569,10 +620,12 @@
     "web"
    ],
    "pit": "no",
+   "revision_risk": "possible",
    "data_types": [
     "market_data",
     "filings"
-   ]
+   ],
+   "redistribution": "restricted"
   },
   {
    "id": "fred",
@@ -607,9 +660,13 @@
     "web"
    ],
    "pit": "no",
+   "revision_risk": "routine",
    "data_types": [
     "macro_series"
    ],
+   "redistribution": "allowed",
+   "freshness_sla": "series-dependent (daily to quarterly)",
+   "fallback_id": "alfred",
    "free_tier": "free API key"
   },
   {
@@ -644,10 +701,12 @@
     "web"
    ],
    "pit": "yes",
+   "revision_risk": "routine",
    "data_types": [
     "macro_series",
     "vintages"
    ],
+   "redistribution": "allowed",
    "free_tier": "free API key"
   },
   {
@@ -683,11 +742,13 @@
     "web"
    ],
    "pit": "no",
+   "revision_risk": "routine",
    "data_types": [
     "macro_series",
     "employment",
     "cpi"
    ],
+   "redistribution": "allowed",
    "free_tier": "free API key"
   },
   {
@@ -720,10 +781,12 @@
     "web"
    ],
    "pit": "no",
+   "revision_risk": "routine",
    "data_types": [
     "macro_series",
     "gdp"
    ],
+   "redistribution": "allowed",
    "free_tier": "free API key"
   },
   {
@@ -757,11 +820,13 @@
     "web"
    ],
    "pit": "no",
+   "revision_risk": "routine",
    "data_types": [
     "fiscal",
     "debt",
     "rates"
    ],
+   "redistribution": "allowed",
    "free_tier": "free, no key"
   },
   {
@@ -794,9 +859,11 @@
     "rest"
    ],
    "pit": "no",
+   "revision_risk": "routine",
    "data_types": [
     "macro_series"
-   ]
+   ],
+   "redistribution": "allowed"
   },
   {
    "id": "world-bank-data",
@@ -828,10 +895,12 @@
     "rest"
    ],
    "pit": "unverified",
+   "revision_risk": "routine",
    "data_types": [
     "macro_series",
     "development"
-   ]
+   ],
+   "redistribution": "allowed"
   },
   {
    "id": "bis-data",
@@ -864,10 +933,12 @@
     "rest"
    ],
    "pit": "no",
+   "revision_risk": "routine",
    "data_types": [
     "macro_series",
     "banking"
-   ]
+   ],
+   "redistribution": "restricted"
   },
   {
    "id": "oecd-data",
@@ -899,9 +970,11 @@
     "rest"
    ],
    "pit": "unverified",
+   "revision_risk": "routine",
    "data_types": [
     "macro_series"
-   ]
+   ],
+   "redistribution": "restricted"
   },
   {
    "id": "ecb-data",
@@ -934,10 +1007,12 @@
     "rest"
    ],
    "pit": "no",
+   "revision_risk": "routine",
    "data_types": [
     "macro_series",
     "rates"
-   ]
+   ],
+   "redistribution": "restricted"
   },
   {
    "id": "nbs-china",
@@ -970,9 +1045,11 @@
     "web"
    ],
    "pit": "no",
+   "revision_risk": "possible",
    "data_types": [
     "macro_series"
-   ]
+   ],
+   "redistribution": "allowed"
   },
   {
    "id": "pbc-china",
@@ -1004,10 +1081,12 @@
     "web"
    ],
    "pit": "no",
+   "revision_risk": "possible",
    "data_types": [
     "rates",
     "macro_series"
-   ]
+   ],
+   "redistribution": "allowed"
   },
   {
    "id": "chinamoney",
@@ -1040,10 +1119,12 @@
     "web"
    ],
    "pit": "no",
+   "revision_risk": "possible",
    "data_types": [
     "rates",
     "fx"
-   ]
+   ],
+   "redistribution": "restricted"
   },
   {
    "id": "massive",
@@ -1079,12 +1160,14 @@
     "archive"
    ],
    "pit": "not_applicable",
+   "revision_risk": "possible",
    "data_types": [
     "ohlcv",
     "trades",
     "options",
     "reference"
-   ]
+   ],
+   "redistribution": "restricted"
   },
   {
    "id": "alpaca-data",
@@ -1117,11 +1200,13 @@
     "ws"
    ],
    "pit": "not_applicable",
+   "revision_risk": "possible",
    "data_types": [
     "ohlcv",
     "trades",
     "quotes"
    ],
+   "redistribution": "restricted",
    "free_tier": "free tier API data is 15-min delayed; real-time SIP needs Algo Trader Plus $99/mo (verified 2026-11-06)"
   },
   {
@@ -1157,11 +1242,13 @@
     "archive"
    ],
    "pit": "not_applicable",
+   "revision_risk": "possible",
    "data_types": [
     "historical_ticks",
     "orderbook_l2",
     "ohlcv"
-   ]
+   ],
+   "redistribution": "restricted"
   },
   {
    "id": "tiingo",
@@ -1194,11 +1281,13 @@
     "ws"
    ],
    "pit": "not_applicable",
+   "revision_risk": "possible",
    "data_types": [
     "ohlcv",
     "fundamentals",
     "news"
    ],
+   "redistribution": "restricted",
    "free_tier": "unverified (pricing page is client-rendered)"
   },
   {
@@ -1232,11 +1321,14 @@
     "mcp"
    ],
    "pit": "not_applicable",
+   "revision_risk": "possible",
    "data_types": [
     "ohlcv",
     "fundamentals",
     "fx"
    ],
+   "redistribution": "restricted",
+   "rate_limit": "25 requests/day (free tier)",
    "free_tier": "free tier 25 requests/day; premium from $49.99/mo (verified 2026-11-06)"
   },
   {
@@ -1270,12 +1362,14 @@
     "ws"
    ],
    "pit": "not_applicable",
+   "revision_risk": "possible",
    "data_types": [
     "ohlcv",
     "fundamentals",
     "news",
     "earnings"
    ],
+   "redistribution": "restricted",
    "free_tier": "unverified"
   },
   {
@@ -1309,10 +1403,13 @@
     "ws"
    ],
    "pit": "not_applicable",
+   "revision_risk": "possible",
    "data_types": [
     "ohlcv",
     "fundamentals"
    ],
+   "redistribution": "restricted",
+   "rate_limit": "8 credits/min, 800/day (free tier)",
    "free_tier": "free: 8 credits/min, 800/day; Grow $79/mo (verified 2026-11-06)"
   },
   {
@@ -1345,11 +1442,13 @@
     "web"
    ],
    "pit": "not_applicable",
+   "revision_risk": "possible",
    "data_types": [
     "ohlcv",
     "macro_series",
     "fundamentals"
-   ]
+   ],
+   "redistribution": "restricted"
   },
   {
    "id": "openbb",
@@ -1383,9 +1482,11 @@
     "web"
    ],
    "pit": "not_applicable",
+   "revision_risk": "possible",
    "data_types": [
     "tooling"
    ],
+   "redistribution": "allowed",
    "free_tier": "open source (AGPL-3.0)"
   },
   {
@@ -1420,10 +1521,12 @@
     "archive"
    ],
    "pit": "yes",
+   "revision_risk": "routine",
    "data_types": [
     "fundamentals",
     "pit"
    ],
+   "redistribution": "restricted",
    "free_tier": "paid subscription",
    "as_reported": "yes",
    "survivorship": "bias-free"
@@ -1459,9 +1562,11 @@
     "sdk"
    ],
    "pit": "partial",
+   "revision_risk": "routine",
    "data_types": [
     "fundamentals"
    ],
+   "redistribution": "restricted",
    "free_tier": "institutional subscription",
    "as_reported": "yes",
    "survivorship": "bias-free"
@@ -1497,11 +1602,13 @@
     "sdk"
    ],
    "pit": "partial",
+   "revision_risk": "possible",
    "data_types": [
     "ohlcv",
     "corporate_actions",
     "delisting"
    ],
+   "redistribution": "restricted",
    "free_tier": "institutional subscription",
    "survivorship": "bias-free"
   },
@@ -1535,11 +1642,13 @@
     "archive"
    ],
    "pit": "partial",
+   "revision_risk": "possible",
    "data_types": [
     "options",
     "iv",
     "vol_surface"
    ],
+   "redistribution": "restricted",
    "free_tier": "paid / academic subscription"
   },
   {
@@ -1572,9 +1681,11 @@
     "rest"
    ],
    "pit": "no",
+   "revision_risk": "routine",
    "data_types": [
     "fundamentals"
    ],
+   "redistribution": "restricted",
    "free_tier": "unverified (docs site blocked bots on 2026-11-06)"
   },
   {
@@ -1608,9 +1719,11 @@
     "mcp"
    ],
    "pit": "no",
+   "revision_risk": "routine",
    "data_types": [
     "fundamentals"
    ],
+   "redistribution": "restricted",
    "free_tier": "unverified"
   },
   {
@@ -1642,9 +1755,11 @@
     "rest"
    ],
    "pit": "no",
+   "revision_risk": "routine",
    "data_types": [
     "fundamentals"
    ],
+   "redistribution": "restricted",
    "free_tier": "unverified"
   },
   {
@@ -1678,10 +1793,12 @@
     "rest"
    ],
    "pit": "partial",
+   "revision_risk": "possible",
    "data_types": [
     "market_data",
     "fundamentals"
    ],
+   "redistribution": "restricted",
    "free_tier": "free tier limited by points/积分"
   },
   {
@@ -1715,10 +1832,12 @@
     "sdk"
    ],
    "pit": "not_applicable",
+   "revision_risk": "possible",
    "data_types": [
     "tooling",
     "market_data"
    ],
+   "redistribution": "allowed",
    "free_tier": "open source, free"
   },
   {
@@ -1753,11 +1872,13 @@
     "mcp"
    ],
    "pit": "yes",
+   "revision_risk": "possible",
    "data_types": [
     "fundamentals",
     "pit",
     "market_data"
    ],
+   "redistribution": "unknown",
    "free_tier": "open source, self-hosted",
    "survivorship": "bias-free"
   },
@@ -1793,11 +1914,13 @@
     "web"
    ],
    "pit": "partial",
+   "revision_risk": "possible",
    "data_types": [
     "market_data",
     "fundamentals",
     "macro_series"
    ],
+   "redistribution": "restricted",
    "free_tier": "paid license"
   },
   {
@@ -1830,11 +1953,13 @@
     "web"
    ],
    "pit": "partial",
+   "revision_risk": "possible",
    "data_types": [
     "market_data",
     "fundamentals",
     "macro_series"
    ],
+   "redistribution": "restricted",
    "free_tier": "paid license"
   },
   {
@@ -1868,11 +1993,13 @@
     "web"
    ],
    "pit": "partial",
+   "revision_risk": "possible",
    "data_types": [
     "market_data",
     "fundamentals",
     "backtest"
    ],
+   "redistribution": "restricted",
    "free_tier": "free tier + paid plans"
   },
   {
@@ -1906,11 +2033,13 @@
     "web"
    ],
    "pit": "partial",
+   "revision_risk": "possible",
    "data_types": [
     "market_data",
     "fundamentals",
     "backtest"
    ],
+   "redistribution": "restricted",
    "free_tier": "free tier + paid plans"
   },
   {
@@ -1946,12 +2075,14 @@
     "sdk"
    ],
    "pit": "not_applicable",
+   "revision_risk": "none",
    "data_types": [
     "orders",
     "positions",
     "ohlcv",
     "account"
    ],
+   "redistribution": "restricted",
    "free_tier": "requires funded account"
   },
   {
@@ -1985,11 +2116,13 @@
     "ws"
    ],
    "pit": "not_applicable",
+   "revision_risk": "none",
    "data_types": [
     "orders",
     "positions",
     "account"
    ],
+   "redistribution": "restricted",
    "free_tier": "paper trading free"
   },
   {
@@ -2022,9 +2155,11 @@
     "web"
    ],
    "pit": "not_applicable",
+   "revision_risk": "none",
    "data_types": [
     "papers"
-   ]
+   ],
+   "redistribution": "restricted"
   },
   {
    "id": "ssrn",
@@ -2056,9 +2191,11 @@
     "web"
    ],
    "pit": "not_applicable",
+   "revision_risk": "none",
    "data_types": [
     "papers"
-   ]
+   ],
+   "redistribution": "restricted"
   },
   {
    "id": "arxiv-qfin",
@@ -2091,9 +2228,11 @@
     "rest"
    ],
    "pit": "not_applicable",
+   "revision_risk": "none",
    "data_types": [
     "papers"
-   ]
+   ],
+   "redistribution": "restricted"
   },
   {
    "id": "gdelt",
@@ -2127,10 +2266,12 @@
     "rest"
    ],
    "pit": "partial",
+   "revision_risk": "possible",
    "data_types": [
     "news",
     "events"
    ],
+   "redistribution": "allowed",
    "free_tier": "free, open"
   },
   {
@@ -2163,10 +2304,12 @@
     "rest"
    ],
    "pit": "partial",
+   "revision_risk": "possible",
    "data_types": [
     "news",
     "events"
    ],
+   "redistribution": "restricted",
    "free_tier": "paid"
   },
   {
@@ -2199,10 +2342,12 @@
     "archive"
    ],
    "pit": "partial",
+   "revision_risk": "possible",
    "data_types": [
     "news",
     "events"
    ],
+   "redistribution": "restricted",
    "free_tier": "paid"
   },
   {
@@ -2236,11 +2381,13 @@
     "web"
    ],
    "pit": "not_applicable",
+   "revision_risk": "none",
    "data_types": [
     "historical_ticks",
     "orderbook_l2",
     "market_data"
    ],
+   "redistribution": "restricted",
    "free_tier": "paid subscription"
   },
   {
@@ -2274,10 +2421,12 @@
     "web"
    ],
    "pit": "partial",
+   "revision_risk": "possible",
    "data_types": [
     "filings",
     "disclosures"
    ],
+   "redistribution": "restricted",
    "free_tier": "free"
   },
   {
@@ -2311,10 +2460,12 @@
     "web"
    ],
    "pit": "partial",
+   "revision_risk": "possible",
    "data_types": [
     "holdings",
     "ownership"
    ],
+   "redistribution": "restricted",
    "free_tier": "free"
   },
   {
@@ -2348,10 +2499,12 @@
     "web"
    ],
    "pit": "partial",
+   "revision_risk": "possible",
    "data_types": [
     "regulatory",
     "news"
    ],
+   "redistribution": "restricted",
    "free_tier": "free"
   },
   {
@@ -2385,11 +2538,13 @@
     "web"
    ],
    "pit": "unverified",
+   "revision_risk": "possible",
    "data_types": [
     "rates",
     "macro_series",
     "banking"
    ],
+   "redistribution": "restricted",
    "free_tier": "unverified"
   },
   {
@@ -2423,9 +2578,11 @@
     "web"
    ],
    "pit": "unverified",
+   "revision_risk": "possible",
    "data_types": [
     "macro_series"
    ],
+   "redistribution": "restricted",
    "free_tier": "unverified"
   },
   {
@@ -2459,10 +2616,12 @@
     "web"
    ],
    "pit": "no",
+   "revision_risk": "routine",
    "data_types": [
     "macro_series",
     "rates"
    ],
+   "redistribution": "restricted",
    "free_tier": "free"
   },
   {
@@ -2496,12 +2655,14 @@
     "web"
    ],
    "pit": "no",
+   "revision_risk": "routine",
    "data_types": [
     "macro_series",
     "employment",
     "cpi",
     "gdp"
    ],
+   "redistribution": "restricted",
    "free_tier": "free"
   },
   {
@@ -2534,9 +2695,11 @@
     "web"
    ],
    "pit": "no",
+   "revision_risk": "routine",
    "data_types": [
     "macro_series"
    ],
+   "redistribution": "restricted",
    "free_tier": "free"
   },
   {
@@ -2569,10 +2732,12 @@
     "web"
    ],
    "pit": "unverified",
+   "revision_risk": "routine",
    "data_types": [
     "rates",
     "macro_series"
    ],
+   "redistribution": "restricted",
    "free_tier": "unverified"
   },
   {
@@ -2606,10 +2771,12 @@
     "web"
    ],
    "pit": "not_applicable",
+   "revision_risk": "routine",
    "data_types": [
     "events",
     "calendar"
    ],
+   "redistribution": "allowed",
    "free_tier": "free"
   },
   {
@@ -2642,10 +2809,12 @@
     "web"
    ],
    "pit": "partial",
+   "revision_risk": "possible",
    "data_types": [
     "news",
     "regulatory"
    ],
+   "redistribution": "allowed",
    "free_tier": "free"
   },
   {
@@ -2678,10 +2847,12 @@
     "web"
    ],
    "pit": "partial",
+   "revision_risk": "possible",
    "data_types": [
     "news",
     "regulatory"
    ],
+   "redistribution": "allowed",
    "free_tier": "free"
   },
   {
@@ -2714,11 +2885,13 @@
     "web"
    ],
    "pit": "no",
+   "revision_risk": "possible",
    "data_types": [
     "listing",
     "symbols",
     "market_status"
    ],
+   "redistribution": "restricted",
    "free_tier": "free"
   },
   {
@@ -2750,10 +2923,12 @@
     "web"
    ],
    "pit": "no",
+   "revision_risk": "possible",
    "data_types": [
     "listing",
     "market_status"
    ],
+   "redistribution": "restricted",
    "free_tier": "free"
   },
   {
@@ -2789,6 +2964,7 @@
     "ws"
    ],
    "pit": "not_applicable",
+   "revision_risk": "none",
    "data_types": [
     "ohlcv",
     "trades",
@@ -2797,6 +2973,7 @@
     "account",
     "orders"
    ],
+   "redistribution": "restricted",
    "free_tier": "public market data free, no key"
   },
   {
@@ -2831,6 +3008,7 @@
     "ws"
    ],
    "pit": "not_applicable",
+   "revision_risk": "none",
    "data_types": [
     "ohlcv",
     "trades",
@@ -2844,6 +3022,7 @@
     "account",
     "orders"
    ],
+   "redistribution": "restricted",
    "free_tier": "public market data free, no key"
   },
   {
@@ -2879,10 +3058,12 @@
     "mcp"
    ],
    "pit": "not_applicable",
+   "revision_risk": "none",
    "data_types": [
     "tooling",
     "llm_docs"
    ],
+   "redistribution": "restricted",
    "verified_on": "2026-11-06"
   },
   {
@@ -2915,10 +3096,12 @@
     "rest"
    ],
    "pit": "not_applicable",
+   "revision_risk": "none",
    "data_types": [
     "tooling",
     "llm_docs"
    ],
+   "redistribution": "restricted",
    "free_tier": "free",
    "verified_on": "2026-11-06"
   },
@@ -2952,10 +3135,12 @@
     "mcp"
    ],
    "pit": "not_applicable",
+   "revision_risk": "none",
    "data_types": [
     "tooling",
     "mcp"
    ],
+   "redistribution": "restricted",
    "verified_on": "2026-11-06"
   },
   {
@@ -2989,11 +3174,14 @@
     "ws"
    ],
    "pit": "not_applicable",
+   "revision_risk": "none",
    "data_types": [
     "trades",
     "orderbook_l2",
     "ticker"
    ],
+   "redistribution": "restricted",
+   "freshness_sla": "realtime (websocket)",
    "verified_on": "2026-11-06"
   },
   {
@@ -3027,6 +3215,7 @@
     "ws"
    ],
    "pit": "not_applicable",
+   "revision_risk": "none",
    "data_types": [
     "trades",
     "orderbook_l2",
@@ -3035,6 +3224,8 @@
     "liquidations",
     "long_short_ratio"
    ],
+   "redistribution": "restricted",
+   "freshness_sla": "realtime (websocket)",
    "verified_on": "2026-11-06"
   },
   {
@@ -3068,11 +3259,13 @@
     "archive"
    ],
    "pit": "not_applicable",
+   "revision_risk": "none",
    "data_types": [
     "historical_ticks",
     "historical_klines",
     "orderbook_l2"
    ],
+   "redistribution": "restricted",
    "free_tier": "free",
    "history_start": "2019-12 (UM futures 1m; spot earlier)",
    "verified_on": "2026-11-06"
@@ -3108,9 +3301,11 @@
     "ws"
    ],
    "pit": "not_applicable",
+   "revision_risk": "none",
    "data_types": [
     "sandbox"
    ],
+   "redistribution": "restricted",
    "free_tier": "free testnet"
   },
   {
@@ -3143,9 +3338,11 @@
     "ws"
    ],
    "pit": "not_applicable",
+   "revision_risk": "none",
    "data_types": [
     "sandbox"
    ],
+   "redistribution": "restricted",
    "free_tier": "free testnet"
   },
   {
@@ -3179,11 +3376,13 @@
     "ws"
    ],
    "pit": "not_applicable",
+   "revision_risk": "none",
    "data_types": [
     "options",
     "iv",
     "greeks"
-   ]
+   ],
+   "redistribution": "restricted"
   },
   {
    "id": "bybit-v5",
@@ -3216,13 +3415,15 @@
     "ws"
    ],
    "pit": "not_applicable",
+   "revision_risk": "none",
    "data_types": [
     "ohlcv",
     "trades",
     "orderbook_l2",
     "funding",
     "open_interest"
-   ]
+   ],
+   "redistribution": "restricted"
   },
   {
    "id": "okx-v5",
@@ -3255,6 +3456,7 @@
     "ws"
    ],
    "pit": "not_applicable",
+   "revision_risk": "none",
    "data_types": [
     "ohlcv",
     "trades",
@@ -3262,7 +3464,8 @@
     "funding",
     "open_interest",
     "options"
-   ]
+   ],
+   "redistribution": "restricted"
   },
   {
    "id": "coinbase-advanced-trade",
@@ -3294,13 +3497,15 @@
     "ws"
    ],
    "pit": "not_applicable",
+   "revision_risk": "none",
    "data_types": [
     "ohlcv",
     "trades",
     "orderbook_l2",
     "orders",
     "account"
-   ]
+   ],
+   "redistribution": "restricted"
   },
   {
    "id": "kraken-api",
@@ -3333,12 +3538,14 @@
     "ws"
    ],
    "pit": "not_applicable",
+   "revision_risk": "none",
    "data_types": [
     "ohlcv",
     "trades",
     "orderbook_l2",
     "funding"
-   ]
+   ],
+   "redistribution": "restricted"
   },
   {
    "id": "deribit",
@@ -3371,13 +3578,15 @@
     "ws"
    ],
    "pit": "not_applicable",
+   "revision_risk": "none",
    "data_types": [
     "options",
     "iv",
     "greeks",
     "futures",
     "funding"
-   ]
+   ],
+   "redistribution": "restricted"
   },
   {
    "id": "coingecko-api",
@@ -3409,11 +3618,14 @@
     "rest"
    ],
    "pit": "not_applicable",
+   "revision_risk": "possible",
    "data_types": [
     "spot_price",
     "market_cap",
     "metadata"
    ],
+   "redistribution": "restricted",
+   "fallback_id": "coinmarketcap-api",
    "free_tier": "demo key; limits unverified"
   },
   {
@@ -3445,10 +3657,12 @@
     "mcp"
    ],
    "pit": "not_applicable",
+   "revision_risk": "possible",
    "data_types": [
     "tooling",
     "mcp"
    ],
+   "redistribution": "restricted",
    "free_tier": "keyless server shares rate limits",
    "verified_on": "2026-11-06"
   },
@@ -3481,11 +3695,13 @@
     "rest"
    ],
    "pit": "not_applicable",
+   "revision_risk": "possible",
    "data_types": [
     "spot_price",
     "market_cap",
     "metadata"
    ],
+   "redistribution": "restricted",
    "free_tier": "unverified"
   },
   {
@@ -3518,12 +3734,14 @@
     "rest"
    ],
    "pit": "not_applicable",
+   "revision_risk": "none",
    "data_types": [
     "funding",
     "open_interest",
     "liquidations",
     "long_short_ratio"
    ],
+   "redistribution": "restricted",
    "free_tier": "unverified"
   },
   {
@@ -3557,11 +3775,13 @@
     "archive"
    ],
    "pit": "not_applicable",
+   "revision_risk": "possible",
    "data_types": [
     "historical_ticks",
     "orderbook_l2",
     "reference_rates"
    ],
+   "redistribution": "restricted",
    "free_tier": "paid"
   },
   {
@@ -3594,11 +3814,13 @@
     "archive"
    ],
    "pit": "not_applicable",
+   "revision_risk": "possible",
    "data_types": [
     "onchain_metrics",
     "market_data",
     "reference_rates"
    ],
+   "redistribution": "restricted",
    "free_tier": "community tier"
   },
   {
@@ -3632,11 +3854,13 @@
     "web"
    ],
    "pit": "not_applicable",
+   "revision_risk": "rare",
    "data_types": [
     "onchain_metrics",
     "exchange_flows",
     "stablecoin_supply"
    ],
+   "redistribution": "restricted",
    "free_tier": "free tier + paid"
   },
   {
@@ -3669,10 +3893,12 @@
     "rest"
    ],
    "pit": "not_applicable",
+   "revision_risk": "rare",
    "data_types": [
     "onchain_flows",
     "whale_behavior"
    ],
+   "redistribution": "restricted",
    "free_tier": "paid"
   },
   {
@@ -3705,11 +3931,13 @@
     "rest"
    ],
    "pit": "not_applicable",
+   "revision_risk": "rare",
    "data_types": [
     "exchange_flows",
     "miner_flow",
     "whale_behavior"
    ],
+   "redistribution": "restricted",
    "free_tier": "paid"
   },
   {
@@ -3742,11 +3970,13 @@
     "rest"
    ],
    "pit": "not_applicable",
+   "revision_risk": "rare",
    "data_types": [
     "transactions",
     "token_transfers",
     "contract"
    ],
+   "redistribution": "restricted",
    "free_tier": "free tier + paid"
   },
   {
@@ -3780,10 +4010,12 @@
     "web"
    ],
    "pit": "not_applicable",
+   "revision_risk": "rare",
    "data_types": [
     "onchain_queries",
     "dashboards"
    ],
+   "redistribution": "restricted",
    "free_tier": "free tier + paid"
   },
   {
@@ -3816,11 +4048,13 @@
     "rest"
    ],
    "pit": "not_applicable",
+   "revision_risk": "rare",
    "data_types": [
     "defi_tvl",
     "stablecoin_supply",
     "dex_volume"
    ],
+   "redistribution": "restricted",
    "free_tier": "free"
   },
   {
@@ -3853,10 +4087,12 @@
     "rest"
    ],
    "pit": "not_applicable",
+   "revision_risk": "rare",
    "data_types": [
     "transactions",
     "onchain_metrics"
    ],
+   "redistribution": "restricted",
    "free_tier": "free tier + paid"
   },
   {
@@ -3889,11 +4125,13 @@
     "rest"
    ],
    "pit": "not_applicable",
+   "revision_risk": "rare",
    "data_types": [
     "mempool",
     "fees",
     "blocks"
    ],
+   "redistribution": "restricted",
    "free_tier": "free, self-hostable"
   },
   {
@@ -3928,11 +4166,13 @@
     "archive"
    ],
    "pit": "not_applicable",
+   "revision_risk": "none",
    "data_types": [
     "historical_ticks",
     "orderbook_l2",
     "derivatives"
    ],
+   "redistribution": "restricted",
    "free_tier": "paid, first day of each month free"
   },
   {
@@ -3966,10 +4206,12 @@
     "archive"
    ],
    "pit": "not_applicable",
+   "revision_risk": "none",
    "data_types": [
     "historical_ticks",
     "orderbook_l2"
    ],
+   "redistribution": "restricted",
    "free_tier": "paid"
   },
   {
@@ -4002,10 +4244,12 @@
     "sdk"
    ],
    "pit": "not_applicable",
+   "revision_risk": "none",
    "data_types": [
     "tooling",
     "sdk"
    ],
+   "redistribution": "allowed",
    "free_tier": "open source (MIT)"
   },
   {
@@ -4037,10 +4281,12 @@
     "sdk"
    ],
    "pit": "not_applicable",
+   "revision_risk": "none",
    "data_types": [
     "tooling",
     "sdk"
    ],
+   "redistribution": "allowed",
    "free_tier": "open source"
   },
   {
@@ -4071,10 +4317,12 @@
     "sdk"
    ],
    "pit": "not_applicable",
+   "revision_risk": "none",
    "data_types": [
     "tooling",
     "sdk"
    ],
+   "redistribution": "allowed",
    "free_tier": "open source (MIT)"
   },
   {
@@ -4108,12 +4356,16 @@
     "rest"
    ],
    "pit": "not_applicable",
+   "revision_risk": "none",
    "data_types": [
     "ticker",
     "ohlcv",
     "trades",
     "orderbook_l2"
    ],
+   "redistribution": "restricted",
+   "freshness_sla": "realtime (REST)",
+   "fallback_id": "binance-data-api-vision",
    "free_tier": "public market data free, no key"
   },
   {
@@ -4146,12 +4398,14 @@
     "rest"
    ],
    "pit": "not_applicable",
+   "revision_risk": "none",
    "data_types": [
     "ticker",
     "ohlcv",
     "trades",
     "orderbook_l2"
    ],
+   "redistribution": "restricted",
    "free_tier": "public market data free, no key"
   },
   {
@@ -4186,9 +4440,12 @@
     "web"
    ],
    "pit": "partial",
+   "revision_risk": "possible",
    "data_types": [
     "news"
    ],
+   "redistribution": "restricted",
+   "freshness_sla": "minutes (RSS)",
    "free_tier": "free"
   },
   {
@@ -4221,9 +4478,11 @@
     "web"
    ],
    "pit": "partial",
+   "revision_risk": "possible",
    "data_types": [
     "news"
    ],
+   "redistribution": "restricted",
    "free_tier": "free"
   },
   {
@@ -4256,9 +4515,11 @@
     "web"
    ],
    "pit": "partial",
+   "revision_risk": "possible",
    "data_types": [
     "news"
    ],
+   "redistribution": "restricted",
    "free_tier": "free"
   },
   {
@@ -4291,9 +4552,11 @@
     "web"
    ],
    "pit": "partial",
+   "revision_risk": "possible",
    "data_types": [
     "news"
    ],
+   "redistribution": "restricted",
    "free_tier": "free"
   },
   {
@@ -4324,9 +4587,11 @@
     "web"
    ],
    "pit": "not_applicable",
+   "revision_risk": "none",
    "data_types": [
     "research"
-   ]
+   ],
+   "redistribution": "restricted"
   },
   {
    "id": "binance-announcements",
@@ -4360,10 +4625,12 @@
     "web"
    ],
    "pit": "partial",
+   "revision_risk": "possible",
    "data_types": [
     "news",
     "events"
    ],
+   "redistribution": "restricted",
    "free_tier": "unverified"
   },
   {
@@ -4397,9 +4664,11 @@
     "web"
    ],
    "pit": "partial",
+   "revision_risk": "rare",
    "data_types": [
     "token_unlocks"
    ],
+   "redistribution": "restricted",
    "free_tier": "free tier + paid plans"
   },
   {
@@ -4433,9 +4702,13 @@
     "web"
    ],
    "pit": "partial",
+   "revision_risk": "possible",
    "data_types": [
     "etf_flows"
    ],
+   "redistribution": "restricted",
+   "freshness_sla": "daily",
+   "fallback_id": "sosovalue",
    "free_tier": "free"
   },
   {
@@ -4468,10 +4741,12 @@
     "web"
    ],
    "pit": "partial",
+   "revision_risk": "possible",
    "data_types": [
     "etf_flows",
     "market_data"
    ],
+   "redistribution": "restricted",
    "free_tier": "free tier + paid API"
   }
  ]
